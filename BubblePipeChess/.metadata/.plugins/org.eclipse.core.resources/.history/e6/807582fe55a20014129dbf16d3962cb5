@@ -1,0 +1,14 @@
+package com.bubblepipe;
+import javax.swing.JFrame;
+
+public class Game extends JFrame {
+	
+	public Game() {
+		initUI();
+	}
+	
+	protected void initUI() {
+		add(new Board());
+	}
+
+}

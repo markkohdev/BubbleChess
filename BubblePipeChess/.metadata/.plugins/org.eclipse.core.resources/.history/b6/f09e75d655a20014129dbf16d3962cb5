@@ -1,0 +1,5 @@
+package com.bubblepipe;
+
+public class ChessBoard extends JPanel {
+
+}
