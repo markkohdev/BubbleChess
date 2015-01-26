@@ -1,0 +1,22 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1081" measuredH="616" mockupW="933" mockupH="573">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::Canvas" x="148" y="43" w="933" h="573" measuredW="100" measuredH="70" zOrder="0" locked="false" isInGroup="-1"/>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::Label" x="509" y="116" w="-1" h="-1" measuredW="211" measuredH="48" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>40</size>
+        <text>Game%20Over</text>
+      </controlProperties>
+    </control>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::Label" x="531" y="197" w="-1" h="-1" measuredW="167" measuredH="36" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <size>28</size>
+        <text>You%20have%20lost</text>
+      </controlProperties>
+    </control>
+    <control controlID="3" controlTypeID="com.balsamiq.mockups::Button" x="531" y="442" w="193" h="62" measuredW="145" measuredH="27" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Return%20to%20Main%20Menu</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
