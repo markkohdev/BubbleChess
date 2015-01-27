@@ -33,5 +33,10 @@
         <text>Create%20Game</text>
       </controlProperties>
     </control>
+    <control controlID="8" controlTypeID="com.balsamiq.mockups::CheckBox" x="580" y="281" w="-1" h="-1" measuredW="129" measuredH="22" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Make%20Public%20Game</text>
+      </controlProperties>
+    </control>
   </controls>
 </mockup>
