@@ -1,6 +1,11 @@
-package com.bubblechess.client;
+package com.bubblechess.client.pieces;
 
 import java.util.ArrayList;
+
+import com.bubblechess.client.BoardPiece;
+import com.bubblechess.client.ChessPiece;
+import com.bubblechess.client.Move;
+import com.bubblechess.client.BoardPiece.Color;
 
 public class Pawn extends ChessPiece {
 
@@ -13,7 +18,7 @@ public class Pawn extends ChessPiece {
 	}
 	
 	@Override
-	public ArrayList<Move> getAllMoves(int x, int y) {
+	public ArrayList getMoves(int x, int y) {
 		ArrayList<Move> moves = new ArrayList<Move>();
 		int from[] = {x,y};
 		int to[] = new int[2];

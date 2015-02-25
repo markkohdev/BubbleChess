@@ -41,17 +41,12 @@ public interface Board {
 	public Board clone();
 	
 	/**
-	 * Get all possible moves from the current board
-	 * @return
+	 * Get all moves for a given piece in a board
+	 * @param x
+	 * @param y
+	 * @return A list of moves
 	 */
-	public ArrayList<Move> getAllMoves();
-	
-	/**
-	 * Get all moves for a given player from a board state
-	 * @param player
-	 * @return
-	 */
-	public ArrayList<Move> getAllMoves(Player player);
+	public ArrayList<Move> getMoves(int row, int col);
 	
 	/**
 	 * Get all moves for a given piece in a board
@@ -59,15 +54,7 @@ public interface Board {
 	 * @param y
 	 * @return A list of moves
 	 */
-	public ArrayList<Move> getMovesForPiece(int row, int col);
-	
-	/**
-	 * Get all moves for a given piece in a board
-	 * @param x
-	 * @param y
-	 * @return A list of moves
-	 */
-	public ArrayList<Move> getMovesForPiece(char row, char col);
+	public ArrayList<Move> getMoves(char row, char col);
 	
 
 	/**

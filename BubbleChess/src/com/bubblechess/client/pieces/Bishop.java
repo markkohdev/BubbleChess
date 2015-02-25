@@ -2,17 +2,16 @@ package com.bubblechess.client;
 
 import java.util.ArrayList;
 
-public class Rook extends ChessPiece {
-	
-	protected int[][] dirs = {N,E,S,W};
-	
-	public Rook(Color col) {
-		color = col;
-		hasMoved = false;
-	}
+public class Bishop extends ChessPiece {
 
+	protected int[][] dirs = {NE,SE,SW,NW};
+	
+	public Bishop(Color col) {
+		color = col;
+	}
+	
 	@Override
-	public ArrayList<Move> getAllMoves(int x, int y) {
+	public ArrayList<Move> getMoves(int x, int y) {
 		ArrayList<Move> moves = new ArrayList<Move>();
 		int from[] = {x,y};
 		int to[] = new int[2];
@@ -33,9 +32,8 @@ public class Rook extends ChessPiece {
 
 	@Override
 	public BoardPiece clone() {
-		ChessPiece piece = new Knight(this.getColor());
+		ChessPiece piece = new Bishop(this.getColor());
 		piece.dirs = this.getDirs();
-		piece.hasMoved = this.getHasMoved();
 		return piece;
 	}
 }

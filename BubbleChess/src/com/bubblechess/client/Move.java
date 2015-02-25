@@ -8,11 +8,7 @@ public class Move {
 	private int[] coordinateFrom;
 	private int[] coordinateTo;
 	
-	public Move(int[] from, int[] to) throws Exception {
-		if(from.length != 2 || to.length != 2){
-			throw new Exception("Error: Invalid coordinate.");
-		}
-		
+	public Move(int[] from, int[] to) {
 		coordinateFrom = from;
 		coordinateTo = to;
 	}

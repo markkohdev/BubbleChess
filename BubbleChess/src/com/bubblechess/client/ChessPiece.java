@@ -30,7 +30,7 @@ public abstract class ChessPiece implements BoardPiece {
 	 * @param y y-coordinate of chessboard
 	 * @return A list of moves
 	 */
-	public abstract ArrayList<Move> getAllMoves(int x, int y);
+	public abstract ArrayList<Move> getMoves(int x, int y);
 
 	/**
 	 * Returns the color of this piece

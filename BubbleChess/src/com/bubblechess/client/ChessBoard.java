@@ -1,8 +1,7 @@
 package com.bubblechess.client;
 
 import java.util.ArrayList;
-
-import com.bubblechess.client.BoardPiece.Color;
+import java.util.Arrays;
 
 public class ChessBoard implements Board {
 	
@@ -17,6 +16,9 @@ public class ChessBoard implements Board {
 	protected int boardWidth = 8;
 	protected int boardHeight = 8;
 	
+	// Fill in the state
+	public enum STATE {};
+	
 	/**
 	 * Constructor
 	 */
@@ -24,8 +26,13 @@ public class ChessBoard implements Board {
 		init();
 	}
 	
+	public ChessBoard(BoardPiece[][] board,BoardPiece[] captured){
+		this.board = board;
+		this.captured = new ArrayList<BoardPiece>(Arrays.asList(captured));
+	}
+
 	/**
-	 * Board initializer. Place all board pieces.
+	 * Board initializer.  Place all the board pieces in and jawn
 	 */
 	protected void init(){
 		board = new BoardPiece[boardWidth][boardHeight];
@@ -64,6 +71,10 @@ public class ChessBoard implements Board {
 		}
 		
 		return newBoard;
+	}
+	
+	public BoardPiece[] getCaptured() {
+		return (BoardPiece[]) this.captured.toArray();
 	}
 	
 	@Override
@@ -122,78 +133,47 @@ public class ChessBoard implements Board {
 	 */
 	@Override
 	public Board clone() {
-		ChessBoard chessboard = new ChessBoard();
-		chessboard.boardWidth = this.boardWidth;
-		chessboard.boardHeight = this.boardHeight;
-		chessboard.captured = this.captured;
 		
-		// copy board contents
-		for (int row=0;row<chessboard.boardHeight;row++) {
-			for (int col=0;col<chessboard.boardWidth;col++) {
-				chessboard.board[col][row] = this.board[col][row];
-			}
-		}
+		ChessBoard newBoard = new ChessBoard(this.getBoard(),this.getCaptured());
 		
-		return chessboard;
+		return newBoard;
 	}
 
-	/**
-	 * Returns a list of all possible moves
-	 * Not guaranteed to be legal
-	 * @return An ArrayList of Moves
-	 */
 	@Override
-	public ArrayList<Move> getAllMoves() {
-		ArrayList<Move> moves = new ArrayList<Move>();
-		moves.addAll(getAllMoves(Color.WHITE));
-		moves.addAll(getAllMoves(Color.BLACK));
-		
-		return moves;
-	}
-	
-	/**
-	 * Returns a list of all possible moves for one side
-	 * Not guaranteed to be legal
-	 * @param color The color of the ChessPiece
-	 * @return An ArrayList of Moves
-	 */
-	@Override
-	public ArrayList<Move> getAllMoves(Color color) {
-		ArrayList<Move> moves = new ArrayList<Move>();
-		for (int row=0;row<boardHeight;row++) {
-			for (int col=0;col<boardWidth;col++) {
-				if (board[col][row] != null && board[col][row].getColor() == color) {
-					moves.addAll(board[col][row].getAllMoves(col,row));
-				}
-			}
-		}
-		
-		return moves;
-	}
-
-	/**
-	 * Returns a list of all possible moves for the piece at a location
-	 * @param col The column
-	 * @param row The row
-	 * @return A list of possible moves for the piece at a location, empty if null
-	 */
-	@Override
-	public ArrayList<Move> getMovesForPiece(int col, int row) {
-		if (board[col][row] == null) {
+	public ArrayList<Move> getMoves(int col, int row) {
+		//Make sure the square isn't empty.  If it is, return an empty list
+		if(board[col][row] == null){
 			return new ArrayList<Move>();
 		}
-		return board[col][row].getAllMoves(col,row);
+		else {
+			//Return the moves available from the piece
+			ArrayList<Move> pieceMoves = board[col][row].getMoves(col, row);
+			
+			ArrayList<Move> validMoves = new ArrayList<Move>();
+			
+			//Iterate through the moves given to us and make sure none are illegal
+			for(Move m: pieceMoves){
+				if (validMove(m)){
+					validMoves.add(m);
+				}
+			}
+			
+			return validMoves;
+		}
 	}
 
 	@Override
-	public ArrayList<Move> getMovesForPiece(char col, char row) {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<Move> getMoves(char col, char row) {
+		//col will be letter from a-z, convert to 0-n
+		int x = col-97;
+		//row will be number
+		int y = Character.getNumericValue(row);
+		return getMoves(x, y);
 	}
 
 	@Override
 	public String getState() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
@@ -222,15 +202,13 @@ public class ChessBoard implements Board {
 	protected boolean handleSpecialCase(Move m){
 		//TODO: Handle special case logic
 		//Castling, etc.
+		
+		//Also handle state changes??
 		return false;
 	}
-
-	/**
-	 * Returns an arraylist of captured BoardPieces
-	 */
-	@Override
-	public ArrayList<BoardPiece> getCaptured() {
-		return captured;
+	
+	protected void updateState(){
+		
 	}
 
 }

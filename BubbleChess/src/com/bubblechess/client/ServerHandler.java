@@ -30,8 +30,14 @@ public class ServerHandler {
 		}
 	}
 	
-	public void SendMove(Move m){
+	public void SendMove(Move m, User u, Game g){
+		JSONObject json = new JSONObject();
 		
+		json.put("move",m.toJSON());
+		json.put("gameID", g.getID());
+		json.put("user", u.getID());
+		
+		out.println(json.toJSONString());
 	}
 	
 	

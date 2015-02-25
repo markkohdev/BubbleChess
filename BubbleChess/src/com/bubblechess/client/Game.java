@@ -21,17 +21,22 @@ public class Game {
 	 * @param u2 Second user
 	 * @param b The initialize gameboard
 	 */
-	public Game(User u1, User u2,Board b){
+	public Game(int gameID, User u1, User u2,Board b){
+		this.gameID = gameID;
 		user1 = u1;
 		user2 = u2;
 		board = b;
 		moves = new ArrayList<Move>();
 		turn = user1;
 	}
+	
+	public int getID(){
+		return gameID;
+	}
 
 	/**
 	 * The move at the specified index
-	 * @param index
+	 * @param index+
 	 * @return The requested move, or null if index out of range
 	 */
 	public Move getMove(int index){

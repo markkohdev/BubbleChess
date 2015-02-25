@@ -1,17 +1,23 @@
-package com.bubblechess.client;
+package com.bubblechess.client.pieces;
 
 import java.util.ArrayList;
 
-public class Queen extends ChessPiece {
+import com.bubblechess.client.BoardPiece;
+import com.bubblechess.client.ChessPiece;
+import com.bubblechess.client.Move;
+import com.bubblechess.client.BoardPiece.Color;
+
+public class Rook extends ChessPiece {
 	
-	protected int[][] dirs = {N,NE,E,SE,S,SW,W,NW};
+	protected int[][] dirs = {N,E,S,W};
 	
-	public Queen(Color col) {
+	public Rook(Color col) {
 		color = col;
+		hasMoved = false;
 	}
 
 	@Override
-	public ArrayList<Move> getAllMoves(int x, int y) {
+	public ArrayList<Move> getMoves(int x, int y) {
 		ArrayList<Move> moves = new ArrayList<Move>();
 		int from[] = {x,y};
 		int to[] = new int[2];
@@ -34,7 +40,7 @@ public class Queen extends ChessPiece {
 	public BoardPiece clone() {
 		ChessPiece piece = new Knight(this.getColor());
 		piece.dirs = this.getDirs();
+		piece.hasMoved = this.getHasMoved();
 		return piece;
 	}
-
 }
