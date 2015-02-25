@@ -1,4 +1,5 @@
 package com.bubblechess.client;
+import org.json.simple.*;
 
 public class Move {
 	
@@ -35,5 +36,20 @@ public class Move {
 	
 	public int rowTo(){
 		return coordinateTo[1];
+	}
+	
+	public String toString(){
+		String str = String.format("(%d,%d),(%d,%d)", colFrom(),rowFrom(),colTo(),rowTo());
+		return str;
+	}
+	
+	public JSONObject toJSON(){
+		JSONObject json = new JSONObject();
+		json.put("colFrom", colFrom());
+		json.put("rowFrom", rowFrom());
+		json.put("colTo", colTo());
+		json.put("rowTo", rowTo());
+		return json;
+		
 	}
 }
