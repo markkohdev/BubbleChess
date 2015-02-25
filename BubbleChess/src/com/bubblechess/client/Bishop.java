@@ -18,7 +18,7 @@ public class Bishop extends ChessPiece {
 	 * @throws Exception 
 	 */
 	@Override
-	public ArrayList<Move> getAllMoves(int x, int y) {
+	public ArrayList<Move> getMoves(int x, int y) {
 		ArrayList<Move> moves = new ArrayList<Move>();
 		int from[] = {x,y};
 		int to[] = new int[2];

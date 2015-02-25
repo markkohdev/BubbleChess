@@ -8,7 +8,7 @@ public interface BoardPiece {
 	
 	public BoardPiece clone();
 	
-	public ArrayList<Move> getAllMoves(int x, int y);
+	public ArrayList<Move> getMoves(int x, int y);
 	
 	public String getColor();
 }

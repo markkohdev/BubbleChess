@@ -1,6 +1,11 @@
-package com.bubblechess.client;
+package com.bubblechess.client.pieces;
 
 import java.util.ArrayList;
+
+import com.bubblechess.client.BoardPiece;
+import com.bubblechess.client.ChessPiece;
+import com.bubblechess.client.Move;
+import com.bubblechess.client.BoardPiece.Color;
 
 public class King extends ChessPiece {
 	
@@ -22,7 +27,7 @@ public class King extends ChessPiece {
 	 * @return A list of moves
 	 */
 	@Override
-	public ArrayList<Move> getAllMoves(int x, int y) {
+	public ArrayList<Move> getMoves(int x, int y) {
 		ArrayList<Move> moves = new ArrayList<Move>();
 		int from[] = {x,y};
 		int to[] = new int[2];
@@ -56,12 +61,6 @@ public class King extends ChessPiece {
 		}
 
 		return moves;
-	}
-
-	@Override
-	public BoardPiece clone() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

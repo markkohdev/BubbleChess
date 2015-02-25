@@ -1,6 +1,7 @@
 package com.bubblechess.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ChessBoard implements Board {
 	
@@ -15,11 +16,19 @@ public class ChessBoard implements Board {
 	protected int boardWidth = 8;
 	protected int boardHeight = 8;
 	
+	// Fill in the state
+	public enum STATE {};
+	
 	/**
 	 * Constructor
 	 */
 	public ChessBoard(){
 		init();
+	}
+	
+	public ChessBoard(BoardPiece[][] board,BoardPiece[] captured){
+		this.board = board;
+		this.captured = new ArrayList<BoardPiece>(Arrays.asList(captured));
 	}
 
 	/**
@@ -47,15 +56,17 @@ public class ChessBoard implements Board {
 		return newBoard;
 	}
 	
+	public BoardPiece[] getCaptured() {
+		return (BoardPiece[]) this.captured.toArray();
+	}
+	
 	@Override
 	public int getWidth() {
-		// TODO Auto-generated method stub
 		return boardWidth;
 	}
 
 	@Override
 	public int getHeight() {
-		// TODO Auto-generated method stub
 		return boardHeight;
 	}
 
@@ -97,37 +108,47 @@ public class ChessBoard implements Board {
 
 	@Override
 	public Board clone() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		ChessBoard newBoard = new ChessBoard(this.getBoard(),this.getCaptured());
+		
+		return newBoard;
 	}
 
 	@Override
-	public ArrayList<Move> getAllMoves() {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<Move> getMoves(int col, int row) {
+		//Make sure the square isn't empty.  If it is, return an empty list
+		if(board[col][row] == null){
+			return new ArrayList<Move>();
+		}
+		else {
+			//Return the moves available from the piece
+			ArrayList<Move> pieceMoves = board[col][row].getMoves(col, row);
+			
+			ArrayList<Move> validMoves = new ArrayList<Move>();
+			
+			//Iterate through the moves given to us and make sure none are illegal
+			for(Move m: pieceMoves){
+				if (validMove(m)){
+					validMoves.add(m);
+				}
+			}
+			
+			return validMoves;
+		}
 	}
 
 	@Override
-	public ArrayList<Move> getAllMoves(Player player) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ArrayList<Move> getMovesForPiece(int col, int row) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ArrayList<Move> getMovesForPiece(char col, char row) {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<Move> getMoves(char col, char row) {
+		//col will be letter from a-z, convert to 0-n
+		int x = col-97;
+		//row will be number
+		int y = Character.getNumericValue(row);
+		return getMoves(x, y);
 	}
 
 	@Override
 	public String getState() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
@@ -156,13 +177,13 @@ public class ChessBoard implements Board {
 	protected boolean handleSpecialCase(Move m){
 		//TODO: Handle special case logic
 		//Castling, etc.
+		
+		//Also handle state changes??
 		return false;
 	}
-
-	@Override
-	public BoardPiece[] getCaptured() {
-		// TODO Auto-generated method stub
-		return null;
+	
+	protected void updateState(){
+		
 	}
 
 }

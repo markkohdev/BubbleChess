@@ -1,21 +1,17 @@
-package com.bubblechess.client;
+package com.bubblechess.client.pieces;
 
 import java.util.ArrayList;
 
-public class Knight extends ChessPiece {
+import com.bubblechess.client.BoardPiece;
+import com.bubblechess.client.ChessPiece;
+import com.bubblechess.client.Move;
+import com.bubblechess.client.BoardPiece.Color;
+
+public class Rook extends ChessPiece {
 	
-	int[] N = {1,2};
-	int[] E = {2,1};
-	int[] S = {2,-1};
-	int[] W = {1,-2};
-	int[] NE = {-1,-2};
-	int[] SE = {-2,-1};
-	int[] SW = {-2,1};
-	int[] NW = {-1,2};
+	public int[][] dirs = {N,E,S,W};
 	
-	public int[][] dirs = {N,NE,E,SE,S,SW,W,NW};
-	
-	public Knight(Color col) {
+	public Rook(Color col) {
 		color = col;
 	}
 
@@ -26,7 +22,7 @@ public class Knight extends ChessPiece {
 	 * @return A list of moves
 	 */
 	@Override
-	public ArrayList<Move> getAllMoves(int x, int y) {
+	public ArrayList<Move> getMoves(int x, int y) {
 		ArrayList<Move> moves = new ArrayList<Move>();
 		int from[] = {x,y};
 		int to[] = new int[2];
@@ -35,9 +31,11 @@ public class Knight extends ChessPiece {
 			to[0] = x + dirs[i][0]; // next x
 			to[1] = y + dirs[i][1]; // next y
 			
-			// if coordinate is in the board
-			if (to[0]>=0 && to[0]<=7 && to[1]>=0 && to[1]<=7) {
+			// while coordinate is in the board
+			while(to[0]>=0 && to[0]<=7 && to[1]>=0 && to[1]<=7) {
 				moves.add(new Move(from, to));
+				to[0] += dirs[i][0];
+				to[1] += dirs[i][1];
 			}
 		}
 		return moves;
