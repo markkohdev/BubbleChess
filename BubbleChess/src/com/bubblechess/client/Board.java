@@ -82,5 +82,5 @@ public interface Board {
 	 */
 	public boolean endState();
 	
-	public BoardPiece[] getCaptured();
+	public ArrayList<BoardPiece> getCaptured();
 }

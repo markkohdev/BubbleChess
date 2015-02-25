@@ -4,18 +4,13 @@ import java.util.ArrayList;
 
 public class Rook extends ChessPiece {
 	
-	public int[][] dirs = {N,E,S,W};
+	protected int[][] dirs = {N,E,S,W};
 	
 	public Rook(Color col) {
 		color = col;
+		hasMoved = false;
 	}
 
-	/**
-	 * Returns a list of possible moves (not guaranteed to be legal)
-	 * @param x x-coordinate of chessboard
-	 * @param y y-coordinate of chessboard
-	 * @return A list of moves
-	 */
 	@Override
 	public ArrayList<Move> getAllMoves(int x, int y) {
 		ArrayList<Move> moves = new ArrayList<Move>();
@@ -38,7 +33,9 @@ public class Rook extends ChessPiece {
 
 	@Override
 	public BoardPiece clone() {
-		// TODO Auto-generated method stub
-		return null;
+		ChessPiece piece = new Knight(this.getColor());
+		piece.dirs = this.getDirs();
+		piece.hasMoved = this.getHasMoved();
+		return piece;
 	}
 }

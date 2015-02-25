@@ -2,6 +2,8 @@ package com.bubblechess.client;
 
 import java.util.ArrayList;
 
+import com.bubblechess.client.BoardPiece.Color;
+
 public class ChessBoard implements Board {
 	
 	/**
@@ -21,14 +23,32 @@ public class ChessBoard implements Board {
 	public ChessBoard(){
 		init();
 	}
-
+	
 	/**
-	 * Board initializer.  Place all the board pieces in and jawn
+	 * Board initializer. Place all board pieces.
 	 */
 	protected void init(){
 		board = new BoardPiece[boardWidth][boardHeight];
-		//TODO: Add piece initialization here
-		
+		for (int i=0;i<8;i++) {
+			board[i][1] = new Pawn(Color.WHITE);
+			board[i][6] = new Pawn(Color.BLACK);
+		}
+		board[0][0] = new Rook(Color.WHITE);
+		board[0][7] = new Rook(Color.BLACK);
+		board[1][0] = new Knight(Color.WHITE);
+		board[1][7] = new Knight(Color.BLACK);
+		board[2][0] = new Bishop(Color.WHITE);
+		board[2][7] = new Bishop(Color.BLACK);
+		board[3][0] = new Queen(Color.WHITE);
+		board[3][7] = new Queen(Color.BLACK);
+		board[4][0] = new King(Color.WHITE);
+		board[4][7] = new King(Color.BLACK);
+		board[5][0] = new Bishop(Color.WHITE);
+		board[5][7] = new Bishop(Color.BLACK);
+		board[6][0] = new Knight(Color.WHITE);
+		board[6][7] = new Knight(Color.BLACK);
+		board[7][0] = new Rook(Color.WHITE);
+		board[7][0] = new Rook(Color.BLACK);		
 	}
 	
 
@@ -36,8 +56,7 @@ public class ChessBoard implements Board {
 	public BoardPiece[][] getBoard() {
 		BoardPiece[][] newBoard = new BoardPiece[boardWidth][boardHeight];
 		
-		//Run through the board and populate a new board 
-		
+		//Run through the board and populate a new board 		
 		for (int col=0;col<board.length;col++){
 			for (int row=0;row<board[col].length;row++){
 				newBoard[col][row] = board[col][row].clone();
@@ -49,13 +68,11 @@ public class ChessBoard implements Board {
 	
 	@Override
 	public int getWidth() {
-		// TODO Auto-generated method stub
 		return boardWidth;
 	}
 
 	@Override
 	public int getHeight() {
-		// TODO Auto-generated method stub
 		return boardHeight;
 	}
 
@@ -87,6 +104,10 @@ public class ChessBoard implements Board {
 		return false;
 	}
 
+	/**
+	 * Returns a new copy of the board with the given move applied
+	 * @return A new, udpated ChessBoard
+	 */
 	@Override
 	public Board applyMoveCloning(Move m) {
 		Board newBoard = this.clone();
@@ -95,28 +116,73 @@ public class ChessBoard implements Board {
 		return newBoard;
 	}
 
+	/**
+	 * Performs a deep copy of a ChessBoard
+	 * @return An identical ChessBoard
+	 */
 	@Override
 	public Board clone() {
-		// TODO Auto-generated method stub
-		return null;
+		ChessBoard chessboard = new ChessBoard();
+		chessboard.boardWidth = this.boardWidth;
+		chessboard.boardHeight = this.boardHeight;
+		chessboard.captured = this.captured;
+		
+		// copy board contents
+		for (int row=0;row<chessboard.boardHeight;row++) {
+			for (int col=0;col<chessboard.boardWidth;col++) {
+				chessboard.board[col][row] = this.board[col][row];
+			}
+		}
+		
+		return chessboard;
 	}
 
+	/**
+	 * Returns a list of all possible moves
+	 * Not guaranteed to be legal
+	 * @return An ArrayList of Moves
+	 */
 	@Override
 	public ArrayList<Move> getAllMoves() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Move> moves = new ArrayList<Move>();
+		moves.addAll(getAllMoves(Color.WHITE));
+		moves.addAll(getAllMoves(Color.BLACK));
+		
+		return moves;
 	}
-
+	
+	/**
+	 * Returns a list of all possible moves for one side
+	 * Not guaranteed to be legal
+	 * @param color The color of the ChessPiece
+	 * @return An ArrayList of Moves
+	 */
 	@Override
-	public ArrayList<Move> getAllMoves(Player player) {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<Move> getAllMoves(Color color) {
+		ArrayList<Move> moves = new ArrayList<Move>();
+		for (int row=0;row<boardHeight;row++) {
+			for (int col=0;col<boardWidth;col++) {
+				if (board[col][row] != null && board[col][row].getColor() == color) {
+					moves.addAll(board[col][row].getAllMoves(col,row));
+				}
+			}
+		}
+		
+		return moves;
 	}
 
+	/**
+	 * Returns a list of all possible moves for the piece at a location
+	 * @param col The column
+	 * @param row The row
+	 * @return A list of possible moves for the piece at a location, empty if null
+	 */
 	@Override
 	public ArrayList<Move> getMovesForPiece(int col, int row) {
-		// TODO Auto-generated method stub
-		return null;
+		if (board[col][row] == null) {
+			return new ArrayList<Move>();
+		}
+		return board[col][row].getAllMoves(col,row);
 	}
 
 	@Override
@@ -159,10 +225,12 @@ public class ChessBoard implements Board {
 		return false;
 	}
 
+	/**
+	 * Returns an arraylist of captured BoardPieces
+	 */
 	@Override
-	public BoardPiece[] getCaptured() {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<BoardPiece> getCaptured() {
+		return captured;
 	}
 
 }

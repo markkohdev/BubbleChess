@@ -4,27 +4,22 @@ import java.util.ArrayList;
 
 public class Knight extends ChessPiece {
 	
-	int[] N = {1,2};
-	int[] E = {2,1};
-	int[] S = {2,-1};
-	int[] W = {1,-2};
-	int[] NE = {-1,-2};
-	int[] SE = {-2,-1};
-	int[] SW = {-2,1};
-	int[] NW = {-1,2};
+	// Modify directional vectors for knight movement
+	protected int[] N = {1,2};
+	protected int[] E = {2,1};
+	protected int[] S = {2,-1};
+	protected int[] W = {1,-2};
+	protected int[] NE = {-1,-2};
+	protected int[] SE = {-2,-1};
+	protected int[] SW = {-2,1};
+	protected int[] NW = {-1,2};
 	
-	public int[][] dirs = {N,NE,E,SE,S,SW,W,NW};
+	protected int[][] dirs = {N,NE,E,SE,S,SW,W,NW};
 	
 	public Knight(Color col) {
 		color = col;
 	}
 
-	/**
-	 * Returns a list of possible moves (not guaranteed to be legal)
-	 * @param x x-coordinate of chessboard
-	 * @param y y-coordinate of chessboard
-	 * @return A list of moves
-	 */
 	@Override
 	public ArrayList<Move> getAllMoves(int x, int y) {
 		ArrayList<Move> moves = new ArrayList<Move>();
@@ -43,9 +38,19 @@ public class Knight extends ChessPiece {
 		return moves;
 	}
 
+	/**
+	 * Returns the directional movements of the knight
+	 * @return An array of directional vectors
+	 */
+	@Override
+	public int[][] getDirs() {
+		return dirs;
+	}
+	
 	@Override
 	public BoardPiece clone() {
-		// TODO Auto-generated method stub
-		return null;
+		ChessPiece piece = new Knight(this.getColor());
+		piece.dirs = this.getDirs();
+		return piece;
 	}
 }

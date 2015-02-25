@@ -4,14 +4,16 @@ import java.util.ArrayList;
 
 public class Pawn extends ChessPiece {
 
-	public int[][] dirsWhite = {N,NE,NW};
-	public int[][] dirsBlack = {S,SE,SW};
+	protected int[][] dirsWhite = {N,NE,NW};
+	protected int[][] dirsBlack = {S,SE,SW};
 	
 	public Pawn(Color col) {
 		color = col;
+		hasMoved = false;
 	}
 	
-	public ArrayList getAllMoves(int x, int y) {
+	@Override
+	public ArrayList<Move> getAllMoves(int x, int y) {
 		ArrayList<Move> moves = new ArrayList<Move>();
 		int from[] = {x,y};
 		int to[] = new int[2];
@@ -26,8 +28,8 @@ public class Pawn extends ChessPiece {
 					moves.add(new Move(from, to));
 				}
 			}
-			// move forward 2 on first move
-			if (y == 1) {
+			// can move forward 2 on the first move
+			if (hasMoved == false) {
 				to[0] = x;
 				to[1] = y+2;
 				moves.add(new Move(from, to));
@@ -44,19 +46,35 @@ public class Pawn extends ChessPiece {
 					moves.add(new Move(from, to));
 				}
 			}
-			// move forward 2 on first move
-			if (y == 6) {
+			// can move forward 2 on the first move
+			if (hasMoved == false) {
 				to[0] = x;
 				to[1] = y-2;
 				moves.add(new Move(from, to));
 			}
 		}
+		
+		return moves;
+	}
+	
+	/**
+	 * Returns the directional movements of a pawn depending on color
+	 * @return An array of directional vectors
+	 */
+	@Override
+	public int[][] getDirs() {
+		if (this.getColor() == Color.WHITE) {
+			return dirsWhite;
+		}
+		return dirsBlack;
 	}
 
 	@Override
 	public BoardPiece clone() {
-		// TODO Auto-generated method stub
-		return null;
+		ChessPiece piece = new Knight(this.getColor());
+		piece.dirs = this.getDirs();
+		piece.hasMoved = this.getHasMoved();
+		return piece;
 	}
 
 }
