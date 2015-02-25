@@ -12,6 +12,9 @@ public class Move {
 		if(from.length != 2 || to.length != 2){
 			throw new Exception("Error: Invalid coordinate.");
 		}
+		
+		coordinateFrom = from;
+		coordinateTo = to;
 	}
 	
 	public int[] from(){
