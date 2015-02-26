@@ -8,8 +8,8 @@ public class Game {
 	 * Attributes
 	 */
 	protected int gameID;
-	protected User user1;
-	protected User user2;
+	protected User user1; //White
+	protected User user2; //Black
 	protected Board board;
 	protected ArrayList<Move> moves;
 	protected User turn;
@@ -32,6 +32,14 @@ public class Game {
 	
 	public int getID(){
 		return gameID;
+	}
+	
+	public User getUser1(){
+		return user1;
+	}
+	
+	public User getUser2(){
+		return user2;
 	}
 
 	/**
@@ -75,6 +83,10 @@ public class Game {
 	
 	public User getTurn(){
 		return turn;
+	}
+	
+	public boolean endState(){
+		return board.endState();
 	}
 
 

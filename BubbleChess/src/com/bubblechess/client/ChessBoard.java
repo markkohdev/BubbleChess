@@ -76,8 +76,11 @@ public class ChessBoard implements Board {
 		return newBoard;
 	}
 	
+	/**
+	 * We wanna use BoardPiece[] here because it makes copies and not references
+	 */
 	public BoardPiece[] getCaptured() {
-		return (BoardPiece[]) this.captured.toArray();
+		return (BoardPiece[])this.captured.toArray();
 	}
 	
 	@Override
