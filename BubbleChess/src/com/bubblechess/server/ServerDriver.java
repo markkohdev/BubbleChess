@@ -11,6 +11,10 @@ public class ServerDriver extends Thread
 {
    private ServerSocket serverSocket;
    
+   /**
+    * Constructor for the server
+    * @throws IOException
+    */
    public ServerDriver() throws IOException
    {
 	  int port = 4444;
@@ -18,6 +22,9 @@ public class ServerDriver extends Thread
       serverSocket.setSoTimeout(10000);
    }
 
+   /**
+    * Method that is ran when server is started
+    */
    public void run()
    {
       while(true)
@@ -179,6 +186,10 @@ public class ServerDriver extends Thread
 		}
       }
    }
+   /**
+    * Main method to start the server thread
+    * @param args
+    */
    public static void main(String [] args)
    {
 	  //removed this to keep it static
@@ -191,14 +202,5 @@ public class ServerDriver extends Thread
       {
          e.printStackTrace();
       }
-   }
-   
-   /**
-    * Check login method for users
-    * @param userId
-    * @param password
-    */
-   public void checkLogin(int userId, String password) {
-		
    }
 }

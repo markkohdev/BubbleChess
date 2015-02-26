@@ -5,12 +5,19 @@ import java.sql.*;
 public class ChessDB {
 	
 	/**
-	 * Constructor for sqllite db
+	 * Constructor
 	 */
 	public ChessDB() {
-	    Connection c = null;
-	    try {
-	    	Class.forName("org.sqlite.JDBC");
+	}
+	
+	/**
+	 * Method to set up db connection
+	 * @return
+	 */
+	public Connection dbConnect() {
+		 Connection c = null;
+		 try {
+		   	Class.forName("org.sqlite.JDBC");
 		    c = DriverManager.getConnection("jdbc:sqlite:test.db");
 		    c.setAutoCommit(false);
 		    System.out.println("Opened database successfully");
@@ -19,21 +26,48 @@ public class ChessDB {
 			System.out.println("Database failed to open :(");
 			e.printStackTrace();
 		}
+		 return c;
 	}
-	
 	/**
 	 * Method to create basic tables
 	 */
 	public void createTables() {
 		//do I need this?
+		Connection c = dbConnect();
 	}
 	
 	//User information
-	public void getUser() {
-		
+	/**
+	 * Method to return a users id by username
+	 * @param userName
+	 * @return
+	 */
+	public int getUser(String userName) {
+		Connection c = dbConnect();
+		int userId = -1;
+		try {
+			Statement stmt = c.createStatement();
+			ResultSet rs;
+			rs = stmt.executeQuery( "SELECT * FROM USERS WHERE USERNAME = "+userName+";");
+		    while ( rs.next() ) {
+		    	userId = rs.getInt("USERID");
+		    }
+		    rs.close();
+		    stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return userId;
 	}
-	public void insertUser(Connection c, String userName, String password)
+	/**
+	 * Method to create a user in the database
+	 * @param userName
+	 * @param password
+	 */
+	public void insertUser(String userName, String password)
 	{
+		Connection c = dbConnect();
 		Statement stmt = null;
 		try {
 			stmt = c.createStatement();
@@ -45,13 +79,53 @@ public class ChessDB {
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * Method to check user login information
+	 * @param userId
+	 * @param password
+	 */
+	public void checkLogin(int userId, String password) {
+	
+	}
 	
 	//Move information
-	public void getAllMoves(int gameId) {
+	/**
+	 * Method to get all moves from a game id
+	 * @param gameId
+	 * @return
+	 */
+	public String getAllMoves(int gameId) {
+		Connection c = dbConnect();
+		String moves = "";
+		try {
+			Statement stmt = c.createStatement();
+			ResultSet rs;
+			rs = stmt.executeQuery( "SELECT * FROM MOVES WHERE GAMEID = "+gameId+";");
+		    while ( rs.next() ) {
+		    	//Uhhh?
+		    }
+		    rs.close();
+		    stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return moves;
 		
 	}
-	public void insertMove(Connection c, int userId, int gameId, int colFrom, int rowFrom, int colTo, int rowTo)
+	
+	/**
+	 * Method to inser a move into the database
+	 * @param userId
+	 * @param gameId
+	 * @param colFrom
+	 * @param rowFrom
+	 * @param colTo
+	 * @param rowTo
+	 */
+	public void insertMove(int userId, int gameId, int colFrom, int rowFrom, int colTo, int rowTo)
 	{
+		Connection c = dbConnect();
 		Statement stmt = null;
 		try {
 			stmt = c.createStatement();
