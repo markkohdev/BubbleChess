@@ -3,6 +3,9 @@ package com.bubblechess.client;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.bubblechess.client.pieces.*;
+import com.bubblechess.client.BoardPiece.Color;
+
 public class ChessBoard implements Board {
 	
 	/**
@@ -132,13 +135,18 @@ public class ChessBoard implements Board {
 	 * @return An identical ChessBoard
 	 */
 	@Override
-	public Board clone() {
-		
+	public Board clone() {	
 		ChessBoard newBoard = new ChessBoard(this.getBoard(),this.getCaptured());
 		
 		return newBoard;
 	}
 
+	/**
+	 * Returns a list of possible moves for a piece in the given location
+	 * @param col x-coordinate
+	 * @param row y-coordinate
+	 * @return An ArrayList of Moves
+	 */
 	@Override
 	public ArrayList<Move> getMoves(int col, int row) {
 		//Make sure the square isn't empty.  If it is, return an empty list
@@ -189,7 +197,6 @@ public class ChessBoard implements Board {
 		return board[coord[0]][coord[1]];
 	}
 
-	
 	protected BoardPiece getPiece(int col, int row){
 		return board[col][row];
 	}
