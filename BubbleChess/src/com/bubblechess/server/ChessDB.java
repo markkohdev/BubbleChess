@@ -29,9 +29,6 @@ public class ChessDB {
 	}
 	
 	//User information
-	public void getUsers() {
-		
-	}
 	public void getUser() {
 		
 	}
@@ -50,7 +47,7 @@ public class ChessDB {
 	}
 	
 	//Move information
-	public void getMoves(int gameId) {
+	public void getAllMoves(int gameId) {
 		
 	}
 	public void insertMove(Connection c, int userId, int gameId, int colFrom, int rowFrom, int colTo, int rowTo)
