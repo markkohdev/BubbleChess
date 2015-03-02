@@ -60,6 +60,7 @@ public class ChessDB {
 		}
 		return userId;
 	}
+	
 	/**
 	 * Method to create a user in the database
 	 * @param userName
