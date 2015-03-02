@@ -6,6 +6,7 @@ import java.util.*;
 import java.net.*;
 import java.io.*;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -83,6 +84,15 @@ public class RequestHandler extends Thread {
             */
             //String request = "{ \"request\": \"createGame\",\"userID\": \"1234\",\"userNumber\": \"user1\"}";
             
+            /* joinGame JSON
+            { 
+            	"request": "joinGame",
+                "userID": "1234",
+                "gameID": "1234"
+            }
+            */
+            //String request = "{ \"request\": \"joinGame\",\"userID\": \"1234\",\"gameID\": \"1234\"}";
+            
             String request = "";
 			request = in.readUTF();
            
@@ -102,16 +112,16 @@ public class RequestHandler extends Thread {
             		int newId = _driver.getGames().size() + 1;
             		
             		long userId = (long) obj.get("userID");
-            		userId = (int) userId;
             		
             		String userNumber = (String) obj.get("userNumber");
             		
             		int userNum;
             		if(userNumber.equalsIgnoreCase("user1")) {
             			userNum = 1;
-            			GameThread gt = new GameThread(userNum, _clientSocket);
+            			GameThread gt = new GameThread(newId, userNum, _clientSocket, (int) userId);
                 		
                 		_driver.addGameThread(newId, gt);
+                		_driver.addJoinableGame(newId);
                 		
                 		//Return gameid
                 		JSONObject json = new JSONObject();
@@ -122,8 +132,10 @@ public class RequestHandler extends Thread {
               		}
             		else if(userNumber.equalsIgnoreCase("user2")) {
             			userNum = 2;
-            			GameThread gt = new GameThread(userNum, _clientSocket);
-                		_driver.addGameThread(newId, gt);
+            			GameThread gt = new GameThread(newId, userNum, _clientSocket, (int) userId);
+                		
+            			_driver.addGameThread(newId, gt);
+                		_driver.addJoinableGame(newId);
                 		
                 		//Return gameid
                 		JSONObject json = new JSONObject();
@@ -140,52 +152,83 @@ public class RequestHandler extends Thread {
             		}
             		
             	break;
+            	case "joinGame":
+            		userId = (long) obj.get("userID");
+            		
+            		long gameId = (long) obj.get("gameID");
+            		
+            		GameThread gt = _driver.getGame((int) gameId);
+            		if(gt.joinGame(_clientSocket, (int) userId)) {
+            			_driver.removeJoinableGame((int) gameId);
+            			
+            			JSONObject json = new JSONObject();
+            			json.put("result","success");
+                		out.writeUTF(json.toJSONString());  
+            		}
+            		else {
+            			JSONObject json = new JSONObject();
+            			json.put("result","failure");
+                		out.writeUTF(json.toJSONString());  
+            		}
+            	break;
+            	case "getJoinableGames":
+            		ArrayList<Integer> joinableGames = _driver.getJoinableGames();
+            		
+            		JSONObject json = new JSONObject();
+            		json.put("result","success");
+            		
+            		JSONArray games = new JSONArray();
+            		
+            		for(int i = 0; i < joinableGames.size(); i ++) {
+            			games.add(joinableGames.get(i));
+            		}
+            		json.put("games", games);
+            		
+            		//TODO: Add failure method
+            	break;
             	case "insertMove":
             		//Need to cast from long to int
-            		userId = (long) obj.get("userid");
-            		userId = (int) userId;
+            		userId = (long) obj.get("userID");
+            		gameId = (long) obj.get("gameID");
+            		long colFrom = (long) obj.get("colFrom");
+            		long rowFrom = (long) obj.get("rowFrom");
+            		long colTo = (long) obj.get("colTo");
+            		long rowTo = (long) obj.get("rowTo");
             		
-            		long gameId = (long) obj.get("gameid");
-            		gameId = (int) gameId;
-            		
-            		long colFrom = (long) obj.get("colfrom");
-            		colFrom = (int) colFrom;
-            		
-            		long rowFrom = (long) obj.get("rowfrom");
-            		rowFrom = (int) rowFrom;
-            		
-            		long colTo = (long) obj.get("colto");
-            		colTo = (int) colTo;
-            		
-            		long rowTo = (long) obj.get("rowto");
-            		rowTo = (int) rowTo;
-            		
-            		System.out.println(userId);
+            		/*System.out.println(userId);
             		System.out.println(gameId);
             		System.out.println(colFrom);
             		System.out.println(rowFrom);
             		System.out.println(colTo);
-            		System.out.println(rowTo);
+            		System.out.println(rowTo);*/
             		
-            		//Method to insert moves
-            		//ChessDB cdb = new ChessDB();
-            		//cdb.insertMove(c, userId, gameId, colFrom, rowFrom, colTo, rowTo);
+            		//Talk to gameThread
+            		GameThread insertThread = _driver.getGame((int) gameId);
+            		insertThread.insertMove((int) userId, (int) colFrom, (int) rowFrom, (int) colTo, (int) rowTo);
             	break;
             	case "getAllMoves":
-            		gameId = (long) obj.get("gameid");
-            		gameId = (int) gameId;
-            		
-            		//Method to return userid
-            		//ChessDB cdb = new ChessDB();
-            		//cdb.getAllMoves(gameId);
+            		gameId = (long) obj.get("gameID");
+           
+            		GameThread allMovesThread = _driver.getGame((int) gameId);
+            		allMovesThread.getAllMoves(_clientSocket);
             	break;
             	case "getUser":
             		String username = (String) obj.get("username");
             		System.out.println(username);
             		
             		//Method to return userid
-            		//ChessDB cdb = new ChessDB();
-            		//cdb.getUser();
+            		ChessDB cdb = new ChessDB();
+            		int getUserId = cdb.getUser(username);
+            		
+            		out = new DataOutputStream(_clientSocket.getOutputStream());
+            		
+            		//This will come through as a JSON String
+            		json = new JSONObject();
+            		json.put("result","success");
+            		json.put("userID", getUserId);
+            		out.writeUTF(json.toJSONString());
+            		
+            		//TODO: Add failure
             	break;
             	case "checkLogin":
             		String userName = (String) obj.get("username");
@@ -194,8 +237,25 @@ public class RequestHandler extends Thread {
             		System.out.println(userName);
             		System.out.println(password);
             		
+            		cdb = new ChessDB();
+            		out = new DataOutputStream(_clientSocket.getOutputStream());
+            		
+            		//get userid for login
+            		int loginUserId = cdb.getUser(userName);
+            		
             		//Method to check if user password is right
-            		//checkLogin();
+            		boolean loginStatus = cdb.checkLogin(loginUserId, password); 		
+            		
+            		if(loginStatus == true) {
+            			json = new JSONObject();
+                		json.put("result","success");
+                		out.writeUTF(json.toJSONString());
+            		}
+            		else {
+            			json = new JSONObject();
+                		json.put("result","failure");
+                		out.writeUTF(json.toJSONString());
+            		}
             	break;
             	case "createUser":
             		username = (String) obj.get("username");
@@ -205,8 +265,10 @@ public class RequestHandler extends Thread {
             		System.out.println(password);
             		
             		//Method to create a user
-            		//ChessDB cdb = new ChessDB();
-            		//cdb.insertUser(c, userName, password);
+            		cdb = new ChessDB();
+            		cdb.insertUser(username, password);
+            		
+            		//TODO: Add failure method
             	break;
             }
 		}

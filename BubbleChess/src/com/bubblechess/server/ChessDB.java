@@ -85,8 +85,9 @@ public class ChessDB {
 	 * @param userId
 	 * @param password
 	 */
-	public void checkLogin(int userId, String password) {
-	
+	public boolean checkLogin(int userId, String password) {
+		//TODO: Make this work
+		return true;
 	}
 	
 	//Move information
@@ -116,7 +117,7 @@ public class ChessDB {
 	}
 	
 	/**
-	 * Method to inser a move into the database
+	 * Method to insert a move into the database
 	 * @param userId
 	 * @param gameId
 	 * @param colFrom
