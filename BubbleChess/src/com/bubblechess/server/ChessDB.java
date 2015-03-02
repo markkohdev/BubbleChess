@@ -2,6 +2,9 @@ package com.bubblechess.server;
 
 import java.sql.*;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 public class ChessDB {
 	
 	/**
@@ -34,6 +37,40 @@ public class ChessDB {
 	public void createTables() {
 		//do I need this?
 		Connection c = dbConnect();
+		Statement stmt = null;
+	    try {
+	    	Class.forName("org.sqlite.JDBC");
+	    	c = DriverManager.getConnection("jdbc:sqlite:test.db");
+	    	System.out.println("Opened database successfully");
+
+	    	//Users Table
+	    	stmt = c.createStatement();
+	    	String sql = "CREATE TABLE IF NOT EXISTS USERS " +
+	    				"(ID INTEGER PRIMARY KEY	AUTOINCREMENT," +
+	    				" USERNAME           TEXT   NOT NULL," + 
+	    				" PASSWORD           TEXT   NOT NULL)";
+	    	stmt.executeUpdate(sql);
+	    	stmt.close();
+	    	
+	    	//Moves Table
+	    	stmt = c.createStatement();
+	    	sql = "CREATE TABLE IF NOT EXISTS MOVES " +
+	    			"(ID INTEGER PRIMARY 	KEY   	AUTOINCREMENT," +
+	    			"GAMEID           		INT   NOT NULL," + 
+	    			"USERID           		INT   NOT NULL," + 
+	    			"COLFROM           		INT   NOT NULL," + 
+	    			"ROWFROM           		INT   NOT NULL," + 
+	    			"COLTO           		INT   NOT NULL," + 
+	    			"ROWTO           		INT   NOT NULL)";
+	    	stmt.executeUpdate(sql);
+	    	stmt.close();
+	    	
+	    	c.close();
+	    } catch ( Exception e ) {
+	    	System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+	    	System.exit(0);
+	    }
+	    System.out.println("Tables created successfully");
 	}
 	
 	//User information
@@ -49,8 +86,8 @@ public class ChessDB {
 			Statement stmt = c.createStatement();
 			ResultSet rs;
 			rs = stmt.executeQuery( "SELECT * FROM USERS WHERE USERNAME = "+userName+";");
-		    while ( rs.next() ) {
-		    	userId = rs.getInt("USERID");
+		    while (rs.next()) {
+		    	userId = rs.getInt("ID");
 		    }
 		    rs.close();
 		    stmt.close();
@@ -86,8 +123,29 @@ public class ChessDB {
 	 * @param password
 	 */
 	public boolean checkLogin(int userId, String password) {
-		//TODO: Make this work
-		return true;
+		Connection c = dbConnect();
+		boolean result = false;
+		
+		try {
+			Statement stmt = c.createStatement();
+			ResultSet rs;
+			rs = stmt.executeQuery( "SELECT * FROM USERS WHERE USERID = "+userId+";");
+		   
+			while ( rs.next() ) {
+				String dbUserName = rs.getString("USERID");
+		    	String dbPass = rs.getString("PASSWORD");
+		    	
+		    	if(password.equals(dbPass)) {
+		    		return true;
+		    	}
+		    }
+		    rs.close();
+		    stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
 	}
 	
 	//Move information
@@ -98,13 +156,30 @@ public class ChessDB {
 	 */
 	public String getAllMoves(int gameId) {
 		Connection c = dbConnect();
-		String moves = "";
+		JSONArray moves =  null;
+		
 		try {
 			Statement stmt = c.createStatement();
 			ResultSet rs;
 			rs = stmt.executeQuery( "SELECT * FROM MOVES WHERE GAMEID = "+gameId+";");
-		    while ( rs.next() ) {
-		    	//Uhhh?
+		   
+			moves = new JSONArray();
+			while ( rs.next() ) {
+		    	//int userId, int colFrom, int rowFrom, int colTo, int rowTo
+		    	int userId = rs.getInt("USERID");
+		    	int colFrom = rs.getInt("COLFROM");
+		    	int rowFrom = rs.getInt("ROWFROM");
+		    	int colTo = rs.getInt("COLTO");
+		    	int rowTo = rs.getInt("ROWTO");
+		    	
+		    	JSONObject json = new JSONObject();
+        		json.put("userID",userId);
+        		json.put("colFrom",colFrom);
+        		json.put("rowFrom",rowFrom);
+        		json.put("colTo",colTo);
+        		json.put("rowTo",rowTo);
+        		
+        		moves.add(json);
 		    }
 		    rs.close();
 		    stmt.close();
@@ -112,8 +187,7 @@ public class ChessDB {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return moves;
-		
+		return moves.toJSONString();
 	}
 	
 	/**

@@ -80,13 +80,18 @@ public class ServerDriver {
 	public void main (String args[]) throws IOException{
 		ServerSocket server = new ServerSocket(420);
 		
-		while (true){
+		ChessDB cdb = new ChessDB();
+		cdb.createTables();
+		
+		while (true) {
 			Socket client = server.accept();
 		      
 			RequestHandler rh = new RequestHandler(client, this);
 			//System.out.println("Recieved a client");
 			rh.start();
 		}
+		//How do I close the server
+		//server.close();
 	}
 	
 }
