@@ -38,7 +38,6 @@ public class Bishop extends ChessPiece {
 	@Override
 	public BoardPiece clone() {
 		ChessPiece piece = new Bishop(this.getColor());
-		piece.dirs = this.getDirs();
 		return piece;
 	}
 }

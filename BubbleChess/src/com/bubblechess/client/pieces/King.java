@@ -56,8 +56,6 @@ public class King extends ChessPiece {
 	@Override
 	public BoardPiece clone() {
 		ChessPiece piece = new King(this.getColor());
-		piece.dirs = this.getDirs();
-		piece.hasMoved = this.getHasMoved();
 		return piece;
 	}
 }

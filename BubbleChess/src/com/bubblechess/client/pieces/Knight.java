@@ -55,7 +55,6 @@ public class Knight extends ChessPiece {
 	@Override
 	public BoardPiece clone() {
 		ChessPiece piece = new Knight(this.getColor());
-		piece.dirs = this.getDirs();
 		return piece;
 	}
 }

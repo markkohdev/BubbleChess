@@ -76,9 +76,7 @@ public class Pawn extends ChessPiece {
 
 	@Override
 	public BoardPiece clone() {
-		ChessPiece piece = new Knight(this.getColor());
-		piece.dirs = this.getDirs();
-		piece.hasMoved = this.getHasMoved();
+		ChessPiece piece = new Pawn(this.getColor());
 		return piece;
 	}
 
