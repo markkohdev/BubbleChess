@@ -14,13 +14,13 @@ public class ChessBoard implements Board {
 	 */
 	protected BoardPiece[][] board;
 	
+	// Fill in the state
+	protected enum STATE { WHITE_MOVE, BLACK_MOVE, CHECKMATE, STALEMATE };
 	
 	protected ArrayList<BoardPiece> captured;
 	protected int boardWidth = 8;
 	protected int boardHeight = 8;
-	
-	// Fill in the state
-	public enum STATE {};
+	protected STATE state;
 	
 	/**
 	 * Constructor
@@ -29,13 +29,14 @@ public class ChessBoard implements Board {
 		init();
 	}
 	
-	public ChessBoard(BoardPiece[][] board,BoardPiece[] captured){
+	public ChessBoard(BoardPiece[][] board,BoardPiece[] captured, STATE state){
 		this.board = board;
 		this.captured = new ArrayList<BoardPiece>(Arrays.asList(captured));
+		this.state = state;
 	}
 
 	/**
-	 * Board initializer.  Place all the board pieces in and jawn
+	 * Board initializer. Sets up pieces and initial state.
 	 */
 	protected void init(){
 		board = new BoardPiece[boardWidth][boardHeight];
@@ -58,7 +59,9 @@ public class ChessBoard implements Board {
 		board[6][0] = new Knight(Color.WHITE);
 		board[6][7] = new Knight(Color.BLACK);
 		board[7][0] = new Rook(Color.WHITE);
-		board[7][0] = new Rook(Color.BLACK);		
+		board[7][0] = new Rook(Color.BLACK);	
+		
+		state = STATE.WHITE_MOVE;
 	}
 	
 
@@ -67,8 +70,8 @@ public class ChessBoard implements Board {
 		BoardPiece[][] newBoard = new BoardPiece[boardWidth][boardHeight];
 		
 		//Run through the board and populate a new board 		
-		for (int col=0;col<board.length;col++){
-			for (int row=0;row<board[col].length;row++){
+		for (int col=0;col<boardHeight;col++){
+			for (int row=0;row<boardWidth;row++){
 				newBoard[col][row] = board[col][row].clone();
 			}
 		}
@@ -113,6 +116,8 @@ public class ChessBoard implements Board {
 				//Move the piece
 				board[m.colTo()][m.rowTo()] = board[m.colFrom()][m.rowFrom()];
 				board[m.colFrom()][m.rowFrom()] = null;
+				//Update the state
+				updateState();
 				
 				return true;
 			}
@@ -129,6 +134,7 @@ public class ChessBoard implements Board {
 	public Board applyMoveCloning(Move m) {
 		Board newBoard = this.clone();
 		newBoard.applyMove(m);
+		updateState();
 
 		return newBoard;
 	}
@@ -139,13 +145,13 @@ public class ChessBoard implements Board {
 	 */
 	@Override
 	public Board clone() {	
-		ChessBoard newBoard = new ChessBoard(this.getBoard(),this.getCaptured());
+		ChessBoard newBoard = new ChessBoard(this.getBoard(),this.getCaptured(),this.state);
 		
 		return newBoard;
 	}
 
 	/**
-	 * Returns a list of possible moves for a piece in the given location
+	 * Returns a list of legal moves for a piece in the given location
 	 * @param col x-coordinate
 	 * @param row y-coordinate
 	 * @return An ArrayList of Moves
@@ -182,15 +188,34 @@ public class ChessBoard implements Board {
 		return getMoves(x, y);
 	}
 
+	/**
+	 * @return The current state as a string
+	 */
 	@Override
 	public String getState() {
-		
-		return null;
+		switch(this.state) {
+		case WHITE_MOVE:
+			return "White to Move";
+		case BLACK_MOVE:
+			return "Black to Move";
+		case CHECKMATE:
+			return "Checkmate";
+		case STALEMATE:
+			return "Stalemate";
+		default:
+			return null;
+		}
 	}
 
+	/**
+	 * Checks if the board is an end-state (checkmate or stalemate)
+	 * @return True if there is checkmate or stalemate, False otherwise
+	 */
 	@Override
 	public boolean endState() {
-		// TODO Auto-generated method stub
+		if (this.state==STATE.CHECKMATE || this.state==STATE.STALEMATE) {
+			return true;
+		}
 		return false;
 	}
 	
@@ -204,21 +229,133 @@ public class ChessBoard implements Board {
 		return board[col][row];
 	}
 
-	protected boolean validMove(Move m){
+	/**
+	 * Preliminary move validation. There is an important distinction between whether
+	 * a piece can attack a square and whether a piece can move to that square.
+	 * For instance, a pawn attacks a square diagonally but can only move there if
+	 * an enemy piece occupies it. It is important to recognize these cases because
+	 * the enemy king cannot move into a pawn's attack even though the pawn
+	 * cannot actually move there legally. 
+	 * 
+	 * As another example, a king cannot move into a square attacked by a knight that
+	 * is pinned to its own king, even though the knight cannot move to occupy that square.
+	 * 
+	 * This method is to verify attacking squares.
+	 * @param m A move
+	 * @return True if the piece can attack this square, False otherwise
+	 */
+	protected boolean validAttack(Move m){
 		//TODO: Validate move here
+		/**
+		 * A move consists of an origin and a destination
+		 * For a move to be psuedo-legal:
+		 * 1. The piece must be able to reach the destination square
+		 * 		- if knight, check destination
+		 * 			- if friendly, return false
+		 * 			- otherwise, goto 2
+		 * 		- if king, check destination
+		 * 			- is this castling? perhaps checked separately
+		 * 			- if friendly, return false
+		 * 			- otherwise, goto 2
+		 * 		- if queen, rook, or bishop
+		 * 			- check path from origin to destination
+		 * 				- if blocked by any piece, return false
+		 * 				- if open, check destination
+		 * 					- if friendly, return false
+		 * 					- otherwise, goto 2
+		 * 		- if pawn
+		 * 			- tbd
+		 */
+		
+		//Create a reference to the piece to work with
+		ChessPiece piece = (ChessPiece)board[m.colFrom()][m.rowFrom()];
+		if (piece == null) {
+			return false;
+		}
+		else if (piece instanceof Knight) {
+			//TODO
+		}
+		else if (piece instanceof King) {
+			//TODO
+		}
+		else if (piece instanceof Queen || piece instanceof Bishop 
+				|| piece instanceof Rook) {
+			//TODO
+		}
+		else { // piece instanceof Pawn
+			//TODO
+		}
+		
+			
+		return false;
+	}
+	
+	/**
+	 * 
+	 * @param m A move
+	 * @return True if move is legal, False otherwise
+	 */
+	protected boolean validMove(Move m){
+		/** Check to see if move leaves OR places king into check (under attack)
+		 * 		- note that this requires a loose definition of "check"
+		 * 		- achieve this by using applyMoveCloning and checking new state
+		 * 		- if move results in "check"
+		 * 			- return false
+		 * 			- otherwise, return true
+		 */
+		
+		//First determine if validAttack is true
+		if (!validAttack(m)) {
+			return false;
+		} //continue
+		
+		//Then determine if this is also a valid move (see if it leaves us in check, etc)
+		ChessBoard newBoard = (ChessBoard)applyMoveCloning(m);
+		
+		//TODO: call to inCheck()
+		
+		return false;
+	}
+	
+	/**
+	 * Helper method for validMove
+	 * @param color Color.WHITE or Color.BLACK
+	 * @return True if the player's king is attacked, False otherwise
+	 */
+	protected boolean inCheck(Color color){
+		int[] kingLoc = new int[2];
+		
+		//Find the king
+		for (int col=0;col<boardWidth;col++){
+			for (int row=0;row<boardHeight;row++){
+				ChessPiece piece = (ChessPiece)board[col][row];
+				if (piece instanceof King && piece.color == color){
+					kingLoc[0] = col;
+					kingLoc[1] = row;
+					break;
+				}
+			}
+		}
+		
+		//TODO generate all valid attacks for opponent (ignore leaving king in danger)
+		//if any of their destination squares are the same as kingLoc,
+		//it means that we are in check.
+		
+		
+		
 		return false;
 	}
 	
 	protected boolean handleSpecialCase(Move m){
 		//TODO: Handle special case logic
-		//Castling, etc.
+		//Castling, en passant, promotion??? (requires an extra call to player)
 		
 		//Also handle state changes??
 		return false;
 	}
 	
 	protected void updateState(){
-		
+		//TODO: update STATE (recognize checkmate and stalemate)
 	}
 
 }
