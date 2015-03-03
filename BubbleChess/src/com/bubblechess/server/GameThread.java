@@ -7,8 +7,6 @@ import java.util.*;
 
 import org.json.simple.JSONObject;
 
-import com.sun.javafx.collections.MappingChange.Map;
-
 public class GameThread extends Thread {
 	
 	//User1 is white user2 is black
