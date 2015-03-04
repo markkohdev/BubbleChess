@@ -14,7 +14,6 @@ public class ChessBoard implements Board {
 	 */
 	protected BoardPiece[][] board;
 	
-	// Fill in the state
 	protected enum STATE { WHITE_MOVE, BLACK_MOVE, CHECKMATE, STALEMATE };
 	
 	protected ArrayList<BoardPiece> captured;
@@ -63,7 +62,6 @@ public class ChessBoard implements Board {
 		
 		state = STATE.WHITE_MOVE;
 	}
-	
 
 	@Override
 	public BoardPiece[][] getBoard() {
@@ -102,7 +100,11 @@ public class ChessBoard implements Board {
 			
 			//Apply the move
 			boolean specialCase = handleSpecialCase(m);
-			if (specialCase) {
+		
+			if (specialCase) {		
+				
+				updateState(); //??
+				
 				return true;
 			}
 			else {
@@ -113,10 +115,11 @@ public class ChessBoard implements Board {
 					board[m.colTo()][m.rowTo()] = null;
 				}
 				
+				((ChessPiece)board[m.colTo()][m.rowTo()]).hasMoved = true;
 				//Move the piece
 				board[m.colTo()][m.rowTo()] = board[m.colFrom()][m.rowFrom()];
 				board[m.colFrom()][m.rowFrom()] = null;
-				//Update the state
+
 				updateState();
 				
 				return true;
@@ -134,7 +137,6 @@ public class ChessBoard implements Board {
 	public Board applyMoveCloning(Move m) {
 		Board newBoard = this.clone();
 		newBoard.applyMove(m);
-		updateState();
 
 		return newBoard;
 	}
@@ -165,6 +167,7 @@ public class ChessBoard implements Board {
 		else {
 			//Return the moves available from the piece
 			ArrayList<Move> pieceMoves = board[col][row].getMoves(col, row);
+			pieceMoves.addAll(board[col][row].getSpecialMoves(col, row));
 			
 			ArrayList<Move> validMoves = new ArrayList<Move>();
 			
@@ -230,132 +233,203 @@ public class ChessBoard implements Board {
 	}
 
 	/**
-	 * Preliminary move validation. There is an important distinction between whether
-	 * a piece can attack a square and whether a piece can move to that square.
-	 * For instance, a pawn attacks a square diagonally but can only move there if
-	 * an enemy piece occupies it. It is important to recognize these cases because
-	 * the enemy king cannot move into a pawn's attack even though the pawn
-	 * cannot actually move there legally. 
-	 * 
-	 * As another example, a king cannot move into a square attacked by a knight that
-	 * is pinned to its own king, even though the knight cannot move to occupy that square.
-	 * 
-	 * This method is to verify attacking squares.
+	 * Returns true if the piece on the origin square attacks the destination square,
+	 * e.g. it is unblocked
+	 * Note that for castling and moving a pawn forward two spaces this function
+	 * will return true, even though they don't attack the destination square
 	 * @param m A move
 	 * @return True if the piece can attack this square, False otherwise
 	 */
 	protected boolean validAttack(Move m){
-		//TODO: Validate move here
-		/**
-		 * A move consists of an origin and a destination
-		 * For a move to be psuedo-legal:
-		 * 1. The piece must be able to reach the destination square
-		 * 		- if knight, check destination
-		 * 			- if friendly, return false
-		 * 			- otherwise, goto 2
-		 * 		- if king, check destination
-		 * 			- is this castling? perhaps checked separately
-		 * 			- if friendly, return false
-		 * 			- otherwise, goto 2
-		 * 		- if queen, rook, or bishop
-		 * 			- check path from origin to destination
-		 * 				- if blocked by any piece, return false
-		 * 				- if open, check destination
-		 * 					- if friendly, return false
-		 * 					- otherwise, goto 2
-		 * 		- if pawn
-		 * 			- tbd
-		 */
-		
-		//Create a reference to the piece to work with
+		ArrayList<int[]> squares = new ArrayList<int[]>();
 		ChessPiece piece = (ChessPiece)board[m.colFrom()][m.rowFrom()];
-		if (piece == null) {
+		
+		if (piece == null){
 			return false;
 		}
-		else if (piece instanceof Knight) {
-			//TODO
-		}
-		else if (piece instanceof King) {
-			//TODO
-		}
-		else if (piece instanceof Queen || piece instanceof Bishop 
-				|| piece instanceof Rook) {
-			//TODO
-		}
-		else { // piece instanceof Pawn
-			//TODO
-		}
 		
+		//For the Knight, origin and destination squares are "adjacent"
+		//Also I'm including pawn and king here because for castling and moving
+		//forward two squares the path must be unblocked for a legal move
+		if (!(piece instanceof Knight)) {
+			squares = getSquaresOnPath(m);
 			
-		return false;
+			//All squares must be empty
+			for (int[] sq : squares){
+				if ((ChessPiece)board[sq[0]][sq[1]] != null){
+					return false;
+				}
+			}
+		}
+			
+		return true;
 	}
 	
 	/**
-	 * 
+	 * Determine if the given move is legal
 	 * @param m A move
 	 * @return True if move is legal, False otherwise
 	 */
 	protected boolean validMove(Move m){
-		/** Check to see if move leaves OR places king into check (under attack)
-		 * 		- note that this requires a loose definition of "check"
-		 * 		- achieve this by using applyMoveCloning and checking new state
-		 * 		- if move results in "check"
-		 * 			- return false
-		 * 			- otherwise, return true
-		 */
-		
-		//First determine if validAttack is true
-		if (!validAttack(m)) {
+		//validAttack=true is a prerequisite for validMove
+		if (!validAttack(m)){
 			return false;
-		} //continue
+		}
 		
-		//Then determine if this is also a valid move (see if it leaves us in check, etc)
+		ChessPiece piece = (ChessPiece)board[m.colFrom()][m.rowFrom()]; 
+		ChessPiece dest = (ChessPiece)board[m.colTo()][m.rowTo()];
+		
+		//Check destination square for a friendly piece
+		if (dest != null){ //occupied
+			if (piece.getColor()==dest.getColor()){ //friendly
+				return false;
+			}
+			else { //enemy
+				//Cannot move a pawn forward if destination occupied by an enemy piece
+				if (piece instanceof Pawn && m.colFrom()-m.colTo()==0){
+					return false;
+				}
+				//Cannot castle when destination square is enemy piece
+				if (piece instanceof King && Math.abs(m.colFrom()-m.colTo())==2){
+					return false;
+				}
+			}
+		}
+		else { //empty
+			//Destination square is empty so remove pawn non-captures
+			//unless...
+			//TODO: Allow for en passant. This requires knowledge of the previous move
+			if (piece instanceof Pawn && m.colFrom()!=m.colTo()){
+				return false;
+			}
+		}
+		
+		//Check for castling (cannot move through check or out of check)
+		if (piece instanceof King && Math.abs(m.colFrom()-m.colTo())==2){
+			//TODO
+		}
+
 		ChessBoard newBoard = (ChessBoard)applyMoveCloning(m);
 		
-		//TODO: call to inCheck()
+		//If this move puts or leaves us in check, it is illegal
+		if(newBoard.inCheck(piece.getColor())){
+			return false;
+		}
 		
-		return false;
+		return true;
 	}
 	
 	/**
-	 * Helper method for validMove
+	 * Return true if the given player is in check
 	 * @param color Color.WHITE or Color.BLACK
 	 * @return True if the player's king is attacked, False otherwise
 	 */
 	protected boolean inCheck(Color color){
+		ArrayList<Move> moves = new ArrayList<Move>();
+		ArrayList<Move> validAttacks = new ArrayList<Move>();
 		int[] kingLoc = new int[2];
 		
-		//Find the king
+		//Cycle through the board
 		for (int col=0;col<boardWidth;col++){
 			for (int row=0;row<boardHeight;row++){
 				ChessPiece piece = (ChessPiece)board[col][row];
+				if (piece == null){
+					break;
+				}
+				
+				//Get attacking moves
+				if (piece.color != color){
+					//Don't consider special moves (castling, move pawn forward 2)
+					//because they don't attack destination squares
+					moves = board[col][row].getMoves(col, row);
+					for (Move m : moves){
+						if (validAttack(m)){
+							validAttacks.add(m);
+						}
+					}
+				}
+				
+				//Find the king
 				if (piece instanceof King && piece.color == color){
 					kingLoc[0] = col;
 					kingLoc[1] = row;
-					break;
 				}
 			}
 		}
 		
-		//TODO generate all valid attacks for opponent (ignore leaving king in danger)
-		//if any of their destination squares are the same as kingLoc,
-		//it means that we are in check.
-		
-		
-		
+		//Determine if any of the valid attacking moves threaten the king
+		for (Move m : validAttacks){
+			if (m.colTo()==kingLoc[0] && m.rowTo()==kingLoc[1]){
+				return true;
+			}
+		}
+				
 		return false;
 	}
 	
+	/**
+	 * Return an ordered list of squares between origin and destination squares
+	 * or an empty list if the squares are adjacent
+	 * @param m A move
+	 * @return A list of squares between origin and destination
+	 */
+	protected ArrayList<int[]> getSquaresOnPath(Move m){
+		ArrayList<int[]> squares = new ArrayList<int[]>();
+		int[] from = {m.colFrom(), m.rowFrom()};
+		int[] to = {m.colTo(), m.rowTo()};
+		int[] sel = new int[2];
+
+		//Directional vectors
+		int i = m.colTo()-m.colFrom();
+		int j = m.rowTo()-m.rowFrom();
+		
+		//Normalize to -1, 0, 1
+		if (i!=0){
+			i = i/i;
+		}
+		if (j!=0){
+			j = j/j;
+		}
+		
+		//Next selection
+		sel[0] = from[0]+i;
+		sel[1] = from[1]+j;
+		
+		while (!(sel[0]==to[0] && sel[1]==to[1])){
+			squares.add(sel);
+			sel[0] += i;
+			sel[1] += j;
+		}
+		
+		return squares;
+	}
+	
+	/**
+	 * TODO: Recognize and handle special cases - deprecate?!
+	 * @param m A move
+	 * @return
+	 */
 	protected boolean handleSpecialCase(Move m){
-		//TODO: Handle special case logic
-		//Castling, en passant, promotion??? (requires an extra call to player)
-		
-		//Also handle state changes??
+		// TODO: execute castling and en passant (but dont need to validate)
+		// TODO: recognize and handle promotion here
+
 		return false;
 	}
 	
+	/**
+	 * Updates the board state variable
+	 * WHITE_MOVE, BLACK_MOVE, CHECKMATE, or STALEMATE
+	 */
 	protected void updateState(){
 		//TODO: update STATE (recognize checkmate and stalemate)
+		
+		//if not, then flip player to move
+		if (state==STATE.WHITE_MOVE){
+			state = STATE.BLACK_MOVE;
+		}
+		if (state==STATE.BLACK_MOVE){
+			state = STATE.WHITE_MOVE;
+		}
 	}
 
 }

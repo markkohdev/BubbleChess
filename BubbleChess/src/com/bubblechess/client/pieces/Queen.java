@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.bubblechess.client.BoardPiece;
 import com.bubblechess.client.ChessPiece;
 import com.bubblechess.client.Move;
-import com.bubblechess.client.BoardPiece.Color;
 
 public class Queen extends ChessPiece {
 	
@@ -40,5 +39,4 @@ public class Queen extends ChessPiece {
 		ChessPiece piece = new Queen(this.getColor());
 		return piece;
 	}
-
 }

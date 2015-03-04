@@ -10,5 +10,7 @@ public interface BoardPiece {
 	
 	public ArrayList<Move> getMoves(int x, int y);
 	
+	public ArrayList<Move> getSpecialMoves(int x, int y);
+	
 	public Color getColor();
 }

@@ -31,6 +31,16 @@ public abstract class ChessPiece implements BoardPiece {
 	 * @return A list of moves
 	 */
 	public abstract ArrayList<Move> getMoves(int x, int y);
+	
+	/**
+	 * Returns a list of possible special moves (not guaranteed to be legal)
+	 * @param x x-coordinate of chessboard
+	 * @param y y-coordinate of chessboard
+	 * @return A list of special moves
+	 */
+	public ArrayList<Move> getSpecialMoves(int x, int y){
+		return new ArrayList<Move>();
+	}
 
 	/**
 	 * Returns the color of this piece

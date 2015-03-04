@@ -18,7 +18,7 @@ public class Pawn extends ChessPiece {
 	}
 	
 	@Override
-	public ArrayList getMoves(int x, int y) {
+	public ArrayList<Move> getMoves(int x, int y) {
 		ArrayList<Move> moves = new ArrayList<Move>();
 		int from[] = {x,y};
 		int to[] = new int[2];
@@ -33,12 +33,6 @@ public class Pawn extends ChessPiece {
 					moves.add(new Move(from, to));
 				}
 			}
-			// can move forward 2 on the first move
-			if (hasMoved == false) {
-				to[0] = x;
-				to[1] = y+2;
-				moves.add(new Move(from, to));
-			}
 		}
 		
 		if (color == Color.BLACK) {
@@ -51,8 +45,25 @@ public class Pawn extends ChessPiece {
 					moves.add(new Move(from, to));
 				}
 			}
-			// can move forward 2 on the first move
-			if (hasMoved == false) {
+		}
+		
+		return moves;
+	}
+	
+	@Override
+	public ArrayList<Move> getSpecialMoves(int x, int y){
+		ArrayList<Move> moves = new ArrayList<Move>();
+		int[] from = {x, y};
+		int[] to = new int[2];
+		
+		//Move forward two spaces on first move
+		if (hasMoved==false){
+			if (color==Color.WHITE){
+				to[0] = x;
+				to[1] = y+2;
+				moves.add(new Move(from, to));
+			}
+			if (color==Color.BLACK){
 				to[0] = x;
 				to[1] = y-2;
 				moves.add(new Move(from, to));
@@ -79,5 +90,4 @@ public class Pawn extends ChessPiece {
 		ChessPiece piece = new Pawn(this.getColor());
 		return piece;
 	}
-
 }
