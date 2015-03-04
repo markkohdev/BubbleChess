@@ -20,6 +20,14 @@ public class ChessBoard implements Board {
 	protected int boardWidth = 8;
 	protected int boardHeight = 8;
 	protected STATE state;
+	protected boolean enPassantEligible;
+	protected int[] enPassantSquare = new int[2];
+	protected int[] enPassantPawn = new int[2];
+	protected int[] castlingRookOrigin = new int[2];
+	protected int[] castlingRookDest = new int[2];
+	protected boolean enPassant;
+	protected boolean castling;
+	protected boolean promotion;
 	
 	/**
 	 * Constructor
@@ -61,6 +69,7 @@ public class ChessBoard implements Board {
 		board[7][0] = new Rook(Color.BLACK);	
 		
 		state = STATE.WHITE_MOVE;
+		enPassantEligible = false;
 	}
 
 	@Override
@@ -101,9 +110,8 @@ public class ChessBoard implements Board {
 			//Apply the move
 			boolean specialCase = handleSpecialCase(m);
 		
-			if (specialCase) {		
-				
-				updateState(); //??
+			if (specialCase) {						
+				updateState();
 				
 				return true;
 			}
@@ -115,11 +123,27 @@ public class ChessBoard implements Board {
 					board[m.colTo()][m.rowTo()] = null;
 				}
 				
-				((ChessPiece)board[m.colTo()][m.rowTo()]).hasMoved = true;
+				//Set enPassantEligible
+				if ((ChessPiece)getPiece(m.from()) instanceof Pawn 
+						&& Math.abs(m.rowFrom()-m.rowTo())==2){
+					enPassantEligible = true;
+					enPassantSquare[0] = m.colTo();
+					//Destination square is between origin and destination
+					enPassantSquare[1] = Math.abs(m.rowFrom()-m.rowTo())/2;
+					enPassantPawn[0] = m.colTo();
+					enPassantPawn[1] = m.rowTo();
+				}
+				else {
+					enPassantEligible = false;
+				}
+				
 				//Move the piece
 				board[m.colTo()][m.rowTo()] = board[m.colFrom()][m.rowFrom()];
 				board[m.colFrom()][m.rowFrom()] = null;
-
+				
+				//Update hasMoved
+				((ChessPiece)board[m.colTo()][m.rowTo()]).hasMoved = true;
+				
 				updateState();
 				
 				return true;
@@ -242,7 +266,7 @@ public class ChessBoard implements Board {
 	 */
 	protected boolean validAttack(Move m){
 		ArrayList<int[]> squares = new ArrayList<int[]>();
-		ChessPiece piece = (ChessPiece)board[m.colFrom()][m.rowFrom()];
+		ChessPiece piece = (ChessPiece)getPiece(m.from());
 		
 		if (piece == null){
 			return false;
@@ -256,7 +280,7 @@ public class ChessBoard implements Board {
 			
 			//All squares must be empty
 			for (int[] sq : squares){
-				if ((ChessPiece)board[sq[0]][sq[1]] != null){
+				if ((ChessPiece)getPiece(sq) != null){
 					return false;
 				}
 			}
@@ -271,15 +295,21 @@ public class ChessBoard implements Board {
 	 * @return True if move is legal, False otherwise
 	 */
 	protected boolean validMove(Move m){
+		//Reset special move flags
+		enPassant = false;
+		castling = false;
+		promotion = false;
+		
 		//validAttack=true is a prerequisite for validMove
 		if (!validAttack(m)){
 			return false;
 		}
 		
-		ChessPiece piece = (ChessPiece)board[m.colFrom()][m.rowFrom()]; 
-		ChessPiece dest = (ChessPiece)board[m.colTo()][m.rowTo()];
+		ChessPiece piece = (ChessPiece)getPiece(m.from()); 
+		ChessPiece dest = (ChessPiece)getPiece(m.to());
 		
 		//Check destination square for a friendly piece
+		//Validate moves this way by applying the logic as a "filter"
 		if (dest != null){ //occupied
 			if (piece.getColor()==dest.getColor()){ //friendly
 				return false;
@@ -296,17 +326,61 @@ public class ChessBoard implements Board {
 			}
 		}
 		else { //empty
-			//Destination square is empty so remove pawn non-captures
-			//unless...
-			//TODO: Allow for en passant. This requires knowledge of the previous move
+			//Destination square is empty so remove pawn non-captures beside en passant
 			if (piece instanceof Pawn && m.colFrom()!=m.colTo()){
-				return false;
+				if (enPassantEligible && enPassantSquare[0]==m.colTo() && enPassantSquare[1]==m.rowTo()){
+					enPassant = true;
+				}
+				else {
+					return false;
+				}
 			}
 		}
 		
-		//Check for castling (cannot move through check or out of check)
+		//Check for promotion
+		if (piece instanceof Pawn && (m.rowTo()==0 || m.rowTo()==7)){
+			promotion = true;
+		}
+		
+		//Check for castling (cannot move through check or out of check) (and rook)
 		if (piece instanceof King && Math.abs(m.colFrom()-m.colTo())==2){
-			//TODO
+			castling = true;
+			
+			ChessPiece rook;
+			int dir = (m.colTo()-m.colFrom())/2; //-1 for queenside, +1 for kingside
+			if (dir==-1){
+				rook = (ChessPiece)getPiece(0, m.rowTo());
+				castlingRookOrigin[0] = 0;
+			}
+			else {
+				rook = (ChessPiece)getPiece(7, m.rowTo());
+				castlingRookOrigin[0] = 7;
+			}
+			castlingRookOrigin[1] = m.rowTo();
+			
+			//Rook must exist, must be same color, and must be unmoved
+			if (rook==null || !(rook instanceof Rook) || rook.getColor()!=piece.getColor() || rook.hasMoved==true){
+				return false;
+			}
+			
+			//Cannot castle out of check
+			if (inCheck(piece.getColor())){
+				return false;
+			}
+			
+			//Cannot castle through check
+			int[] from = {m.colFrom(), m.rowFrom()};
+			int[] to = {Math.abs(m.colFrom()-m.colTo())/2 , m.rowTo()};
+			
+			//This square is also the rook's destination square
+			castlingRookDest[0] = to[0];
+			castlingRookDest[1] = to[1];
+			
+			Move temp = new Move(from, to);
+			ChessBoard newBoard = (ChessBoard)applyMoveCloning(temp);
+			if (newBoard.inCheck(piece.getColor())){
+				return false;
+			}
 		}
 
 		ChessBoard newBoard = (ChessBoard)applyMoveCloning(m);
@@ -332,7 +406,7 @@ public class ChessBoard implements Board {
 		//Cycle through the board
 		for (int col=0;col<boardWidth;col++){
 			for (int row=0;row<boardHeight;row++){
-				ChessPiece piece = (ChessPiece)board[col][row];
+				ChessPiece piece = (ChessPiece)this.getPiece(col, row);
 				if (piece == null){
 					break;
 				}
@@ -341,7 +415,7 @@ public class ChessBoard implements Board {
 				if (piece.color != color){
 					//Don't consider special moves (castling, move pawn forward 2)
 					//because they don't attack destination squares
-					moves = board[col][row].getMoves(col, row);
+					moves = this.getPiece(col, row).getMoves(col, row);
 					for (Move m : moves){
 						if (validAttack(m)){
 							validAttacks.add(m);
@@ -405,31 +479,63 @@ public class ChessBoard implements Board {
 	}
 	
 	/**
-	 * TODO: Recognize and handle special cases - deprecate?!
+	 * Recognize and handle castling, en passant, and promotion
 	 * @param m A move
-	 * @return
+	 * @return True if special case if recognized and handled, False otherwise
 	 */
 	protected boolean handleSpecialCase(Move m){
-		// TODO: execute castling and en passant (but dont need to validate)
-		// TODO: recognize and handle promotion here
-
-		return false;
+		if (!(castling || enPassant || promotion)){
+			return false;
+		}
+		
+		if (castling){
+			//Move the king
+			board[m.colTo()][m.rowTo()] = board[m.colFrom()][m.rowFrom()];
+			board[m.colFrom()][m.rowFrom()] = null;
+			//Move the rook
+			board[castlingRookDest[0]][castlingRookDest[1]] = board[castlingRookOrigin[0]][castlingRookOrigin[1]];
+			board[castlingRookOrigin[0]][castlingRookOrigin[1]] = null;
+		}
+		
+		if (enPassant){
+			//Move the pawn
+			board[m.colTo()][m.rowTo()] = board[m.colFrom()][m.rowFrom()];
+			board[m.colFrom()][m.rowFrom()] = null;
+			//Remove the enemy pawn and add it to captured pieces list
+			captured.add(getPiece(enPassantPawn));
+			board[enPassantPawn[0]][enPassantPawn[1]] = null;
+		}
+		
+		if (promotion){
+			//Check if anything got captured
+			if(getPiece(m.to()) != null){
+				//Add piece to captured list, remove it from the board
+				captured.add(getPiece(m.to()));
+				board[m.colTo()][m.rowTo()] = null;
+			}
+			
+			//TODO: Prompt user for promotion piece - default queen
+			ChessPiece promotedPiece = new Queen(getPiece(m.from()).getColor());
+			board[m.colTo()][m.rowTo()] = promotedPiece;
+			board[m.colFrom()][m.rowFrom()] = null;
+		}
+		
+		return true;
 	}
 	
 	/**
 	 * Updates the board state variable
 	 * WHITE_MOVE, BLACK_MOVE, CHECKMATE, or STALEMATE
 	 */
-	protected void updateState(){
-		//TODO: update STATE (recognize checkmate and stalemate)
-		
-		//if not, then flip player to move
+	protected void updateState(){	
 		if (state==STATE.WHITE_MOVE){
 			state = STATE.BLACK_MOVE;
 		}
 		if (state==STATE.BLACK_MOVE){
 			state = STATE.WHITE_MOVE;
 		}
+		
+		//TODO: recognize checkmate and stalemate
 	}
-
+	
 }
