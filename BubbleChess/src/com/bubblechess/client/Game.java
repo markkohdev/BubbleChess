@@ -72,12 +72,21 @@ public class Game {
 		if(board.endState()) {
 			return false;
 		}
+		
+		boolean valid = board.applyMove(m);
+		
+		//Make sure the move was valid
+		if (!valid)
+			return false;
+		
+		//Add it to the local history
 		moves.add(m);
 		
 		if(turn == user1)
 			turn = user2;
 		else
 			turn = user1;
+		
 		return true;
 	}
 	
@@ -87,6 +96,10 @@ public class Game {
 	
 	public boolean endState(){
 		return board.endState();
+	}
+	
+	public ArrayList<Move> getMoves(int col, int row){
+		return board.getMoves(row, col);
 	}
 
 

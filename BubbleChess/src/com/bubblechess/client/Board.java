@@ -69,5 +69,10 @@ public interface Board {
 	 */
 	public boolean endState();
 	
+	/**
+	 * Get a list of the captured pieces on the board
+	 * @return
+	 */
 	public BoardPiece[] getCaptured();
+	
 }
