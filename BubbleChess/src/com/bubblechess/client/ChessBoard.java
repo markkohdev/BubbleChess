@@ -527,15 +527,56 @@ public class ChessBoard implements Board {
 	 * Updates the board state variable
 	 * WHITE_MOVE, BLACK_MOVE, CHECKMATE, or STALEMATE
 	 */
-	protected void updateState(){	
+	protected void updateState(){
 		if (state==STATE.WHITE_MOVE){
 			state = STATE.BLACK_MOVE;
-		}
-		if (state==STATE.BLACK_MOVE){
-			state = STATE.WHITE_MOVE;
+			
+			if (hasValidMove(Color.BLACK)){
+				return;
+			}
+			
+			if (inCheck(Color.BLACK)){	
+				state = STATE.CHECKMATE;
+			}
+			else {
+				state = STATE.STALEMATE;
+			}
 		}
 		
-		//TODO: recognize checkmate and stalemate
+		if (state==STATE.BLACK_MOVE){
+			state = STATE.WHITE_MOVE;
+			
+			if (hasValidMove(Color.WHITE)){
+				return;
+			}
+			
+			if (inCheck(Color.WHITE)){
+				state = STATE.CHECKMATE;
+			}
+			else {
+				state = STATE.STALEMATE;
+			}
+		}
+	}
+	
+	/**
+	 * Checks if the given side has at least one legal move
+	 * @param color Color.WHITE or Color.BLACK
+	 * @return True if given side has at least one legal move, False otherwise
+	 */
+	protected boolean hasValidMove(Color color) {
+		for (int col=0;col<boardWidth;col++){
+			for (int row=0;row<boardHeight;row++){
+				ChessPiece piece = (ChessPiece)getPiece(col, row);
+				if (piece != null && piece.getColor()==color){
+					if (!getMoves(col, row).isEmpty()){
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 }
