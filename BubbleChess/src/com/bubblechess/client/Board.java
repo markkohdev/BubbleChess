@@ -25,7 +25,7 @@ public interface Board {
 	/**
 	 * Apply the passed move to the game board
 	 * @param m The Move to be applied
-	 * @param validate TODO
+	 * @param validate Validate the move
 	 * @return True if move was successful, False if move invalid
 	 */
 	public boolean applyMove(Move m, boolean validate);
@@ -35,7 +35,7 @@ public interface Board {
 	/**
 	 * Apply the passed move to a clone of the game board
 	 * @param m
-	 * @param validate TODO
+	 * @param validate Validate the move
 	 * @return
 	 */
 	public Board applyMoveCloning(Move m, boolean validate);
@@ -80,5 +80,10 @@ public interface Board {
 	 * @return
 	 */
 	public BoardPiece[] getCaptured();
+
+	/**
+	 * Update the board's state
+	 */
+	public void updateState();
 	
 }

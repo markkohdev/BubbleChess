@@ -119,9 +119,7 @@ public class ChessBoard implements Board, Cloneable {
 			//Apply the move
 			boolean specialCase = handleSpecialCase(m);
 		
-			if (specialCase) {						
-				//updateState();
-				
+			if (specialCase) {							
 				return true;
 			}
 			else {
@@ -152,8 +150,6 @@ public class ChessBoard implements Board, Cloneable {
 				
 				//Update hasMoved
 				((ChessPiece)board[m.colTo()][m.rowTo()]).hasMoved = true;
-				
-				//updateState();
 				
 				return true;
 			}
@@ -540,7 +536,8 @@ public class ChessBoard implements Board, Cloneable {
 	 * Updates the board state variable
 	 * WHITE_MOVE, BLACK_MOVE, CHECKMATE, or STALEMATE
 	 */
-	protected void updateState(){
+	@Override
+	public void updateState(){
 		if (state==STATE.WHITE_MOVE){
 			state = STATE.BLACK_MOVE;
 			
