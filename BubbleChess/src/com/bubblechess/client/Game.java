@@ -82,6 +82,9 @@ public class Game {
 		//Add it to the local history
 		moves.add(m);
 		
+		//Update the board's state
+		board.updateState();
+		
 		if(turn == user1)
 			turn = user2;
 		else
