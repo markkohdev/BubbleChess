@@ -1,12 +1,9 @@
 package com.bubblechess.gui;
 
 import javax.swing.JPanel;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
-import javax.swing.LayoutStyle.ComponentPlacement;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -19,15 +16,16 @@ import java.awt.event.MouseEvent;
 import java.util.Arrays;
 
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JPasswordField;
 
 import com.bubblechess.GUIBridge;
 
 public class LoginPanel extends JPanel {
+	
+	
 	private JTextField textUsername;
 	private JPasswordField passwordField;
-	/*
+	/**
 	 * Login states: 0 Waiting, 1 TryLogin, 2 CreateUser, 3 Continue as guest
 	 */
 	private int loginState;
@@ -35,7 +33,8 @@ public class LoginPanel extends JPanel {
 	
 
 	/**
-	 * Create the panel.
+	 * Default Constructor
+	 * Create the panel. Adds Listeners for all 3 Buttons and changes the login state when activated
 	 */
 	public LoginPanel() {
 		this.setLoginState(0);
@@ -51,7 +50,7 @@ public class LoginPanel extends JPanel {
 		btnLogin.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				/*if (getUserName().equals("")) {
+				if (getUserName().equals("")) {
 					setErrorLabel("No Username Was Entered");		
 				}
 				else if(getPassword().equals("")) {
@@ -59,7 +58,7 @@ public class LoginPanel extends JPanel {
 				}
 				else {
 					setLoginState(1);
-				}*/
+				}
 				
 			}
 		});
@@ -121,6 +120,11 @@ public class LoginPanel extends JPanel {
 
 	}
 	
+	
+	/**
+	 * Chenges the login state and fires off a property Change
+	 * @param state
+	 */
 	public void setLoginState(int state) {
 		int oldValue = this.loginState;
 		this.loginState = state;
@@ -128,6 +132,10 @@ public class LoginPanel extends JPanel {
 	}
 	
 
+	/**
+	 * Creates a label with red text and adds it to panel to display error
+	 * @param msg
+	 */
 	public void setErrorLabel(String msg) {
 		JLabel lblErrorLabel = new JLabel(msg);
 		lblErrorLabel.setForeground(Color.RED);
@@ -136,16 +144,28 @@ public class LoginPanel extends JPanel {
 		this.add(lblErrorLabel);
 	}
 	
+	/**
+	 * gets login state
+	 * @return loginState
+	 */
 	public int getLoginState() {
 		return this.loginState;
 	}
-	
+	/**
+	 * gets username entered in textfield
+	 * @return username
+	 */
 	public String getUserName() { 
 		return this.textUsername.getText();
 	}
 	
+	/**
+	 * returns password as string from password field
+	 * @return
+	 */
 	public String getPassword() {
-		return Arrays.toString(this.passwordField.getPassword());
+		String pass = new String(this.passwordField.getPassword());
+		return pass;
 	}
 
 }

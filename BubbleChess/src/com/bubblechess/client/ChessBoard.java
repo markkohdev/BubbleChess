@@ -14,7 +14,7 @@ public class ChessBoard implements Board, Cloneable {
 	 */
 	protected BoardPiece[][] board;
 	
-	protected enum STATE { WHITE_MOVE, BLACK_MOVE, CHECKMATE, STALEMATE };
+	protected enum STATE { WHITE_MOVE, BLACK_MOVE, CHECKMATE, STALEMATE, DRAW };
 	
 	protected ArrayList<BoardPiece> captured;
 	protected int boardWidth = 8;
@@ -40,6 +40,108 @@ public class ChessBoard implements Board, Cloneable {
 		this.board = board;
 		this.captured = new ArrayList<BoardPiece>(Arrays.asList(captured));
 		this.state = state;
+	}
+	
+	/**
+	 * Allows the user to load a game with all the information needed
+	 * to restart the game from the given position
+	 * Undefined behavior for invalid FEN strings
+	 * @param fen A string in modified Forsyth-Edwards notation
+	 */
+	public ChessBoard(String fen){
+		String pieces, toMove, castling, enPassant, halfMoveClock, moveNumber;
+		String[] tokens = fen.split(" ");
+		
+		pieces = tokens[0];
+		toMove = tokens[1];
+		castling = tokens[2];
+		enPassant = tokens[3];
+		halfMoveClock = tokens[4];
+		moveNumber = tokens[5];
+		
+		String[] ranks = pieces.split("/");
+		board = new BoardPiece[boardWidth][boardHeight];
+		
+		//at least some data validation
+		if (ranks.length==8){
+			for (int row=7;row>=0;row--){
+				for (int col=0;col<boardHeight;col++){
+					char piece = ranks[row].toCharArray()[col];
+					
+					switch(piece){
+					case 'r':
+						board[col][Math.abs(row-7)] = new Rook(Color.BLACK); break;
+					case 'R':
+						board[col][Math.abs(row-7)] = new Rook(Color.WHITE); break;
+					case 'n':
+						board[col][Math.abs(row-7)] = new Knight(Color.BLACK); break;
+					case 'N':
+						board[col][Math.abs(row-7)] = new Knight(Color.WHITE); break;
+					case 'b':
+						board[col][Math.abs(row-7)] = new Bishop(Color.BLACK); break;
+					case 'B':
+						board[col][Math.abs(row-7)] = new Bishop(Color.WHITE); break;
+					case 'k':
+						board[col][Math.abs(row-7)] = new King(Color.BLACK); break;
+					case 'K':
+						board[col][Math.abs(row-7)] = new King(Color.WHITE); break;
+					case 'q':
+						board[col][Math.abs(row-7)] = new Queen(Color.BLACK); break;
+					case 'Q':
+						board[col][Math.abs(row-7)] = new Queen(Color.WHITE); break;
+					case 'p':
+						board[col][Math.abs(row-7)] = new Pawn(Color.BLACK); break;
+					case 'P':
+						board[col][Math.abs(row-7)] = new Pawn(Color.WHITE); break;
+					default:
+						board[col][Math.abs(row-7)] = null;
+					}
+					
+				}
+			}
+		}
+		
+		if (toMove.equals("w")){
+			state = STATE.WHITE_MOVE;
+		}
+		else{
+			state = STATE.BLACK_MOVE;
+		}
+		
+		if (checkInsufficientMaterial()){
+			state = STATE.DRAW;
+		}
+		
+		if (castling.equals("-")){
+			//TODO
+		}
+		else{
+			//TODO: parse castling input and do things
+		}
+		
+		if (enPassant.equals("-")){
+			this.enPassant = false;
+		}
+		else{
+			this.enPassant = true;
+			enPassantSquare = convertToCoord(enPassant);
+		}
+		
+		//TODO: do something with halfmove clock and move numbers?
+	}
+	
+	/**
+	 * Converts a square to a coordinate, ex: e3 -> [4,2]
+	 * @param square
+	 * @return The square in coordiante form
+	 */
+	protected int[] convertToCoord(String square){
+		int[] result = new int[2];
+		
+		result[0] = square.toCharArray()[0] - 97;
+		result[1] = square.toCharArray()[1];
+		
+		return result;
 	}
 
 	/**
@@ -93,6 +195,9 @@ public class ChessBoard implements Board, Cloneable {
 	 * We wanna use BoardPiece[] here because it makes copies and not references
 	 */
 	public BoardPiece[] getCaptured() {
+		if (this.captured==null){
+			//return new BoardPiece[];
+		}
 		BoardPiece[] result = new BoardPiece[this.captured.size()];
 		this.captured.toArray(result);
 		return result;
@@ -238,6 +343,8 @@ public class ChessBoard implements Board, Cloneable {
 			return "Checkmate";
 		case STALEMATE:
 			return "Stalemate";
+		case DRAW:
+			return "Draw";
 		default:
 			return null;
 		}
@@ -478,6 +585,13 @@ public class ChessBoard implements Board, Cloneable {
 		sel[1] = from[1]+j;
 		
 		while (!(sel[0]==to[0] && sel[1]==to[1])){
+			
+			//Check board bounds to make sure we're not wandering off into space
+			if (sel[0]<0 || sel[0]>7 || sel[1]<0 || sel[1]>7){
+				//Invalid move path supplied - return empty.
+				return new ArrayList<int[]>();
+			}
+			
 			squares.add(new int[] {sel[0],sel[1]});
 			sel[0] += i;
 			sel[1] += j;
@@ -537,6 +651,11 @@ public class ChessBoard implements Board, Cloneable {
 	 */
 	@Override
 	public void updateState(){
+		if(checkInsufficientMaterial()){
+			state = STATE.DRAW;
+			return;
+		}
+		
 		if (state==STATE.WHITE_MOVE){
 			state = STATE.BLACK_MOVE;
 			
@@ -566,6 +685,36 @@ public class ChessBoard implements Board, Cloneable {
 				state = STATE.STALEMATE;
 			}
 		}
+	}
+	
+	/**
+	 * Returns true if there is an insufficient mating material case:
+	 * 	- KB vs K
+	 *  - KN vs K
+	 * @return True if there is insufficient mating material
+	 */
+	protected boolean checkInsufficientMaterial(){
+		ArrayList<BoardPiece> pieces = new ArrayList<BoardPiece>();	
+		boolean knightOrBishop = false;
+		
+		for (int col=0;col<boardHeight;col++){
+			for (int row=0;row<boardWidth;row++){
+				ChessPiece piece = (ChessPiece)board[col][row];
+				if (piece != null){
+					pieces.add(piece);
+					//Record if there is a knight or bishop on the board
+					if (piece instanceof Knight || piece instanceof Bishop){
+						knightOrBishop = true;
+					}
+				}
+			}
+		}
+		
+		if (pieces.size()==3 && knightOrBishop){
+			return true;
+		}
+		
+		return false;
 	}
 	
 	/**

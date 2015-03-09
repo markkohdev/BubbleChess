@@ -267,7 +267,7 @@ public class ServerHandler {
 			if(response.get("result").equals("success")) {
 				// Return [userID, username]
 				String[] opponent = {
-						(String)response.get("userID"), //Opponent userID
+						(String)response.get("userID").toString(), //Opponent userID
 						(String)response.get("username"), //Opponent username
 						};
 				retVal = opponent;
@@ -295,6 +295,7 @@ public class ServerHandler {
 	 * failure to join game
 	 */
 	public String[] JoinGame(int gameID, int userID){
+		SetupConnection();
 		JSONObject json = new JSONObject();
 		
 		json.put("request","joinGame");
@@ -310,25 +311,33 @@ public class ServerHandler {
 		} catch (IOException e) {
 			System.err.println("Error recieving data from server.");
 			e.printStackTrace();
+			CloseConnection();
 			return null;
 		}
 		
 		if(response.get("result").equals("success")) {
 			// Return [userID, username]
 			String[] opponent = {
-					(String)response.get("userID"), //Opponent userID
+					(String)response.get("userID").toString(), //Opponent userID
 					(String)response.get("username"), //Opponent username
-					(String)response.get("userNumber")
+					(String)response.get("playerNumber").toString()
 					};
+			CloseConnection();
 			return opponent;
 		}
+		else if (response.get("result").equals("game does not exist")) {
+			CloseConnection();
+			return null;
+		}
 		else {
+			CloseConnection();
 			return null;
 		}
 	}
 	
 	
 	public ArrayList<Integer> GetJoinableGames() {
+		SetupConnection();
 		JSONObject json = new JSONObject();
 		
 		json.put("request","getJoinableGames");
@@ -342,20 +351,23 @@ public class ServerHandler {
 		} catch (IOException e) {
 			System.err.println("Error recieving data from server.");
 			e.printStackTrace();
+			CloseConnection();
 			return null;
 		}
 		
 		if(response.get("result").equals("success")) {
 			JSONArray games = (JSONArray) response.get("games");
 			ArrayList<Integer> gameIDs = new ArrayList<Integer>();
-			Iterator<String> game = games.iterator();
+			Iterator<Long> game = games.iterator();
 			while (game.hasNext()) {
-				int gameID = Integer.parseInt(game.next());
+				int gameID = (int)((long)game.next());
 				gameIDs.add(gameID);
 			}
+			CloseConnection();
 			return gameIDs;
 		}
 		else {
+			CloseConnection();
 			return null;
 		}
 	}
@@ -392,7 +404,7 @@ public class ServerHandler {
 			return false;
 	}
 	
-	public Move CheckForMove(int gameID, int userID){
+	public Move CheckForMove(int gameID, int playerNumber){
 		Move retVal = null;
 		
 		int attempts = 0;
@@ -404,7 +416,7 @@ public class ServerHandler {
 			
 			json.put("request", "checkForMove");
 			json.put("gameID", gameID);
-			json.put("user", userID);
+			json.put("playerNumber", playerNumber);
 			
 			toServer.println(json.toJSONString());
 		
