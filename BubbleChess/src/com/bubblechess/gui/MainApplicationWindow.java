@@ -20,19 +20,16 @@ public class MainApplicationWindow {
 	/**
 	 * Create the application.
 	 */
-	// public MainApplicationWindow(GUIBridge b) {
-	public MainApplicationWindow() {
-		ServerHandler server = new ServerHandler("144.118.48.18",8080);		
-		GUIBridge b = new GUIBridge(server);
-		// this.bridge = b;
+	public MainApplicationWindow(GUIBridge b) {	
+		this.bridge = b;
 		frame = new JFrame();
 		frame.setBounds(0, 0, 1024, 768);
 		//frame.setBounds(100, 100, 450, 300);
 		//frame.setPreferredSize(new Dimension(1024,768));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		LoginPanel lP = new LoginPanel();
-		frame.setContentPane(lP);
-		frame.setVisible(true);
+		// LoginPanel lP = new LoginPanel();
+		// frame.setContentPane(lP);
+		// frame.setVisible(true);
 	}
 	
 	/**
@@ -70,7 +67,7 @@ public class MainApplicationWindow {
 	 * @param panel
 	 */
 	public void addPanel(JPanel panel) {
-		this.frame.add(panel);		
+		this.frame.setContentPane(panel);		
 	}
 	/**
 	 * Sets panel received as paramter to visible or not
