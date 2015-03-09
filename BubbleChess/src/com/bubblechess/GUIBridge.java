@@ -294,7 +294,8 @@ public class GUIBridge {
 		
 		//System.out.println("Game Join: " + this.JoinGame(games.get(0)));
 		
-		this.PlayMove(new Move(new int[]{0,0},new int[]{0,1}));
+		//this.PlayMove(new Move(new int[]{0,0},new int[]{0,1}));
+		server.SendMove(new Move(new int[]{0,0},new int[]{0,1}), player.getID(), game.getID());
 		System.out.println(this.WaitForNextMove());
 	}
 

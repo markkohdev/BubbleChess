@@ -375,11 +375,12 @@ public class ServerHandler {
 	
 	
 	public boolean SendMove(Move m, int userID, int gameID){
+		SetupConnection();
 		JSONObject json = new JSONObject();
 		
 		json.put("request", "insertMove");
 		json.put("gameID", gameID);
-		json.put("user", userID);
+		json.put("userID", userID);
 		json.put("colFrom", m.colFrom());
 		json.put("rowFrom", m.rowFrom());
 		json.put("colTo", m.colTo());
@@ -394,13 +395,16 @@ public class ServerHandler {
 		} catch (IOException e) {
 			System.err.println("Error recieving data from server.");
 			e.printStackTrace();
+			CloseConnection();
 			return false;
 		}
 		
 		if (response.get("result").equals("success")){
+			CloseConnection();
 			return true;
 		}
 		else
+			CloseConnection();
 			return false;
 	}
 	
