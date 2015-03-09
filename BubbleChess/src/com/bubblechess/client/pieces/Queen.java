@@ -8,10 +8,9 @@ import com.bubblechess.client.Move;
 
 public class Queen extends ChessPiece {
 	
-	protected int[][] dirs = {N,NE,E,SE,S,SW,W,NW};
-	
 	public Queen(Color col) {
 		color = col;
+		dirs = new int[][]{N,NE,E,SE,S,SW,W,NW};
 	}
 
 	@Override

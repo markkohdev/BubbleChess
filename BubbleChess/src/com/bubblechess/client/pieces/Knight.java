@@ -8,20 +8,21 @@ import com.bubblechess.client.Move;
 
 public class Knight extends ChessPiece {
 	
-	// Modify directional vectors for knight movement
-	protected int[] N = {1,2};
-	protected int[] E = {2,1};
-	protected int[] S = {2,-1};
-	protected int[] W = {1,-2};
-	protected int[] NE = {-1,-2};
-	protected int[] SE = {-2,-1};
-	protected int[] SW = {-2,1};
-	protected int[] NW = {-1,2};
-	
-	protected int[][] dirs = {N,NE,E,SE,S,SW,W,NW};
 	
 	public Knight(Color col) {
 		color = col;
+		
+		// Modify directional vectors for knight movement
+		N = new int[]{1,2};
+		E = new int[]{2,1};
+		S = new int[]{2,-1};
+		W = new int[]{1,-2};
+		NE = new int[]{-1,-2};
+		SE = new int[]{-2,-1};
+		SW = new int[]{-2,1};
+		NW = new int[]{-1,2};
+		
+		dirs = new int[][]{N,NE,E,SE,S,SW,W,NW};
 	}
 
 	@Override

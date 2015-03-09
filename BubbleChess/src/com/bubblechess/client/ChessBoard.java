@@ -6,7 +6,7 @@ import java.util.Arrays;
 import com.bubblechess.client.pieces.*;
 import com.bubblechess.client.BoardPiece.Color;
 
-public class ChessBoard implements Board {
+public class ChessBoard implements Board, Cloneable {
 	
 	/**
 	 * To access a piece, board is stored as [col][row] where [0][0] is the 
@@ -66,9 +66,10 @@ public class ChessBoard implements Board {
 		board[6][0] = new Knight(Color.WHITE);
 		board[6][7] = new Knight(Color.BLACK);
 		board[7][0] = new Rook(Color.WHITE);
-		board[7][0] = new Rook(Color.BLACK);	
+		board[7][7] = new Rook(Color.BLACK);	
 		
 		state = STATE.WHITE_MOVE;
+		captured = new ArrayList<BoardPiece>();
 		enPassantEligible = false;
 	}
 
@@ -79,7 +80,9 @@ public class ChessBoard implements Board {
 		//Run through the board and populate a new board 		
 		for (int col=0;col<boardHeight;col++){
 			for (int row=0;row<boardWidth;row++){
-				newBoard[col][row] = board[col][row].clone();
+				if (board[col][row]!=null){
+					newBoard[col][row] = board[col][row].clone();
+				}				
 			}
 		}
 		
@@ -90,7 +93,9 @@ public class ChessBoard implements Board {
 	 * We wanna use BoardPiece[] here because it makes copies and not references
 	 */
 	public BoardPiece[] getCaptured() {
-		return (BoardPiece[])this.captured.toArray();
+		BoardPiece[] result = new BoardPiece[this.captured.size()];
+		this.captured.toArray(result);
+		return result;
 	}
 	
 	@Override
@@ -103,16 +108,18 @@ public class ChessBoard implements Board {
 		return boardHeight;
 	}
 
+	public boolean applyMove(Move m){
+		return applyMove(m, true);
+	}
+	
 	@Override
-	public boolean applyMove(Move m) {
-		if (validMove(m)) {
+	public boolean applyMove(Move m, boolean validate) {
+		if (!validate || validMove(m)) {
 			
 			//Apply the move
 			boolean specialCase = handleSpecialCase(m);
 		
-			if (specialCase) {						
-				updateState();
-				
+			if (specialCase) {							
 				return true;
 			}
 			else {
@@ -144,13 +151,15 @@ public class ChessBoard implements Board {
 				//Update hasMoved
 				((ChessPiece)board[m.colTo()][m.rowTo()]).hasMoved = true;
 				
-				updateState();
-				
 				return true;
 			}
 		}
 
 		return false;
+	}
+	
+	public Board applyMoveCloning(Move m){
+		return applyMoveCloning(m, true);
 	}
 
 	/**
@@ -158,9 +167,9 @@ public class ChessBoard implements Board {
 	 * @return A new, udpated ChessBoard
 	 */
 	@Override
-	public Board applyMoveCloning(Move m) {
+	public Board applyMoveCloning(Move m, boolean validate) {
 		Board newBoard = this.clone();
-		newBoard.applyMove(m);
+		newBoard.applyMove(m, validate);
 
 		return newBoard;
 	}
@@ -377,13 +386,13 @@ public class ChessBoard implements Board {
 			castlingRookDest[1] = to[1];
 			
 			Move temp = new Move(from, to);
-			ChessBoard newBoard = (ChessBoard)applyMoveCloning(temp);
+			ChessBoard newBoard = (ChessBoard)applyMoveCloning(temp, false);
 			if (newBoard.inCheck(piece.getColor())){
 				return false;
 			}
 		}
 
-		ChessBoard newBoard = (ChessBoard)applyMoveCloning(m);
+		ChessBoard newBoard = (ChessBoard)applyMoveCloning(m, false);
 		
 		//If this move puts or leaves us in check, it is illegal
 		if(newBoard.inCheck(piece.getColor())){
@@ -398,7 +407,7 @@ public class ChessBoard implements Board {
 	 * @param color Color.WHITE or Color.BLACK
 	 * @return True if the player's king is attacked, False otherwise
 	 */
-	protected boolean inCheck(Color color){
+	public boolean inCheck(Color color){
 		ArrayList<Move> moves = new ArrayList<Move>();
 		ArrayList<Move> validAttacks = new ArrayList<Move>();
 		int[] kingLoc = new int[2];
@@ -459,10 +468,10 @@ public class ChessBoard implements Board {
 		
 		//Normalize to -1, 0, 1
 		if (i!=0){
-			i = i/i;
+			i = i/Math.abs(i);
 		}
 		if (j!=0){
-			j = j/j;
+			j = j/Math.abs(j);
 		}
 		
 		//Next selection
@@ -470,7 +479,7 @@ public class ChessBoard implements Board {
 		sel[1] = from[1]+j;
 		
 		while (!(sel[0]==to[0] && sel[1]==to[1])){
-			squares.add(sel);
+			squares.add(new int[] {sel[0],sel[1]});
 			sel[0] += i;
 			sel[1] += j;
 		}
@@ -527,7 +536,8 @@ public class ChessBoard implements Board {
 	 * Updates the board state variable
 	 * WHITE_MOVE, BLACK_MOVE, CHECKMATE, or STALEMATE
 	 */
-	protected void updateState(){
+	@Override
+	public void updateState(){
 		if (state==STATE.WHITE_MOVE){
 			state = STATE.BLACK_MOVE;
 			

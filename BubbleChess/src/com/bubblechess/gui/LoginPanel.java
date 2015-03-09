@@ -16,20 +16,25 @@ import javax.swing.JTextArea;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
 
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JPasswordField;
 
+import com.bubblechess.GUIBridge;
+
 public class LoginPanel extends JPanel {
 	private JTextField textUsername;
 	private JPasswordField passwordField;
+
+	
 
 	/**
 	 * Create the panel.
 	 */
 	@SuppressWarnings("deprecation")
-	public LoginPanel() {
+	public LoginPanel(final GUIBridge bridge) {
 		setBackground(Color.LIGHT_GRAY);
 		setPreferredSize(new Dimension(1024,768));
 		setLayout(null);
@@ -43,6 +48,9 @@ public class LoginPanel extends JPanel {
 		btnLogin.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				
+					
+				
 			}
 		});
 		btnLogin.setBounds(625, 297, 89, 23);
@@ -97,5 +105,39 @@ public class LoginPanel extends JPanel {
 		add(passwordField);
 
 
+	}
+	
+	
+	
+	@SuppressWarnings("deprecation")
+	public int loginFunction() {
+		
+		int loginResult = null;
+		
+		String userName = textUsername.getText();
+		String password = Arrays.toString(passwordField.getPassword());
+		if(userName == null || password == null) {
+			// change warning label to say nothing entered
+		}
+		else {
+			loginResult = bridge.Login(userName, password);		
+			
+		}
+
+		if(loginResult == 0) {
+			return 0;
+			
+		}
+		else if(loginResult == (-2)) {
+			// change error label to user not found
+		}
+		else if(loginResult == (-1)) {
+			// change error label to user not found
+			
+		}
+		else if(loginResult > 0) {
+			// change error label unknown result code
+		}
+		
 	}
 }

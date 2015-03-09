@@ -42,6 +42,7 @@ public class MainMenuPanel extends JPanel {
 		JLabel lblMainMenu = new JLabel("Main Menu");
 		lblMainMenu.setFont(new Font("Tahoma", Font.BOLD, 30));
 		lblMainMenu.setBounds(409, 90, 206, 70);
+		lblMainMenu.setEnabled(false);
 		add(lblMainMenu);
 		
 

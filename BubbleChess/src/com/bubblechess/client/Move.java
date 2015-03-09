@@ -9,8 +9,8 @@ public class Move {
 	private int[] coordinateTo;
 	
 	public Move(int[] from, int[] to) {
-		coordinateFrom = from;
-		coordinateTo = to;
+		coordinateFrom = new int[] {from[0],from[1]};
+		coordinateTo = new int[] {to[0],to[1]};
 	}
 	
 	public int[] from(){

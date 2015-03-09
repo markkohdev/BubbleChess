@@ -13,6 +13,8 @@ public class GamePlayPanel extends JPanel {
 	 */
 	
 	private GameBoard board = new GameBoard(1);
+	
+	
 	public GamePlayPanel() {
 		setBackground(Color.LIGHT_GRAY);
 		setPreferredSize(new Dimension(1024,768));
@@ -27,4 +29,5 @@ public class GamePlayPanel extends JPanel {
 		
 
 	}
+	
 }

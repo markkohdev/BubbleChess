@@ -82,6 +82,9 @@ public class Game {
 		//Add it to the local history
 		moves.add(m);
 		
+		//Update the board's state
+		board.updateState();
+		
 		if(turn == user1)
 			turn = user2;
 		else
@@ -99,7 +102,16 @@ public class Game {
 	}
 	
 	public ArrayList<Move> getMoves(int col, int row){
-		return board.getMoves(row, col);
+		return board.getMoves(col, row);
+	}
+	
+	public int InCheck(){
+		if (board.inCheck(BoardPiece.Color.WHITE))
+			return 1;
+		else if (board.inCheck(BoardPiece.Color.BLACK))
+			return 2;
+		else
+			return 0;
 	}
 
 

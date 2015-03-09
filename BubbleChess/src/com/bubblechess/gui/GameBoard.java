@@ -19,21 +19,36 @@ import java.awt.event.MouseEvent;
 
 public class GameBoard extends JPanel {
 	
-	private JPanel squares[][] = new JPanel[8][8];
+	private BoardCell squares[][] = new BoardCell[8][8];
+	private int selectedCol, selectedRow;	
+	private Color c1, c2;
 	
-	private Font pieceFont = new Font(Font.SANS_SERIF, Font.PLAIN, 50);
 	
-	private MouseAdapter squareListener = new MouseAdapter() {
+	
+	
+	private MouseAdapter pieceListener = new MouseAdapter() { 
 		@Override
 		public void mouseClicked(MouseEvent arg0) {
-			JPanel panel = (JPanel) arg0.getComponent();
-			panel.setBorder(BorderFactory.createBevelBorder(1,Color.green, Color.GREEN));
-			
-			
-			
+			BoardCell cell = (BoardCell) arg0.getComponent();
+			if (cell.isSelected() == 1) {
+				for(int i = 0; i < 8; i++) {
+					for(int j = 0; j < 8; j++) {
+						squares[i][j].selectCell(false);
+					}
+				}
+			}
+			else {
+				for(int i = 0; i < 8; i++) {
+					for(int j = 0; j < 8; j++) {
+						squares[i][j].selectCell(false);
+					}
+				}
+				cell.selectCell(true);
+				getMoves(cell.getColumn(), cell.getRow());
+				
+			}			
 		}
 	};
-
 	
 	public GameBoard() {
 		setBackground(Color.WHITE);
@@ -49,21 +64,22 @@ public class GameBoard extends JPanel {
 			for(int j = 0; j < 8; j++)
 			{
 				
-				JPanel p = new JPanel();
-				p.setLayout(new BorderLayout());
+				BoardCell cell = new BoardCell();
+				cell.setColumn(j);
+				cell.setRow(i);
 				if((i+j)%2 == 0) {
-					p.setBackground(Color.white);
+					cell.setBackColor(Color.white);
 					
 				}
 				else {
-					p.setBackground(Color.black);
+					cell.setBackColor(Color.black);
 				}
 				// ImageIcon pawn = new ImageIcon(GameBoard.class.getResource("/com/bubblechess/gui/WhitePieces/pawn.png"));
 				// label.setForeground(new Color(192,192,192));
 				// label.setForeground(new Color(218,165,32));
 				
 					
-				squares[i][j] = p;	
+				squares[j][i] = cell;	
 				
 			}
 			
@@ -91,21 +107,22 @@ public class GameBoard extends JPanel {
 			for(int j = 0; j < 8; j++)
 			{
 				
-				JPanel p = new JPanel();
-				p.setLayout(new BorderLayout());
+				BoardCell cell = new BoardCell();
+				cell.setColumn(j);
+				cell.setRow(i);
 				if((i+j)%2 == 0) {
-					p.setBackground(Color.white);
+					cell.setBackColor(Color.white);
 					
 				}
 				else {
-					p.setBackground(Color.black);
+					cell.setBackColor(Color.black);
 				}
 				// ImageIcon pawn = new ImageIcon(GameBoard.class.getResource("/com/bubblechess/gui/WhitePieces/pawn.png"));
 				// label.setForeground(new Color(192,192,192));
 				// label.setForeground(new Color(218,165,32));
 				
 					
-				squares[i][j] = p;	
+				squares[j][i] = cell;	
 				
 			}
 			
@@ -119,7 +136,7 @@ public class GameBoard extends JPanel {
 			for(int j = 0; j < 8; j++)
 			{
 				
-				this.add(squares[i][j]);
+				this.add(squares[j][i]);
 				
 			}
 			
@@ -134,7 +151,6 @@ public class GameBoard extends JPanel {
 	
 	public void addPiecesToBoard(int color) {
 		
-		Color c1, c2;
 		//String[] unicode = { "\u2654", "\u2655", "\u2656", "\u2657", "\u2658", "\u2659" };
         String[] unicode = { "\u265A", "\u265B", "\u265C", "\u265D", "\u265E", "\u265F" };
         
@@ -149,17 +165,9 @@ public class GameBoard extends JPanel {
 		
 		for(int i = 0; i < 8; i++)
 		{
-			JPanel currentPawnPanel = squares[1][i];
-			JLabel pawnlabel = new JLabel(unicode[5]);
-			pawnlabel.setForeground(c1);
-			pawnlabel.setFont(pieceFont);
-			pawnlabel.setOpaque(false);
-			pawnlabel.setHorizontalAlignment(JLabel.CENTER);
-			//pawnlabel.addMouseListener(pieceListener);
-			currentPawnPanel.add(pawnlabel);
-			currentPawnPanel.addMouseListener(squareListener);
-			
-			squares[1][i] = currentPawnPanel;
+			BoardCell currentPawnPanel = squares[i][1];
+			currentPawnPanel.addChessPiece(unicode[5], c1);			
+			squares[i][1] = currentPawnPanel;
 			
 			
 			
@@ -171,9 +179,9 @@ public class GameBoard extends JPanel {
 						break;
 				case 2: pieceUni = unicode[3];
 						break;
-				case 3: pieceUni = unicode[0];
+				case 3: pieceUni = unicode[1];
 						break;
-				case 4: pieceUni = unicode[1];
+				case 4: pieceUni = unicode[0];
 						break;
 				case 5: pieceUni = unicode[3];
 						break;
@@ -186,29 +194,19 @@ public class GameBoard extends JPanel {
 					
 			}
 			
-			JPanel currentPiecePanel = squares[0][i];
-			JLabel label = new JLabel(pieceUni);
-			label.setForeground(c1);
-			label.setFont(pieceFont);
-			label.setOpaque(false);
-			label.setHorizontalAlignment(JLabel.CENTER);
-			//label.addMouseListener(pieceListener);
-			currentPiecePanel.add(label);
-			currentPiecePanel.addMouseListener(squareListener);
-			squares[0][i] = currentPiecePanel;
+			BoardCell currentPiecePanel = squares[i][0];
+			currentPiecePanel.addChessPiece(pieceUni, c1);
+			squares[i][0] = currentPiecePanel;
 		}
+		
+		
 		
 		for(int i = 0; i < 8; i++)
 		{
-			JPanel currentPawnPanel = squares[6][i];
-			JLabel pawnlabel = new JLabel(unicode[5]);
-			pawnlabel.setForeground(c2);
-			pawnlabel.setFont(pieceFont);
-			pawnlabel.setOpaque(false);
-			pawnlabel.setHorizontalAlignment(JLabel.CENTER);
-			// pawnlabel.addMouseListener(pieceListener);
-			currentPawnPanel.add(pawnlabel);
-			squares[6][i] = currentPawnPanel;
+			BoardCell currentPawnPanel = squares[i][6];
+			currentPawnPanel.addChessPiece(unicode[5], c2);
+			currentPawnPanel.changeListenerState(true, pieceListener);
+			squares[i][6] = currentPawnPanel;
 			
 			String pieceUni;
 			switch (i) {
@@ -218,9 +216,9 @@ public class GameBoard extends JPanel {
 						break;
 				case 2: pieceUni = unicode[3];
 						break;
-				case 3: pieceUni = unicode[0];
+				case 3: pieceUni = unicode[1];
 						break;
-				case 4: pieceUni = unicode[1];
+				case 4: pieceUni = unicode[0];
 						break;
 				case 5: pieceUni = unicode[3];
 						break;
@@ -233,17 +231,10 @@ public class GameBoard extends JPanel {
 					
 			}
 			
-			JPanel currentPiecePanel = squares[7][i];
-			JLabel label = new JLabel(pieceUni);
-			label.setForeground(c2);
-			label.setFont(pieceFont);
-			label.setOpaque(false);
-			label.setHorizontalAlignment(JLabel.CENTER);
-			
-			//label.addMouseListener(pieceListener);
-			currentPiecePanel.add(label);
-			currentPiecePanel.addMouseListener(squareListener);
-			squares[7][i] = currentPiecePanel;
+			BoardCell currentPiecePanel = squares[i][7];
+			currentPiecePanel.addChessPiece(pieceUni, c2);
+			currentPiecePanel.changeListenerState(true, pieceListener);
+			squares[i][7] = currentPiecePanel;
 			
 			
 		}
@@ -253,9 +244,27 @@ public class GameBoard extends JPanel {
 	}
 	
 	
+	public void setSelCol(int c) {
+		this.selectedCol = c;
+	}
 	
-	public boolean movePiece() { 
-		return true;
+	public void setSelRow(int r) {
+		this.selectedRow = r;
+	}
+	
+	public int getSelRow() { 
+		return this.selectedRow;
+	}
+	
+	public int getSelCol() { 
+		return this.selectedCol;
+	}
+	
+	
+	
+	public void getMoves(int column, int row) {
+		
+		
 	}
 	
 	
