@@ -39,7 +39,7 @@ public class ServerTest {
 		
 		//connect to it
 		try {
-			_socket = new Socket("127.0.0.1",8080);
+			_socket = new Socket("localhost",8080);
 			_toServer = new PrintWriter(_socket.getOutputStream(),true);
 			_fromServer = new BufferedReader(new InputStreamReader(_socket.getInputStream()));
 		}
