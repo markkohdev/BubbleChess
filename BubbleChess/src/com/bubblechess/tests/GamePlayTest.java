@@ -10,6 +10,7 @@ import static org.junit.Assert.*;
 
 import com.bubblechess.client.Board;
 import com.bubblechess.client.ChessBoard;
+import com.bubblechess.client.ChessPiece;
 import com.bubblechess.client.Game;
 import com.bubblechess.client.Move;
 import com.bubblechess.client.User;
@@ -48,12 +49,17 @@ public class GamePlayTest {
 	@Test
 	public void recognizeCheckmate() {
 		//Fool's Mate!
-		game.playMove(new Move(new int[]{5,1}, new int[]{5,2}));
-		game.playMove(new Move(new int[]{4,6}, new int[]{4,4}));
-		game.playMove(new Move(new int[]{6,1}, new int[]{6,3}));
-		game.playMove(new Move(new int[]{3,7}, new int[]{7,3}));
+		String fen = "rnb-kbnr/pppp-ppp/--------/----p---/-----PPq/--------/PPPPP--P/RNBQKBNR w KQkq - 0 2";
+		chessboard = new ChessBoard(fen);
 		
-		String result = game.getBoard().getState();
+		String result = chessboard.getState();
+		Assert.assertEquals("Checkmate", result);
+		
+		//Scholar's Mate
+		fen = "r-bqk-nr/pppp-Qpp/--n-----/--b-p---/--B-P---/--------/PPPP-PPP/RNB-K-NR b KQkq - 0 3";
+		chessboard = new ChessBoard(fen);
+		result = chessboard.getState();
+		
 		Assert.assertEquals("Checkmate", result);
 	}
 	
@@ -63,39 +69,48 @@ public class GamePlayTest {
 	 */
 	@Test
 	public void recognizeStalemate() {
-		game.playMove(new Move(new int[]{4,1}, new int[]{4,2}));
-		game.playMove(new Move(new int[]{0,6}, new int[]{0,4}));
-		game.playMove(new Move(new int[]{3,0}, new int[]{7,4}));
-		game.playMove(new Move(new int[]{0,7}, new int[]{0,5}));
-		game.playMove(new Move(new int[]{7,4}, new int[]{0,4}));
-		game.playMove(new Move(new int[]{7,6}, new int[]{7,4}));
-		game.playMove(new Move(new int[]{7,1}, new int[]{7,3}));
-		game.playMove(new Move(new int[]{0,5}, new int[]{7,5}));
-		game.playMove(new Move(new int[]{0,4}, new int[]{2,6}));
-		game.playMove(new Move(new int[]{5,6}, new int[]{5,5}));
-		game.playMove(new Move(new int[]{2,6}, new int[]{3,6}));
-		game.playMove(new Move(new int[]{4,7}, new int[]{5,6}));
-		game.playMove(new Move(new int[]{3,6}, new int[]{1,6}));
-		game.playMove(new Move(new int[]{3,7}, new int[]{3,2}));
-		game.playMove(new Move(new int[]{1,6}, new int[]{1,7}));
-		game.playMove(new Move(new int[]{3,2}, new int[]{7,6}));
-		game.playMove(new Move(new int[]{1,7}, new int[]{2,7}));
-		game.playMove(new Move(new int[]{5,6}, new int[]{6,5}));
-		game.playMove(new Move(new int[]{2,7}, new int[]{4,5}));
+		String fen = "-----bnr/----p-pq/----Qpkr/-------p/-------P/----P---/PPPP-PP-/RNB-KBNR b KQkq - 0 10";
+		chessboard = new ChessBoard(fen);
 		
-		String result = game.getBoard().getState();
-		Assert.assertEquals(result, "Stalemate");
+		String result = chessboard.getState();
+		Assert.assertEquals("Stalemate", result);
+		
+		fen = "--------/--------/--------/--------/--------/----k---/----p---/----K--- w KQkq - 0 60";
+		chessboard = new ChessBoard(fen);
+		result = chessboard.getState();
+		
+		Assert.assertEquals("Stalemate", result);
 	}
 	
 	/**
-	 * Load starting position with alternate constructor
+	 * Test "load" constructor with starting position
 	 */
 	@Test
 	public void loadGame(){
 		String fen = "rnbqkbnr/pppppppp/--------/--------/--------/--------/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 		chessboard = new ChessBoard(fen);
+		
+		ChessBoard newGame = new ChessBoard();
 			
-		//TODO Assert something
+		for (int col=0;col<8;col++){
+			for (int row=0;row<8;row++){
+				ChessPiece expected = (ChessPiece)newGame.getBoard()[col][row];
+				ChessPiece result = (ChessPiece)chessboard.getBoard()[col][row];
+				
+				if (expected!=null && result==null){
+					fail();
+				}
+				else if (expected==null && result!=null){
+					fail();
+				}
+				else if (expected!=null && result!=null){
+					Assert.assertEquals(expected.getType(), result.getType());
+					Assert.assertEquals(expected.getColor(), result.getColor());
+				}			
+			}
+		}
+		
+		Assert.assertEquals("White to Move", chessboard.getState());
 	}
 	
 	/**
@@ -106,6 +121,11 @@ public class GamePlayTest {
 	@Test
 	public void insufficientMaterial(){
 		String fen = "--------/---K----/--------/--n-----/--------/----k---/--------/-------- w KQkq - 0 1";
+		chessboard = new ChessBoard(fen);
+		
+		Assert.assertEquals("Draw", chessboard.getState());
+		
+		fen = "--------/---K----/--------/--------/-----B--/----k---/--------/-------- w KQkq - 0 1";
 		chessboard = new ChessBoard(fen);
 		
 		Assert.assertEquals("Draw", chessboard.getState());

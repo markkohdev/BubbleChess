@@ -101,16 +101,15 @@ public class ChessBoard implements Board, Cloneable {
 			}
 		}
 		
+		//Need to set opposite color to let updateState do it's thing
 		if (toMove.equals("w")){
-			state = STATE.WHITE_MOVE;
-		}
-		else{
 			state = STATE.BLACK_MOVE;
 		}
-		
-		if (checkInsufficientMaterial()){
-			state = STATE.DRAW;
+		else{
+			state = STATE.WHITE_MOVE;
 		}
+		
+		updateState();
 		
 		if (castling.equals("-")){
 			//TODO
@@ -195,8 +194,8 @@ public class ChessBoard implements Board, Cloneable {
 	 * We wanna use BoardPiece[] here because it makes copies and not references
 	 */
 	public BoardPiece[] getCaptured() {
-		if (this.captured==null){
-			//return new BoardPiece[];
+		if (this.captured==null){			
+			return new BoardPiece[0];
 		}
 		BoardPiece[] result = new BoardPiece[this.captured.size()];
 		this.captured.toArray(result);
@@ -383,8 +382,14 @@ public class ChessBoard implements Board, Cloneable {
 	protected boolean validAttack(Move m){
 		ArrayList<int[]> squares = new ArrayList<int[]>();
 		ChessPiece piece = (ChessPiece)getPiece(m.from());
+		ChessPiece dest = (ChessPiece)getPiece(m.to());
 		
 		if (piece == null){
+			return false;
+		}
+		
+		//Pawn does not "attack" the square ahead, it can only move to occupy it
+		if (piece instanceof Pawn && m.colFrom()==m.colTo() && dest!= null){
 			return false;
 		}
 		
@@ -657,9 +662,9 @@ public class ChessBoard implements Board, Cloneable {
 		}
 		
 		if (state==STATE.WHITE_MOVE){
-			state = STATE.BLACK_MOVE;
 			
 			if (hasValidMove(Color.BLACK)){
+				state = STATE.BLACK_MOVE;
 				return;
 			}
 			
@@ -668,13 +673,13 @@ public class ChessBoard implements Board, Cloneable {
 			}
 			else {
 				state = STATE.STALEMATE;
-			}
+			}			
 		}
 		
 		if (state==STATE.BLACK_MOVE){
-			state = STATE.WHITE_MOVE;
-			
+						
 			if (hasValidMove(Color.WHITE)){
+				state = STATE.WHITE_MOVE;
 				return;
 			}
 			

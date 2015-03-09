@@ -50,7 +50,11 @@ public class MoveValidationTest {
 		
 		ArrayList<Move> generatedMoves = chessboard.getMoves(0,7);
 		
-		Assert.assertEquals(legalMoves, generatedMoves);
+		Assert.assertEquals(legalMoves.size(), generatedMoves.size());
+		Assert.assertEquals(legalMoves.get(0).from()[0], generatedMoves.get(0).from()[0]);
+		Assert.assertEquals(legalMoves.get(0).from()[1], generatedMoves.get(0).from()[1]);
+		Assert.assertEquals(legalMoves.get(0).to()[0], generatedMoves.get(0).to()[0]);
+		Assert.assertEquals(legalMoves.get(0).to()[1], generatedMoves.get(0).to()[1]);
 	}
 	
 	/**

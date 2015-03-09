@@ -57,4 +57,9 @@ public class Knight extends ChessPiece {
 		ChessPiece piece = new Knight(this.getColor());
 		return piece;
 	}
+
+	@Override
+	public String getType() {
+		return "Knight";
+	}
 }

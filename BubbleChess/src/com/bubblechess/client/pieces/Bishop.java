@@ -38,4 +38,9 @@ public class Bishop extends ChessPiece {
 		ChessPiece piece = new Bishop(this.getColor());
 		return piece;
 	}
+
+	@Override
+	public String getType() {
+		return "Bishop";
+	}
 }

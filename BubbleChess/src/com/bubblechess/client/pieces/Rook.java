@@ -40,4 +40,9 @@ public class Rook extends ChessPiece {
 		ChessPiece piece = new Rook(this.getColor());
 		return piece;
 	}
+
+	@Override
+	public String getType() {
+		return "Rook";
+	}
 }

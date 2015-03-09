@@ -89,4 +89,9 @@ public class Pawn extends ChessPiece {
 		ChessPiece piece = new Pawn(this.getColor());
 		return piece;
 	}
+
+	@Override
+	public String getType() {
+		return "Pawn";
+	}
 }
