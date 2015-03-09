@@ -117,18 +117,22 @@ public class RequestHandler extends Thread {
 		    		// TODO: Confirm no user
 		    		//Method to create a user
 		    		ChessDB cdb = new ChessDB();
+		    		JSONObject json;
 		    		
 		    		//Check if user exists
-		    		//if(cdb.getUser(username))
-		    			
-		    		
-		    			
-		    		cdb.insertUser(username, password);
-		    		int userid = cdb.getUser(username);
-		    		
-		    		JSONObject json = new JSONObject();
-		    		json.put("result", "success");
-		    		json.put("userID", userid);
+		    		if(cdb.getUser(username) != -1) {
+		    			json = new JSONObject();
+			    		json.put("result", "username already exists");
+		    		}
+		    		else {
+			    		cdb.insertUser(username, password);
+			    		int userid = cdb.getUser(username);
+			    		
+			    		json = new JSONObject();
+			    		json.put("result", "success");
+			    		json.put("userID", userid);
+		    		}
+
 		    		toClient.println(json.toJSONString());
 		    	break;
 		        case "checkLogin":
