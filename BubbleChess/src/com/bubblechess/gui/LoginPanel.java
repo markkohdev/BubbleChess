@@ -27,14 +27,18 @@ import com.bubblechess.GUIBridge;
 public class LoginPanel extends JPanel {
 	private JTextField textUsername;
 	private JPasswordField passwordField;
+	/*
+	 * Login states: 0 Waiting, 1 TryLogin, 2 CreateUser, 3 Continue as guest
+	 */
+	private int loginState;
 
 	
 
 	/**
 	 * Create the panel.
 	 */
-	@SuppressWarnings("deprecation")
-	public LoginPanel(final GUIBridge bridge) {
+	public LoginPanel() {
+		this.setLoginState(0);
 		setBackground(Color.LIGHT_GRAY);
 		setPreferredSize(new Dimension(1024,768));
 		setLayout(null);
@@ -42,14 +46,20 @@ public class LoginPanel extends JPanel {
 		textUsername = new JTextField();
 		textUsername.setBounds(423, 242, 192, 20);
 		add(textUsername);
-		textUsername.setColumns(10);
 		
 		JButton btnLogin = new JButton("Login");
 		btnLogin.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				
-					
+				/*if (getUserName().equals("")) {
+					setErrorLabel("No Username Was Entered");		
+				}
+				else if(getPassword().equals("")) {
+					setErrorLabel("No Password Was Entered");
+				}
+				else {
+					setLoginState(1);
+				}*/
 				
 			}
 		});
@@ -60,9 +70,9 @@ public class LoginPanel extends JPanel {
 		txtpnDontHaveAn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
+				setLoginState(2);
 			}
 		});
-		txtpnDontHaveAn.setForeground(Color.BLUE);
 		txtpnDontHaveAn.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		txtpnDontHaveAn.setBackground(Color.LIGHT_GRAY);
 		txtpnDontHaveAn.setText("Don't Have An Account Register Here");
@@ -70,7 +80,7 @@ public class LoginPanel extends JPanel {
 		add(txtpnDontHaveAn);
 		
 		JTextArea txtrOr = new JTextArea();
-		txtrOr.setFont(new Font("Monospaced", Font.BOLD, 18));
+		txtrOr.setFont(new Font("Tahoma", Font.BOLD, 18));
 		txtrOr.setBackground(Color.LIGHT_GRAY);
 		txtrOr.setText("_______________________________________________ OR ___________________________________________________________");
 		txtrOr.setBounds(10, 401, 1004, 51);
@@ -80,6 +90,7 @@ public class LoginPanel extends JPanel {
 		btnContinueAsGuest.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				setLoginState(3);
 			}
 		});
 		btnContinueAsGuest.setBounds(423, 508, 291, 23);
@@ -103,41 +114,38 @@ public class LoginPanel extends JPanel {
 		passwordField = new JPasswordField();
 		passwordField.setBounds(423, 298, 192, 20);
 		add(passwordField);
+		
+		
+		
 
 
 	}
 	
+	public void setLoginState(int state) {
+		int oldValue = this.loginState;
+		this.loginState = state;
+		firePropertyChange("loginState", oldValue, this.loginState);
+	}
 	
-	/*
-	@SuppressWarnings("deprecation")
-	public int loginFunction() {
-		
-		int loginResult = null;
-		
-		String userName = textUsername.getText();
-		String password = Arrays.toString(passwordField.getPassword());
-		if(userName == null || password == null) {
-			// change warning label to say nothing entered
-		}
-		else {
-			loginResult = bridge.Login(userName, password);		
-			
-		}
 
-		if(loginResult == 0) {
-			return 0;
-			
-		}
-		else if(loginResult == (-2)) {
-			// change error label to user not found
-		}
-		else if(loginResult == (-1)) {
-			// change error label to user not found
-			
-		}
-		else if(loginResult > 0) {
-			// change error label unknown result code
-		}
-		
-	}*/
+	public void setErrorLabel(String msg) {
+		JLabel lblErrorLabel = new JLabel(msg);
+		lblErrorLabel.setForeground(Color.RED);
+		lblErrorLabel.setFont(new Font("Dialog", Font.BOLD, 13));
+		lblErrorLabel.setBounds(423, 185, 70, 15);
+		this.add(lblErrorLabel);
+	}
+	
+	public int getLoginState() {
+		return this.loginState;
+	}
+	
+	public String getUserName() { 
+		return this.textUsername.getText();
+	}
+	
+	public String getPassword() {
+		return Arrays.toString(this.passwordField.getPassword());
+	}
+
 }

@@ -12,25 +12,20 @@ public class GamePlayPanel extends JPanel {
 	 * Create the panel.
 	 */
 	
-	private GameBoard board = new GameBoard(1);
+	private GameBoard board;
 	
 	
 	
 	
 	// Flip Board if player is black pieces
-	public GamePlayPanel() {
+	public GamePlayPanel(int playerNum) {
+		board = new GameBoard(playerNum);
 		setBackground(Color.LIGHT_GRAY);
 		setPreferredSize(new Dimension(1024,768));
 		setLayout(null);
 		board.setLocation(10, 11);
-		board.addPiecesToBoard(1);
-
-		
+		board.addPiecesToBoard(playerNum);		
 		add(board);
-		
-
-		
-
 	}
 	
 }
