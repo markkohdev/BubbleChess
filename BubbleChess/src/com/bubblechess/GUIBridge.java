@@ -2,6 +2,8 @@ package com.bubblechess;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.junit.Test;
+
 import com.bubblechess.client.*;
 
 public class GUIBridge {
@@ -227,6 +229,14 @@ public class GUIBridge {
 	
 	//TODO: Implement waitfornextmove
 	
+	public void TestServer(){
+		String testuser = "testuser";
+		String testpass = "testpass";
+		
+		System.out.println("Register code: " + this.Register(testuser, testpass));
+		
+		System.out.println("Login code: " + this.Login(testuser, testpass));
+	}
 	
 	/**
 	 * Dummy method to test move validation functionality
@@ -257,6 +267,5 @@ public class GUIBridge {
 		
 		return false;
 	}
-	
 
 }

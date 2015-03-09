@@ -6,7 +6,7 @@ import java.util.Arrays;
 import com.bubblechess.client.pieces.*;
 import com.bubblechess.client.BoardPiece.Color;
 
-public class ChessBoard implements Board {
+public class ChessBoard implements Board, Cloneable {
 	
 	/**
 	 * To access a piece, board is stored as [col][row] where [0][0] is the 
