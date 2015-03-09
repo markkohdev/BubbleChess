@@ -20,7 +20,11 @@ public class BubbleChessDriver {
 		MainApplicationWindow mainAppWindow = new MainApplicationWindow(bridge);
 		mainAppWindow.addPanel(login);
 		mainAppWindow.setFrameVisible();
-		mainAppWindow.startLogin(login);
+		
+		while(mainAppWindow.getPaneResult() < 0) {
+			mainAppWindow.startLogin(login);
+		}
+		
 		MainMenuPanel mainMenu = new MainMenuPanel();
 		int result = mainAppWindow.getPaneResult();
 		if (result == 2) {

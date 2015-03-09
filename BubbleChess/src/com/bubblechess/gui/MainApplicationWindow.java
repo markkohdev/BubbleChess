@@ -23,6 +23,7 @@ public class MainApplicationWindow {
 	 */
 	public MainApplicationWindow(GUIBridge b) {	
 		this.bridge = b;
+		this.paneResult = -5;
 		frame = new JFrame();
 		frame.setBounds(0, 0, 1024, 768);
 		//frame.setBounds(100, 100, 450, 300);
@@ -97,7 +98,9 @@ public class MainApplicationWindow {
 						startMainMenu();
 						
 					}*/
-					setPaneResult(result);
+					if(result >= 0) {
+						setPaneResult(result);
+					}
 					
 					
 				}
