@@ -18,6 +18,10 @@ public class GamePlayPanel extends JPanel {
 	
 	
 	// Flip Board if player is black pieces
+	/**
+	 * Creates gameplay panel and board using clients playerNum
+	 * @param playerNum
+	 */
 	public GamePlayPanel(int playerNum) {
 		board = new GameBoard(playerNum);
 		setBackground(Color.LIGHT_GRAY);

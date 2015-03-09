@@ -25,7 +25,9 @@ public class GameBoard extends JPanel {
 	
 	
 	
-	
+	/**
+	 * Create MouseAdapter to trigger event for when pieces are clicked
+	 */
 	private MouseAdapter pieceListener = new MouseAdapter() { 
 		@Override
 		public void mouseClicked(MouseEvent arg0) {
@@ -44,20 +46,20 @@ public class GameBoard extends JPanel {
 					}
 				}
 				cell.selectCell(true);
-				getMoves(cell.getColumn(), cell.getRow());
+				// getMoves(cell.getColumn(), cell.getRow());
 				
 			}			
 		}
 	};
 	
+	/**
+	 * Default Constructor of GameBoard
+	 */
 	public GameBoard() {
 		setBackground(Color.WHITE);
 		setPreferredSize(new Dimension(500, 500));
 		setLayout(new GridLayout(8, 8));
 		setBounds(0,0,500,500);
-
-
-
 		
 		for(int i = 0; i < 8; i++)
 		{
@@ -74,11 +76,6 @@ public class GameBoard extends JPanel {
 				else {
 					cell.setBackColor(Color.black);
 				}
-				// ImageIcon pawn = new ImageIcon(GameBoard.class.getResource("/com/bubblechess/gui/WhitePieces/pawn.png"));
-				// label.setForeground(new Color(192,192,192));
-				// label.setForeground(new Color(218,165,32));
-				
-					
 				squares[j][i] = cell;	
 				
 			}
@@ -92,7 +89,10 @@ public class GameBoard extends JPanel {
 	// Dark Square RGB: 92, 129, 152
 	// Light Square RGB: 140, 150, 155
 	
-	
+	/**
+	 * Constructor of GameBoard, adding pieces to board with players color on proper side
+	 * @param color
+	 */
 	public GameBoard(int color) {
 		setBackground(Color.WHITE);
 		setPreferredSize(new Dimension(500, 500));
@@ -100,8 +100,6 @@ public class GameBoard extends JPanel {
 		setBounds(0,0,500,500);
 
 
-
-		
 		for(int i = 0; i < 8; i++)
 		{
 			for(int j = 0; j < 8; j++)
@@ -117,10 +115,6 @@ public class GameBoard extends JPanel {
 				else {
 					cell.setBackColor(Color.black);
 				}
-				// ImageIcon pawn = new ImageIcon(GameBoard.class.getResource("/com/bubblechess/gui/WhitePieces/pawn.png"));
-				// label.setForeground(new Color(192,192,192));
-				// label.setForeground(new Color(218,165,32));
-				
 					
 				squares[j][i] = cell;	
 				
@@ -148,10 +142,14 @@ public class GameBoard extends JPanel {
 	
 
 	
-	
+	/**
+	 * Add Pieces to board using param to determine placement of pieces
+	 * @param color
+	 */
 	public void addPiecesToBoard(int color) {
 		
 		//String[] unicode = { "\u2654", "\u2655", "\u2656", "\u2657", "\u2658", "\u2659" };
+		// unicode	 =		{"king",   "queen",  "rook",   "bishop", "knight", "pawn" }  
         String[] unicode = { "\u265A", "\u265B", "\u265C", "\u265D", "\u265E", "\u265F" };
         
 		if(color == 1) { 
@@ -243,36 +241,45 @@ public class GameBoard extends JPanel {
 		
 	}
 	
+	/**
+	 * Function to start listeners for clients pieces are start of game
+	 */
 	public void startListeners() {
 		
 	}
 	
-	
+	/**
+	 * Set selected piece col to param
+	 * @param c
+	 */
 	public void setSelCol(int c) {
 		this.selectedCol = c;
 	}
 	
+	
+	/**
+	 * Set selected piece row to param
+	 * @param r
+	 */
 	public void setSelRow(int r) {
 		this.selectedRow = r;
 	}
 	
+	/**
+	 * Get selected piece row
+	 * @return selectedRow
+	 */
 	public int getSelRow() { 
 		return this.selectedRow;
 	}
 	
+	/**
+	 * Get selected piece column
+	 * @return selectedCol
+	 */
 	public int getSelCol() { 
 		return this.selectedCol;
 	}
-	
-	
-	
-	public void getMoves(int column, int row) {
-		
-		
-	}
-	
-	
 
-	
 
 }

@@ -11,6 +11,7 @@ import com.bubblechess.GUIBridge;
 
 public class MainApplicationWindow {
 
+	
 	private JFrame frame;
 	private GUIBridge bridge;
 
@@ -40,28 +41,47 @@ public class MainApplicationWindow {
 		});
 	}*/
 
-	
+	/**
+	 * sets the JFrame of the window as visible
+	 */
 	public void setFrameVisible() { 
 		this.frame.setVisible(true);
 	}
 	
+	/**
+	 * Removes panel received from the frame
+	 * @param panel
+	 */
 	public void removePanel(JPanel panel) {
 		this.frame.remove(panel);
 	}
-	
+	/**
+	 * adds panel received as param to the frame
+	 * @param panel
+	 */
 	public void addPanel(JPanel panel) {
 		this.frame.add(panel);		
 	}
-	
+	/**
+	 * Sets panel received as paramter to visible or not
+	 * @param panel
+	 * @param b
+	 */
 	public void setVisiblePanel(JPanel panel, boolean b) {
 		panel.setVisible(b);
 	}
 	
+	/** 
+	 * Starts the login Panel. Property Listens is watching for when the loginState
+	 * of the LoginPanel is changed the the change event is fired off.
+	 * @param p
+	 */
 	public void startLogin(LoginPanel p) {
 		p.addPropertyChangeListener("loginState", new PropertyChangeListener() {
 
 			public void propertyChange(PropertyChangeEvent evt) { 
 				int newStateValue = (int) evt.getNewValue();
+				// if value is 1 it will try to login and start main menu if sucess
 				if(newStateValue == 1) {
 					LoginPanel lP = (LoginPanel) evt.getSource();
 					int result = loginFunction(lP);
@@ -72,9 +92,11 @@ public class MainApplicationWindow {
 					
 					
 				}
+				// fires off create new user screen
 				else if(newStateValue == 2) {
 					
 				}
+				// fires off continue as guest and if sucess starts main menu
 				else if(newStateValue == 3) {
 					int result = continueAsGuest();
 					
@@ -87,7 +109,11 @@ public class MainApplicationWindow {
 		});
 	}
 	
-	
+	/**
+	 * Tries to login to server using login function from GUIBridge.
+	 * @param lP
+	 * @returns 0 Sucess, -1 Incorrect Pass, -2 User Not Found
+	 */
 	public int loginFunction(LoginPanel lP) {
 		String user = lP.getUserName();
 		String pass = lP.getPassword();
@@ -104,6 +130,10 @@ public class MainApplicationWindow {
 		return result;
 	}
 	
+	/**
+	 * calls Continue as guest from bridge
+	 * @return 0 success, -1 failure
+	 */
 	public int continueAsGuest() { 
 		return bridge.ContinueAsGuest();
 	}
