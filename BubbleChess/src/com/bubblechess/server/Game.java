@@ -7,14 +7,11 @@ import java.util.*;
 
 import org.json.simple.JSONObject;
 
-public class GameThread extends Thread {
+public class Game {
 	
 	//User1 is white user2 is black
-	private Socket _user1;
-	private int _user1Id;
-	
-	private Socket _user2;
-	private int _user2Id;
+	private int _user1Id = -1;
+	private int _user2Id = -1;
 	
 	private int _gameId;
 	
@@ -25,26 +22,26 @@ public class GameThread extends Thread {
 	 * @param user
 	 * @param userId
 	 */
-	public GameThread(int gameId, int id, Socket user, int userId) {
-		setUser(id, user, userId);
+	public Game(int gameId, int playerNumber, int userId) {
+		setUser(userId, playerNumber);
 		_gameId = gameId;
 	}
 	
 	//Getters
 	/**
-	 * Method to get user socket
-	 * @param id
+	 * Method to get opponent of a player by id
+	 * @param playerNumber
 	 * @return
 	 */
-	public Socket getUser(int id) {
-		if(id == 1) {
-			return _user1;
+	public int getOpponentId(int playerNumber) {
+		if(playerNumber == 1) {
+			return _user2Id;
 		}
-		else if(id == 2) {
-			return _user2;
+		else if(playerNumber == 2) {
+			return _user1Id;
 		}
 		else {
-			return null;
+			return -1;
 		}
 	}
 	
@@ -55,13 +52,11 @@ public class GameThread extends Thread {
 	 * @param user
 	 * @param userId
 	 */
-	public void setUser(int id, Socket user, int userId) {
-		if(id == 1) {
-			_user1 = user;
+	public void setUser(int userId, int playerNumber) {
+		if(playerNumber == 1) {
 			_user1Id = userId;
 		}
-		else if(id ==2) {
-			_user2 = user;
+		else if(playerNumber == 2) {
 			_user2Id = userId;
 		}
 	}
@@ -73,13 +68,13 @@ public class GameThread extends Thread {
 	 * @param userId
 	 * @return
 	 */
-	public boolean joinGame(Socket user, int userId) {
-		if(_user1 == null) {
-			setUser(1, user, userId);
+	public boolean joinGame(int userId, Socket client) {
+		if(_user1Id == -1) {
+			setUser(userId, 1);
 			return true;
 		}
-		else if(_user2 == null) {
-			setUser(2, user, userId);
+		else if(_user2Id == -1) {
+			setUser(userId, 2);
 			return true;
 		}
 		else {
@@ -98,7 +93,7 @@ public class GameThread extends Thread {
 	 * @param rowTo
 	 * @throws IOException
 	 */
-	public void insertMove(int userId, int colFrom, int rowFrom, int colTo, int rowTo) throws IOException {
+	public void insertMove(int userId, int colFrom, int rowFrom, int colTo, int rowTo, Socket client) throws IOException {
 		ChessDB cdb = new ChessDB();
 		cdb.insertMove(userId, _gameId, colFrom, rowFrom, colTo, rowTo);
 		
@@ -111,7 +106,7 @@ public class GameThread extends Thread {
 		
 		//Respond to the right user
 		if(userId == _user1Id) {
-			DataOutputStream out = new DataOutputStream(_user1.getOutputStream());
+			DataOutputStream out = new DataOutputStream(client.getOutputStream());
 			
 			JSONObject json = new JSONObject();
     		json.put("result","success");
@@ -121,11 +116,11 @@ public class GameThread extends Thread {
     		JSONObject oppJson = new JSONObject();
     		oppJson.put("message","newMove");
     		oppJson.put("move", move);
-    		out = new DataOutputStream(_user2.getOutputStream());
+    		out = new DataOutputStream(client.getOutputStream());
     		out.writeUTF(oppJson.toJSONString());
 		}
 		else if(userId == _user2Id) {
-			DataOutputStream out = new DataOutputStream(_user2.getOutputStream());
+			DataOutputStream out = new DataOutputStream(client.getOutputStream());
 			
 			JSONObject json = new JSONObject();
     		json.put("result","success");
@@ -135,7 +130,7 @@ public class GameThread extends Thread {
     		JSONObject oppJson = new JSONObject();
     		oppJson.put("message","newMove");
     		oppJson.put("move", move);
-    		out = new DataOutputStream(_user1.getOutputStream());
+    		out = new DataOutputStream(client.getOutputStream());
     		out.writeUTF(oppJson.toJSONString());
 		}
 	}

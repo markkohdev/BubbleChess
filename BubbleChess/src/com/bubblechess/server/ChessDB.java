@@ -62,7 +62,17 @@ public class ChessDB {
 	    			"ROWTO           		INT   NOT NULL)";
 	    	stmt.executeUpdate(sql);
 	    	stmt.close();
-
+	    	
+	    	//Games Table
+	    	stmt = c.createStatement();
+	    	sql = "CREATE TABLE IF NOT EXISTS GAMES " +
+	    			"(ID INTEGER PRIMARY 	KEY   	AUTOINCREMENT," +
+	    			"USER1ID           		INT   NOT NULL," + 
+	    			"USER2ID           		INT   NOT NULL," + 
+	    			"GAMESTATUS           	INT   NOT NULL)";
+	    	stmt.executeUpdate(sql);
+	    	stmt.close();
+	    	
 	    	c.close();
 	    } catch ( Exception e ) {
 	    	System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -89,11 +99,39 @@ public class ChessDB {
 		    }
 		    rs.close();
 		    stmt.close();
+		    c.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return userId;
+	}
+	
+	/**
+	 * Method to return a username
+	 * @param userId
+	 * @return
+	 */
+	public String getUsername(int userId) {
+		Connection c = dbConnect();
+		
+		String username = "";
+		
+		try {
+			Statement stmt = c.createStatement();
+			ResultSet rs;
+			rs = stmt.executeQuery( "SELECT * FROM USERS WHERE ID = '"+userId+"'");
+		    while (rs.next()) {
+		    	username = rs.getString("USERNAME");
+		    }
+		    rs.close();
+		    stmt.close();
+		    c.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return username;
 	}
 	
 	/**
@@ -109,8 +147,9 @@ public class ChessDB {
 			stmt = c.createStatement();
 			String sql = "INSERT INTO USERS (USERNAME, PASSWORD) " +
 						 "VALUES ('"+userName+"', '"+password+"');";
-			System.out.println(sql);
 			stmt.executeUpdate(sql);
+			stmt.close();
+			c.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -140,6 +179,7 @@ public class ChessDB {
 		    }
 		    rs.close();
 		    stmt.close();
+		    c.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -182,6 +222,7 @@ public class ChessDB {
 		    }
 		    rs.close();
 		    stmt.close();
+		    c.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -207,10 +248,93 @@ public class ChessDB {
 			String sql = "INSERT INTO MOVES (USERID, GAMEID, COLFROM, ROWFROM, COLTO, ROWTO) " +
 						 "VALUES ("+userId+", "+gameId+", "+colFrom+", "+rowFrom+", "+colTo+", "+rowTo+");"; 
 			stmt.executeUpdate(sql);
+			stmt.close();
+			c.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	   
+	}
+	
+	//Game Information
+	public String getGame(int gameId) {
+		Connection c = dbConnect();
+		
+		String game = "";
+		
+		try {
+			Statement stmt = c.createStatement();
+			ResultSet rs;
+			rs = stmt.executeQuery( "SELECT * FROM GAMES WHERE ID = '"+gameId+"'");
+		    while (rs.next()) {
+		    	int user1Id = rs.getInt("USER1ID");
+		    	int user2Id = rs.getInt("USER2ID");
+		    	int gameStatus = rs.getInt("GAMESTATUS");
+		    	
+		    	JSONObject json = new JSONObject();
+		    	json.put("user1ID", user1Id);
+		    	json.put("user2ID", user1Id);
+		    	json.put("gameStatus", gameStatus);
+		    	
+		    	game = json.toJSONString();
+		    }
+		    rs.close();
+		    stmt.close();
+		    c.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return game;
+	}
+	public void insertGame(int userId, int playerNumber)
+	{
+		Connection c = dbConnect();
+		Statement stmt = null;
+		try {
+			stmt = c.createStatement();
+			
+			String sql = "";
+			if(playerNumber == 1) {
+				sql = "INSERT INTO GAMES (USER1ID, GAMESTATUS) " +
+						 	 "VALUES ('"+userId+"', '0');";
+			}
+			else if(playerNumber == 2) {
+				sql = "INSERT INTO GAMES (USER2ID, GAMESTATUS) " +
+					 	     "VALUES ('"+userId+"', '0');";
+			}
+			
+			stmt.executeUpdate(sql);
+			stmt.close();
+			c.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void addOpponent(int userId, int playerNumber, int gameId) {
+		Connection c = dbConnect();
+		Statement stmt = null;
+		try {
+			stmt = c.createStatement();
+			
+			String sql = "";
+			if(playerNumber == 1) {
+				sql = "UPDATE GAMES SET USER1ID='"+userId+"', GAMESTATUS='0'," +
+						 	 "WHERE ID = '"+gameId+"';";
+			}
+			else if(playerNumber == 2) {
+				sql = "UPDATE GAMES SET USER2ID='"+userId+"', GAMESTATUS='0'," +
+					 	 "WHERE ID = '"+gameId+"';";
+			}
+			
+			stmt.executeUpdate(sql);
+			stmt.close();
+			c.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

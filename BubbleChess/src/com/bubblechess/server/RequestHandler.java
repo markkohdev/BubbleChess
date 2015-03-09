@@ -15,7 +15,7 @@ import org.json.simple.parser.ParseException;
 public class RequestHandler extends Thread {
 	private Socket _clientSocket = null;
 	private ServerInstance _server = null;
-	protected PrintWriter toServer;
+	protected PrintWriter toClient;
 	
 	public RequestHandler(Socket clientSocket, ServerInstance server) {
 		// TODO Auto-generated constructor stub
@@ -23,7 +23,7 @@ public class RequestHandler extends Thread {
 		_server = server;
 		
 		try {
-			toServer = new PrintWriter(_clientSocket.getOutputStream(), true);
+			toClient = new PrintWriter(_clientSocket.getOutputStream(), true);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -110,49 +110,130 @@ public class RequestHandler extends Thread {
             String requestString = (String) obj.get("request");
             
             switch(requestString) {
+		        case "createUser":
+		    		String username = (String) obj.get("username");
+		    		String password = (String) obj.get("password");
+		    		
+		    		// TODO: Confirm no user
+		    		//Method to create a user
+		    		ChessDB cdb = new ChessDB();
+		    		JSONObject json;
+		    		
+		    		//Check if user exists
+		    		if(cdb.getUser(username) != -1) {
+		    			json = new JSONObject();
+			    		json.put("result", "username already exists");
+		    		}
+		    		else {
+			    		cdb.insertUser(username, password);
+			    		int userid = cdb.getUser(username);
+			    		
+			    		json = new JSONObject();
+			    		json.put("result", "success");
+			    		json.put("userID", userid);
+		    		}
+
+		    		toClient.println(json.toJSONString());
+		    	break;
+		        case "checkLogin":
+            		String userName = (String) obj.get("username");
+            		password = (String) obj.get("password");
+
+            		//get userid for login
+            		cdb = new ChessDB();
+            		int loginUserId = cdb.getUser(userName);
+            		
+            		if(loginUserId == -1) {
+            			json = new JSONObject();
+                		json.put("result","user not found");
+            		}
+            		else {
+            			//Method to check if user password is right
+                		boolean loginStatus = cdb.checkLogin(loginUserId, password); 		
+                		
+                		if(loginStatus == true) {
+                			json = new JSONObject();
+                    		json.put("result","success");
+                    		json.put("userID", loginUserId);
+                		}
+                		else {
+                			json = new JSONObject();
+                    		json.put("result","incorrect password");
+                		}
+            		}
+            		toClient.println(json.toJSONString());
+            	break;
             	case "createGame":
             		int newId = _server.getGames().size() + 1;
-            		
+
             		long userId = (long) obj.get("userID");
             		
-            		int userNumber = (int)((long) obj.get("userNumber"));
+            		int playerNumber = (int)((long) obj.get("playerNumber"));
             		
-        			GameThread gt = new GameThread(newId, userNumber, _clientSocket, (int) userId);
+        			Game game = new Game(newId, playerNumber, (int) userId);
             		
-            		_server.addGameThread(newId, gt);
+            		_server.addGameThread(newId, game);
             		_server.addJoinableGame(newId);
             		
+            		cdb = new ChessDB();
+            		cdb.insertGame((int) userId, playerNumber);
+            		
             		//Return gameid
-            		JSONObject json = new JSONObject();
+            		json = new JSONObject();
+            		json.put("result", "success");
+            		json.put("gameID", newId);
+            		toClient.println(json.toJSONString());  
+            	break;
+            	case "getOpponent":
+            		int gameId = (int)((long) obj.get("gameID"));
+            		userId = (long) obj.get("userID");
+            		playerNumber = (int)((long) obj.get("playerNumber"));
             		
-            		json.put("result","success");
-            		json.put("gameID",newId);
-            		toServer.println(json.toJSONString());  
+            		game = _server.getGame(gameId);
+            		int oppId = game.getOpponentId(playerNumber);
             		
+            		if(oppId != -1) {
+            			//Method to return userid
+                		cdb = new ChessDB();
+                		username = cdb.getUsername((int) userId);
+                		
+                		//This will come through as a JSON String
+                		json = new JSONObject();
+                		json.put("result","success");
+                		json.put("userID", oppId);
+                		json.put("username", username);
+                		toClient.println(json.toJSONString());
+            		}
+            		else {
+            			json = new JSONObject();
+                		json.put("result","waiting");
+                		System.out.println(json.toJSONString());
+                		toClient.println(json.toJSONString());
+            		}
             	break;
             	case "joinGame":
             		userId = (long) obj.get("userID");
+            		gameId = (int)((long) obj.get("gameID"));
             		
-            		long gameId = (long) obj.get("gameID");
+            		game = _server.getGame((int) gameId);
             		
-            		GameThread gt = _server.getGame((int) gameId);
-            		if(gt.joinGame(_clientSocket, (int) userId)) {
-            			_server.removeJoinableGame((int) gameId);
+            		if(game.joinGame((int) userId, _clientSocket)) {
+            			_server.removeJoinableGame(gameId);
             			
-            			JSONObject json = new JSONObject();
+            			json = new JSONObject();
             			json.put("result","success");
-            			toServer.println(json.toJSONString());  
+            			toClient.println(json.toJSONString());  
             		}
             		else {
-            			JSONObject json = new JSONObject();
+            			json = new JSONObject();
             			json.put("result","failure");
-            			toServer.println(json.toJSONString());  
+            			toClient.println(json.toJSONString());  
             		}
             	break;
             	case "getJoinableGames":
             		ArrayList<Integer> joinableGames = _server.getJoinableGames();
             		
-            		JSONObject json = new JSONObject();
+            		json = new JSONObject();
             		json.put("result","success");
             		
             		JSONArray games = new JSONArray();
@@ -167,7 +248,7 @@ public class RequestHandler extends Thread {
             	case "insertMove":
             		//Need to cast from long to int
             		userId = (long) obj.get("userID");
-            		gameId = (long) obj.get("gameID");
+            		gameId = (int)((long) obj.get("gameID"));
             		long colFrom = (long) obj.get("colFrom");
             		long rowFrom = (long) obj.get("rowFrom");
             		long colTo = (long) obj.get("colTo");
@@ -181,69 +262,33 @@ public class RequestHandler extends Thread {
             		System.out.println(rowTo);*/
             		
             		//Talk to gameThread
-            		GameThread insertThread = _server.getGame((int) gameId);
-            		insertThread.insertMove((int) userId, (int) colFrom, (int) rowFrom, (int) colTo, (int) rowTo);
+            		game = _server.getGame(gameId);
+            		game.insertMove((int) userId, (int) colFrom, (int) rowFrom, (int) colTo, (int) rowTo, _clientSocket);
             	break;
             	case "getAllMoves":
-            		gameId = (long) obj.get("gameID");
+            		gameId = (int)((long) obj.get("gameID"));
            
-            		GameThread allMovesThread = _server.getGame((int) gameId);
+            		Game allMovesThread = _server.getGame(gameId);
             		allMovesThread.getAllMoves(_clientSocket);
             	break;
             	case "getUser":
-            		String username = (String) obj.get("username");
+            		username = (String) obj.get("username");
             		System.out.println(username);
             		
             		//Method to return userid
-            		ChessDB cdb = new ChessDB();
+            		cdb = new ChessDB();
             		int getUserId = cdb.getUser(username);
             		
             		//This will come through as a JSON String
             		json = new JSONObject();
             		json.put("result","success");
             		json.put("userID", getUserId);
-            		toServer.println(json.toJSONString());
+            		toClient.println(json.toJSONString());
             		
             		//TODO: Add failure
             	break;
-            	case "checkLogin":
-            		String userName = (String) obj.get("username");
-            		String password = (String) obj.get("password");
-            		
-            		cdb = new ChessDB();
-            		
-            		//get userid for login
-            		int loginUserId = cdb.getUser(userName);
-            		
-            		//Method to check if user password is right
-            		boolean loginStatus = cdb.checkLogin(loginUserId, password); 		
-            		
-            		if(loginStatus == true) {
-            			json = new JSONObject();
-                		json.put("result","success");
-                		json.put("userID", loginUserId);
-                		toServer.println(json.toJSONString());
-            		}
-            		else {
-            			json = new JSONObject();
-                		json.put("result","failure");
-                		toServer.println(json.toJSONString());
-            		}
-            	break;
-            	case "createUser":
-            		username = (String) obj.get("username");
-            		password = (String) obj.get("password");
-            		
-            		//Method to create a user
-            		cdb = new ChessDB();
-            		cdb.insertUser(username, password);
-            		int userid = cdb.getUser(username);
-            		
-            		json = new JSONObject();
-            		json.put("result", "success");
-            		json.put("userID", userid);
-            		toServer.println(json.toJSONString());
-            	break;
+            	
+            	
             }
 		}
 		catch (IOException e1) {

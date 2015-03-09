@@ -127,6 +127,7 @@ public class LoginPanel extends JPanel {
 		firePropertyChange("loginState", oldValue, this.loginState);
 	}
 	
+
 	public void setErrorLabel(String msg) {
 		JLabel lblErrorLabel = new JLabel(msg);
 		lblErrorLabel.setForeground(Color.RED);
@@ -146,4 +147,5 @@ public class LoginPanel extends JPanel {
 	public String getPassword() {
 		return Arrays.toString(this.passwordField.getPassword());
 	}
+
 }

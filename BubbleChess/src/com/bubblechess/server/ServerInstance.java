@@ -14,6 +14,7 @@ public class ServerInstance {
 	 */
 	public ServerInstance() {
 		_games = new HashMap();
+		_joinableGames = new ArrayList<Integer>();
 	}
 	
 	//getters
@@ -22,8 +23,8 @@ public class ServerInstance {
 	 * @param gameId
 	 * @return
 	 */
-	public GameThread getGame(int gameId) {
-		return (GameThread) _games.get(gameId);
+	public Game getGame(int gameId) {
+		return (Game) _games.get(gameId);
 	}
 	
 	/**
@@ -48,7 +49,7 @@ public class ServerInstance {
 	 * @param gameId
 	 * @param game
 	 */
-	public void addGameThread(int gameId, GameThread game) {
+	public void addGameThread(int gameId, Game game) {
 		if (_games.get(gameId) == null) {
 			_games.put(gameId, game);
 		}
