@@ -16,6 +16,7 @@ public class MainApplicationWindow {
 	
 	private JFrame frame;
 	private GUIBridge bridge;
+	private int paneResult;
 
 	/**
 	 * Create the application.
@@ -92,23 +93,25 @@ public class MainApplicationWindow {
 				// if value is 1 it will try to login and start main menu if sucess
 				if(newStateValue == 1) {
 					int result = loginFunction(lP);
-					if(result >= 0) { 
-						startMainMenu(lP);
+					/*if(result >= 0) { 
+						startMainMenu();
 						
-					}
+					}*/
+					setPaneResult(result);
 					
 					
 				}
 				// fires off create new user screen
 				else if(newStateValue == 2) {
+					setPaneResult(newStateValue);
 					
 				}
-				// fires off continue as guest and if sucess starts main menu
+				// fires off continue as guest and if success starts main menu
 				else if(newStateValue == 3) {
 					int result = continueAsGuest();
 					
 					if(result >= 0) {
-						startMainMenu(lP);
+						setPaneResult(result);
 					}
 					
 				}
@@ -150,10 +153,14 @@ public class MainApplicationWindow {
 	}
 	
 	
-	public void startMainMenu(LoginPanel lP) {
-		MainMenuPanel mainMenu = new MainMenuPanel();
-		this.frame.remove(lP);
-		this.frame.add(mainMenu);
+	public void setPaneResult(int i) {
+		paneResult = i;
+	}
+	
+	public int getPaneResult() {
+		return this.paneResult;
+	}
+	public void startMainMenu() {
 		
 	}
 	

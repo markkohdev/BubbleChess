@@ -164,7 +164,8 @@ public class LoginPanel extends JPanel {
 	 * @return
 	 */
 	public String getPassword() {
-		return Arrays.toString(this.passwordField.getPassword());
+		String pass = new String(this.passwordField.getPassword());
+		return pass;
 	}
 
 }
