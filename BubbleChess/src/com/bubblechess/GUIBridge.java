@@ -113,7 +113,10 @@ public class GUIBridge {
 		//We haven't logged in yet
 		assert(player != null);
 		
+		assert(color == 1 || color == 2);
+		
 		int result = server.CreateGame(player.getID(), color);
+		System.out.println("Game ID:" + result);
 		
 		if (result >= 0) {
 			//Create user
@@ -245,7 +248,15 @@ public class GUIBridge {
 		return server.SendMove(m, player.getID(), game.getID());
 	}
 	
-	//TODO: Implement waitfornextmove
+	public Move WaitForNextMove() {
+		if (IsPlayersTurn())
+			return null;
+		
+		//We may wait here
+		Move next = server.CheckForMove(game.getID(),player.getID());
+		
+		return next;
+	}
 	
 	/**
 	 * Whether or not the game is in an End game state.
@@ -273,6 +284,8 @@ public class GUIBridge {
 		System.out.println("Register code: " + this.Register(testuser, testpass));
 		
 		System.out.println("Login code: " + this.Login(testuser, testpass));
+		
+		System.out.println("GameID: " + this.CreateGame(1));
 	}
 	
 	/**

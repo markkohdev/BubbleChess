@@ -4,6 +4,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.io.*;
 
 import org.json.simple.*;
@@ -196,17 +197,13 @@ public class ServerHandler {
 	 */
 	public int CreateGame(int userID, int playerNumber) {
 		SetupConnection();
+		int retVal = 0;
 		
 		JSONObject json = new JSONObject();
 		
 		json.put("request","createGame");
 		json.put("userID", userID);
-		
-		//User1 is white player.  It's important to keep track of this.
-		if(playerNumber == 1)
-			json.put("userNumber", "user1");
-		else
-			json.put("userNumber", "user2");
+		json.put("playerNumber", playerNumber);
 		
 		toServer.println(json.toJSONString());
 		
@@ -217,17 +214,20 @@ public class ServerHandler {
 		} catch (IOException e) {
 			System.err.println("Error recieving data from server.");
 			e.printStackTrace();
+			CloseConnection();
 			return -1;
 		}
 		
 		if(response.get("result").equals("success")) {
-			return Integer.parseInt((String)response.get("gameID"));
+			retVal =  (int)((long)response.get("gameID"));
 		}
 		else {
-			return -1;
+			retVal = -1;
 		}
 		
 		//We want to persist the connection here
+		CloseConnection();
+		return retVal;
 	}
 	
 	/**
@@ -238,35 +238,53 @@ public class ServerHandler {
 	 * @return The userID and username of the oppoenent as [userID, username]
 	 */
 	public String[] GetOpponent(int gameID, int userID, int playerNumber){
-		JSONObject json = new JSONObject();
+		String[] retVal = null;
 		
-		json.put("request","getOpponent");
-		json.put("gameID", gameID);
-		json.put("userID", userID);
-		
-		toServer.println(json.toJSONString());
-		
-		//Wait for server response
-		JSONObject response;
-		try {
-			response = (JSONObject)JSONValue.parse(fromServer.readLine());
-		} catch (IOException e) {
-			System.err.println("Error recieving data from server.");
-			e.printStackTrace();
-			return null;
+		int attempts = 0;
+		int MAX_ATTEMPTS = 1000;
+		while (attempts < MAX_ATTEMPTS && retVal == null) {
+			SetupConnection();
+			JSONObject json = new JSONObject();
+			
+			json.put("request","getOpponent");
+			json.put("gameID", gameID);
+			json.put("userID", userID);
+			json.put("playerNumber", playerNumber);
+			
+			toServer.println(json.toJSONString());
+			
+			//Wait for server response
+			JSONObject response;
+			try {
+				response = (JSONObject)JSONValue.parse(fromServer.readLine());
+			} catch (IOException e) {
+				System.err.println("Error recieving data from server.");
+				e.printStackTrace();
+				CloseConnection();
+				return null;
+			}
+			
+			if(response.get("result").equals("success")) {
+				// Return [userID, username]
+				String[] opponent = {
+						(String)response.get("userID"), //Opponent userID
+						(String)response.get("username"), //Opponent username
+						};
+				retVal = opponent;
+			}
+			else if (response.get("result").equals("waiting")){
+				attempts++;
+				System.out.print(".");
+				CloseConnection();
+				try {
+					TimeUnit.SECONDS.sleep(2);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
-		
-		if(response.get("result").equals("success")) {
-			// Return [userID, username]
-			String[] opponent = {
-					(String)response.get("userID"), //Opponent userID
-					(String)response.get("username"), //Opponent username
-					};
-			return opponent;
-		}
-		else {
-			return null;
-		}
+		return retVal;
 	}
 	
 	/**
@@ -347,6 +365,7 @@ public class ServerHandler {
 	public boolean SendMove(Move m, int userID, int gameID){
 		JSONObject json = new JSONObject();
 		
+		json.put("request", "insertMove");
 		json.put("gameID", gameID);
 		json.put("user", userID);
 		json.put("colFrom", m.colFrom());
@@ -373,32 +392,60 @@ public class ServerHandler {
 			return false;
 	}
 	
-	public Move GetNextMove(){
-		JSONObject response;
-		try {
-			//We're gonna spin here I guess?
-			response = (JSONObject)JSONValue.parse(fromServer.readLine());
-		} catch (IOException e) {
-			System.err.println("Error recieving data from server.");
-			e.printStackTrace();
-			return null;
+	public Move CheckForMove(int gameID, int userID){
+		Move retVal = null;
+		
+		int attempts = 0;
+		int MAX_ATTEMPTS = 1000;
+		while (attempts < MAX_ATTEMPTS && retVal == null) {
+			SetupConnection();
+			
+			JSONObject json = new JSONObject();
+			
+			json.put("request", "checkForMove");
+			json.put("gameID", gameID);
+			json.put("user", userID);
+			
+			toServer.println(json.toJSONString());
+		
+			JSONObject response;
+			try {
+				response = (JSONObject)JSONValue.parse(fromServer.readLine());
+			} catch (IOException e) {
+				System.err.println("Error recieving data from server.");
+				e.printStackTrace();
+				CloseConnection();
+				return null;
+			}
+			
+			if (response.get("result").equals("success")){
+				int[] from = {
+				              Integer.parseInt((String)response.get("colFrom")),
+				              Integer.parseInt((String)response.get("rowFrom"))
+				};
+				int[] to = {
+			              Integer.parseInt((String)response.get("colTo")),
+			              Integer.parseInt((String)response.get("rowTo"))
+				};
+				
+				Move m = new Move(from,to);
+				retVal = m;
+			}
+			else if (response.get("result").equals("waiting")){
+				attempts++;
+				System.out.print(".");
+				CloseConnection();
+				try {
+					TimeUnit.SECONDS.sleep(2);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 		
-		if (response.get("result").equals("success")){
-			int[] from = {
-			              Integer.parseInt((String)response.get("colFrom")),
-			              Integer.parseInt((String)response.get("rowFrom"))
-			};
-			int[] to = {
-		              Integer.parseInt((String)response.get("colTo")),
-		              Integer.parseInt((String)response.get("rowTo"))
-			};
-			
-			Move m = new Move(from,to);
-			return m;
-		}
-		else
-			return null;
+		CloseConnection();
+		return retVal;
 	}
 	
 	public boolean EndGame() {
