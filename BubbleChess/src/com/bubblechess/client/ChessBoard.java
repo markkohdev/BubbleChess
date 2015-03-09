@@ -407,7 +407,7 @@ public class ChessBoard implements Board, Cloneable {
 	 * @param color Color.WHITE or Color.BLACK
 	 * @return True if the player's king is attacked, False otherwise
 	 */
-	protected boolean inCheck(Color color){
+	public boolean inCheck(Color color){
 		ArrayList<Move> moves = new ArrayList<Move>();
 		ArrayList<Move> validAttacks = new ArrayList<Move>();
 		int[] kingLoc = new int[2];

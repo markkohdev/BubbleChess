@@ -2,6 +2,8 @@ package com.bubblechess.client;
 
 import java.util.ArrayList;
 
+import com.bubblechess.client.BoardPiece.Color;
+
 public interface Board {
 
 	public enum Player {PLAYER1, PLAYER2};
@@ -85,5 +87,7 @@ public interface Board {
 	 * Update the board's state
 	 */
 	public void updateState();
+	
+	public boolean inCheck(Color color);
 	
 }
