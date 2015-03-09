@@ -321,7 +321,7 @@ public class ChessDB {
 			
 			String sql = "";
 			if(playerNumber == 1) {
-				sql = "UPDATE GAMES SET USER1ID='"+userId+"', GAMESTATUS='0'" +
+				sql = "UPDATE GAMES SET USER1ID='"+userId+"', GAMESTATUS='0'," +
 						 	 "WHERE ID = '"+gameId+"';";
 			}
 			else if(playerNumber == 2) {

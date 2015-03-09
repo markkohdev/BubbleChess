@@ -134,29 +134,30 @@ public class RequestHandler extends Thread {
 		        case "checkLogin":
             		String userName = (String) obj.get("username");
             		password = (String) obj.get("password");
-            		
-            		cdb = new ChessDB();
-            		
+
             		//get userid for login
+            		cdb = new ChessDB();
             		int loginUserId = cdb.getUser(userName);
             		
-            		//Method to check if user password is right
-            		boolean loginStatus = cdb.checkLogin(loginUserId, password); 		
-            		
-            		if(loginStatus == true) {
+            		if(loginUserId == -1) {
             			json = new JSONObject();
-                		json.put("result","success");
-                		json.put("userID", loginUserId);
-                		toClient.println(json.toJSONString());
+                		json.put("result","user not found");
             		}
-            		// TODO: Success and user ID
-            		// TODO: Password incorrect result="incorrect password"
-            		// TODO: User not found 'user not found'
             		else {
-            			json = new JSONObject();
-                		json.put("result","failure");
-                		toClient.println(json.toJSONString());
+            			//Method to check if user password is right
+                		boolean loginStatus = cdb.checkLogin(loginUserId, password); 		
+                		
+                		if(loginStatus == true) {
+                			json = new JSONObject();
+                    		json.put("result","success");
+                    		json.put("userID", loginUserId);
+                		}
+                		else {
+                			json = new JSONObject();
+                    		json.put("result","incorrect password");
+                		}
             		}
+            		toClient.println(json.toJSONString());
             	break;
             	case "createGame":
             		int newId = _server.getGames().size() + 1;
