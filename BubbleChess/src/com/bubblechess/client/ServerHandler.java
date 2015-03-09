@@ -465,11 +465,5 @@ public class ServerHandler {
 		return false;
 	}
 	
-	public void TestConnection() {
-		String hello = "Hello, world.";
-		
-		toServer.println(hello);
-	}
-	
 	
 }
