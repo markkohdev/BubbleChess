@@ -7,12 +7,11 @@ import com.bubblechess.client.ChessPiece;
 import com.bubblechess.client.Move;
 
 public class King extends ChessPiece {
-	
-	protected int[][] dirs = {N,NE,E,SE,S,SW,W,NW};
-	
+		
 	public King(Color col) {
 		color = col;
 		hasMoved = false;
+		dirs = new int[][]{N,NE,E,SE,S,SW,W,NW};
 	}
 	
 	@Override

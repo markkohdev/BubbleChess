@@ -21,15 +21,35 @@ public class ServerHandler {
 		this.hostname = hostname;
 		this.port = port;
 		
-		try {
-			socket = new Socket(hostname,port);
-			toServer = new PrintWriter(socket.getOutputStream(),true);
-			fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		//SetupConnection();
+	}
+	
+	protected void SetupConnection() {
+		if (socket == null) {
+			try {
+				socket = new Socket(hostname,port);
+				toServer = new PrintWriter(socket.getOutputStream(),true);
+				fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			}
+			catch(UnknownHostException e){
+				System.out.println("Error: Not connected to server.  Unknown host.");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		catch(UnknownHostException e){
-			System.out.println("Error: Not connected to server.  Unknown host.");
-		} catch (IOException e) {
-			e.printStackTrace();
+	}
+	
+	protected void CloseConnection() {
+		if (socket != null) {
+			try {
+				socket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				System.err.println("Unable to close connection.");
+			}
+			socket = null;
+			toServer = null;
+			fromServer = null;
 		}
 	}
 	
@@ -42,6 +62,9 @@ public class ServerHandler {
 	 * invalid password, -2 if username not found, -3 unexpected
 	 */
 	public int Login(String username, String password){
+		SetupConnection();
+		int retVal = 0;
+		
 		JSONObject json = new JSONObject();
 		
 		json.put("request","checkLogin");
@@ -55,25 +78,33 @@ public class ServerHandler {
 		try {
 			response = (JSONObject)JSONValue.parse(fromServer.readLine());
 		} catch (IOException e) {
-			System.err.println("Error recieving data from server.");
+			System.out.println("Error recieving data from server.");
 			e.printStackTrace();
+			
+			CloseConnection();
 			return -3;
 		}
 		
+		System.out.println(response);
+		
 		if(response.get("result").equals("success")) {
-			return Integer.parseInt((String)response.get("userID"));
+		
+			retVal = (int)((long)response.get("userID"));
 		}
 		else if(response.get("result").equals("incorrect password")) {
 			//Incorrect password
-			return -1;
+			retVal = -1;
 		}
 		else if (response.get("result").equals("user not found")) {
 			// User not found
-			return -2;
+			retVal = -2;
 		}
 		else {
-			return -3;
+			retVal = -3;
 		}
+		
+		CloseConnection();
+		return retVal;
 	}
 	
 	/**
@@ -81,6 +112,9 @@ public class ServerHandler {
 	 * @return The temporary userID
 	 */
 	public int ContinueAsGuest(){
+		SetupConnection();
+		int retVal = 0;
+		
 		JSONObject json = new JSONObject();
 		
 		json.put("request","continueAsGuest");
@@ -94,15 +128,20 @@ public class ServerHandler {
 		} catch (IOException e) {
 			System.err.println("Error recieving data from server.");
 			e.printStackTrace();
+			
+			CloseConnection();
 			return -1;
 		}
 		
 		if(response.get("result").equals("success")) {
-			return Integer.parseInt((String)response.get("userID"));
+			retVal = Integer.parseInt((String)response.get("userID"));
 		}
 		else {
-			return -1;
+			retVal = -1;
 		}
+		
+		CloseConnection();
+		return retVal;
 	}
 	
 	/**
@@ -112,9 +151,14 @@ public class ServerHandler {
 	 * @return userID if success, -1 if username exists, -2 unexpected
 	 */
 	public int Register(String username, String password) {
+		SetupConnection();
+		int retVal = 0;
+		
 		JSONObject json = new JSONObject();
 		
 		json.put("request","createUser");
+		json.put("username",username);
+		json.put("password",password);
 		
 		toServer.println(json.toJSONString());
 		
@@ -125,18 +169,23 @@ public class ServerHandler {
 		} catch (IOException e) {
 			System.err.println("Error recieving data from server.");
 			e.printStackTrace();
+			
+			CloseConnection();
 			return -2;
 		}
 		
 		if(response.get("result").equals("success")) {
-			return Integer.parseInt((String)response.get("userID"));
+			retVal = (int)((long)response.get("userID"));
 		}
 		else if (response.get("result").equals("username already exists")) {
-			return -1;
+			retVal = -1;
 		}
 		else {
-			return -2;
+			retVal = -2;
 		}
+		
+		CloseConnection();
+		return retVal;
 	}
 	
 	/**
@@ -146,6 +195,8 @@ public class ServerHandler {
 	 * @return
 	 */
 	public int CreateGame(int userID, int playerNumber) {
+		SetupConnection();
+		
 		JSONObject json = new JSONObject();
 		
 		json.put("request","createGame");
@@ -175,6 +226,8 @@ public class ServerHandler {
 		else {
 			return -1;
 		}
+		
+		//We want to persist the connection here
 	}
 	
 	/**
@@ -346,6 +399,17 @@ public class ServerHandler {
 		}
 		else
 			return null;
+	}
+	
+	public boolean EndGame() {
+		CloseConnection();
+		return false;
+	}
+	
+	public void TestConnection() {
+		String hello = "Hello, world.";
+		
+		toServer.println(hello);
 	}
 	
 	

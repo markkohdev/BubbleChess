@@ -8,11 +8,11 @@ import com.bubblechess.client.Move;
 
 public class Rook extends ChessPiece {
 	
-	protected int[][] dirs = {N,E,S,W};
-	
 	public Rook(Color col) {
 		color = col;
 		hasMoved = false;
+		
+		dirs = new int[][]{N,E,S,W};
 	}
 
 	@Override
