@@ -184,6 +184,19 @@ public class GUIBridge {
 		return server.GetJoinableGames();
 	}
 	
+	/**
+	 * Get the player number.
+	 * @return 1 if player 1, 2 if player 2, 0 if neither
+	 */
+	public int GetPlayerNumber() {
+		if (game.getUser1() != null && game.getUser1() == player)
+			return 1;
+		else if (game.getUser2() != null && game.getUser2() == player)
+			return 2;
+		else
+			return 0;
+	}
+	
 	
 	/*************************************************************************
 	 * In-Game methods
@@ -217,6 +230,11 @@ public class GUIBridge {
 		return game.getMoves(col, row);
 	}
 	
+	/**
+	 * Check if a move is valid, and if it is then send it to the server.
+	 * @param m
+	 * @return True if move is valid and submitted, false otherwise
+	 */
 	public boolean PlayMove(Move m) {
 		boolean valid = game.playMove(m);
 		
@@ -228,6 +246,25 @@ public class GUIBridge {
 	}
 	
 	//TODO: Implement waitfornextmove
+	
+	/**
+	 * Whether or not the game is in an End game state.
+	 * @return True if EndState, False otherwise.
+	 */
+	public boolean EndState() {
+		return game.endState();
+	}
+	
+	
+	/**
+	 * Check if either player is in check
+	 * @return 0 if neither player in check, 1 if white in check, 2 if black in
+	 * check
+	 */
+	public int InCheck() {
+		return game.InCheck();
+	}
+	
 	
 	public void TestServer(){
 		String testuser = "testuser";
