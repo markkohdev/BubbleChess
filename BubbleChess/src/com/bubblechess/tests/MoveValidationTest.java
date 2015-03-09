@@ -1,12 +1,16 @@
 package com.bubblechess.tests;
 
+import java.util.ArrayList;
+
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.bubblechess.client.Board;
 import com.bubblechess.client.ChessBoard;
 import com.bubblechess.client.Game;
+import com.bubblechess.client.Move;
 import com.bubblechess.client.User;
 
 public class MoveValidationTest {
@@ -38,7 +42,15 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void kingInCheck(){
-		//TODO
+		String fen = "K-------/--------/--------/-q------/--------/--------/--------/-------k w KQkq - 0 1";
+		chessboard = new ChessBoard(fen);
+		
+		ArrayList<Move> legalMoves = new ArrayList<Move>();
+		legalMoves.add(new Move(new int[]{0,7}, new int[]{0,6}));
+		
+		ArrayList<Move> generatedMoves = chessboard.getMoves(0,7);
+		
+		Assert.assertEquals(legalMoves, generatedMoves);
 	}
 	
 	/**

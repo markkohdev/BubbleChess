@@ -88,13 +88,27 @@ public class GamePlayTest {
 	}
 	
 	/**
+	 * Load starting position with alternate constructor
+	 */
+	@Test
+	public void loadGame(){
+		String fen = "rnbqkbnr/pppppppp/--------/--------/--------/--------/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+		chessboard = new ChessBoard(fen);
+			
+		//TODO Assert something
+	}
+	
+	/**
 	 * Test that the game is automatically ended in the case of insufficient
 	 * mating material
 	 * Test #12 - 1.4.3.4
 	 */
 	@Test
 	public void insufficientMaterial(){
-		//TODO
+		String fen = "--------/---K----/--------/--n-----/--------/----k---/--------/-------- w KQkq - 0 1";
+		chessboard = new ChessBoard(fen);
+		
+		Assert.assertEquals("Draw", chessboard.getState());
 	}
 	
 	/**
