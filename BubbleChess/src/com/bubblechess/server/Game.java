@@ -15,6 +15,7 @@ public class Game {
 	
 	private int _gameId;
 	
+	private int _currentUser = 1;
 	/**
 	 * Constructor
 	 * @param gameId
@@ -45,6 +46,45 @@ public class Game {
 		}
 	}
 	
+	/**
+	 * Method used to get the other user id for joining
+	 * @return
+	 */
+	public int getOtherUser() {
+		if(_user1Id == -1) {
+			return _user2Id;
+		}
+		else if (_user2Id == -1) {
+			return _user1Id;
+		}
+		else {
+			return -1;
+		}
+	}
+	/**
+	 * Returns the current player number
+	 * @return
+	 */
+	public int getCurrentPlayer() {
+		return _currentUser;
+	}
+	
+	/**
+	 * Method to get player number based off ID
+	 * @param userId
+	 * @return
+	 */
+	public int getPlayerNumber(int userId) {
+		if(userId == _user1Id) {
+			return 1;
+		}
+		else if(userId == _user2Id) {
+			return 2;
+		}
+		else {
+			return -1;
+		}
+	}
 	//Setters
 	/**
 	 * Sets a user to a socket and id in the thread
@@ -132,6 +172,13 @@ public class Game {
     		oppJson.put("move", move);
     		out = new DataOutputStream(client.getOutputStream());
     		out.writeUTF(oppJson.toJSONString());
+		}
+		
+		if(_currentUser == 1) {
+			_currentUser = 2;
+		}
+		else {
+			_currentUser = 1;
 		}
 	}
 	

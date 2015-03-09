@@ -205,7 +205,7 @@ public class GameBoard extends JPanel {
 		{
 			BoardCell currentPawnPanel = squares[i][6];
 			currentPawnPanel.addChessPiece(unicode[5], c2);
-			currentPawnPanel.changeListenerState(true, pieceListener);
+			//currentPawnPanel.changeListenerState(true, pieceListener);
 			squares[i][6] = currentPawnPanel;
 			
 			String pieceUni;
@@ -233,13 +233,17 @@ public class GameBoard extends JPanel {
 			
 			BoardCell currentPiecePanel = squares[i][7];
 			currentPiecePanel.addChessPiece(pieceUni, c2);
-			currentPiecePanel.changeListenerState(true, pieceListener);
+			// currentPiecePanel.changeListenerState(true, pieceListener);
 			squares[i][7] = currentPiecePanel;
 			
 			
 		}
 		
 		
+		
+	}
+	
+	public void startListeners() {
 		
 	}
 	
