@@ -45,7 +45,7 @@ public class GamePlayTest {
 	 * Test that the board automatically recognizes checkmate
 	 * Test #10 - 1.4.3.2
 	 */
-	/*@Test
+	@Test
 	public void recognizeCheckmate() {
 		//Fool's Mate!
 		game.playMove(new Move(new int[]{5,1}, new int[]{5,2}));
@@ -55,7 +55,7 @@ public class GamePlayTest {
 		
 		String result = game.getBoard().getState();
 		Assert.assertEquals("Checkmate", result);
-	}*/
+	}
 	
 	/**
 	 * Test that the board automatically recognizes stalemate
@@ -81,10 +81,29 @@ public class GamePlayTest {
 		game.playMove(new Move(new int[]{3,2}, new int[]{7,6}));
 		game.playMove(new Move(new int[]{1,7}, new int[]{2,7}));
 		game.playMove(new Move(new int[]{5,6}, new int[]{6,5}));
-		game.playMove(new Move(new int[]{2,7}, new int[]{4,6}));
+		game.playMove(new Move(new int[]{2,7}, new int[]{4,5}));
 		
 		String result = game.getBoard().getState();
 		Assert.assertEquals(result, "Stalemate");
+	}
+	
+	/**
+	 * Test that the game is automatically ended in the case of insufficient
+	 * mating material
+	 * Test #12 - 1.4.3.4
+	 */
+	@Test
+	public void insufficientMaterial(){
+		//TODO
+	}
+	
+	/**
+	 * Test that the game is automatically ended in the case of three fold repetition 
+	 * Test #13 - 1.4.3.5
+	 */
+	@Test
+	public void threeFoldRepetition(){
+		//TODO
 	}
 	
 }
