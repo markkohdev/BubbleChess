@@ -21,9 +21,9 @@ public class ChessDB {
 		 Connection c = null;
 		 try {
 		   	Class.forName("org.sqlite.JDBC");
-		    c = DriverManager.getConnection("jdbc:sqlite:test.db");
-		    c.setAutoCommit(false);
-		    System.out.println("Opened database successfully");
+		    c = DriverManager.getConnection("jdbc:sqlite:Chess.db");
+		    c.setAutoCommit(true);
+		    //System.out.println("Opened database successfully");
 		} catch (ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block
 			System.out.println("Database failed to open :(");
@@ -39,9 +39,7 @@ public class ChessDB {
 		Connection c = dbConnect();
 		Statement stmt = null;
 	    try {
-	    	Class.forName("org.sqlite.JDBC");
-	    	c = DriverManager.getConnection("jdbc:sqlite:test.db");
-	    	System.out.println("Opened database successfully");
+	    	c = dbConnect();
 
 	    	//Users Table
 	    	stmt = c.createStatement();
@@ -64,13 +62,13 @@ public class ChessDB {
 	    			"ROWTO           		INT   NOT NULL)";
 	    	stmt.executeUpdate(sql);
 	    	stmt.close();
-	    	
+
 	    	c.close();
 	    } catch ( Exception e ) {
 	    	System.err.println( e.getClass().getName() + ": " + e.getMessage() );
 	    	System.exit(0);
 	    }
-	    System.out.println("Tables created successfully");
+	    //System.out.println("Tables created successfully");
 	}
 	
 	//User information
@@ -85,7 +83,7 @@ public class ChessDB {
 		try {
 			Statement stmt = c.createStatement();
 			ResultSet rs;
-			rs = stmt.executeQuery( "SELECT * FROM USERS WHERE USERNAME = "+userName+";");
+			rs = stmt.executeQuery( "SELECT * FROM USERS WHERE USERNAME = '"+userName+"'");
 		    while (rs.next()) {
 		    	userId = rs.getInt("ID");
 		    }
@@ -110,7 +108,8 @@ public class ChessDB {
 		try {
 			stmt = c.createStatement();
 			String sql = "INSERT INTO USERS (USERNAME, PASSWORD) " +
-						 "VALUES ("+userName+", "+password+");"; 
+						 "VALUES ('"+userName+"', '"+password+"');";
+			System.out.println(sql);
 			stmt.executeUpdate(sql);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -129,10 +128,10 @@ public class ChessDB {
 		try {
 			Statement stmt = c.createStatement();
 			ResultSet rs;
-			rs = stmt.executeQuery( "SELECT * FROM USERS WHERE USERID = "+userId+";");
+			rs = stmt.executeQuery( "SELECT * FROM USERS WHERE ID = '"+userId+"';");
 		   
 			while ( rs.next() ) {
-				String dbUserName = rs.getString("USERID");
+				String dbUserName = rs.getString("ID");
 		    	String dbPass = rs.getString("PASSWORD");
 		    	
 		    	if(password.equals(dbPass)) {
