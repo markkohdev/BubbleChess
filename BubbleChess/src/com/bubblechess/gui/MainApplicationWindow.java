@@ -1,5 +1,6 @@
 package com.bubblechess.gui;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -8,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.bubblechess.GUIBridge;
+import com.bubblechess.client.ServerHandler;
 
 public class MainApplicationWindow {
 
@@ -18,11 +20,19 @@ public class MainApplicationWindow {
 	/**
 	 * Create the application.
 	 */
-	public MainApplicationWindow(GUIBridge b) {
-		this.bridge = b;
+	// public MainApplicationWindow(GUIBridge b) {
+	public MainApplicationWindow() {
+		ServerHandler server = new ServerHandler("144.118.48.18",8080);		
+		GUIBridge b = new GUIBridge(server);
+		// this.bridge = b;
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		frame.setBounds(0, 0, 1024, 768);
+		//frame.setBounds(100, 100, 450, 300);
+		//frame.setPreferredSize(new Dimension(1024,768));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		LoginPanel lP = new LoginPanel();
+		frame.setContentPane(lP);
+		frame.setVisible(true);
 	}
 	
 	/**
@@ -81,12 +91,12 @@ public class MainApplicationWindow {
 
 			public void propertyChange(PropertyChangeEvent evt) { 
 				int newStateValue = (int) evt.getNewValue();
+				LoginPanel lP = (LoginPanel) evt.getSource();
 				// if value is 1 it will try to login and start main menu if sucess
 				if(newStateValue == 1) {
-					LoginPanel lP = (LoginPanel) evt.getSource();
 					int result = loginFunction(lP);
 					if(result >= 0) { 
-						startMainMenu();
+						startMainMenu(lP);
 						
 					}
 					
@@ -101,7 +111,7 @@ public class MainApplicationWindow {
 					int result = continueAsGuest();
 					
 					if(result >= 0) {
-						startMainMenu();
+						startMainMenu(lP);
 					}
 					
 				}
@@ -143,8 +153,10 @@ public class MainApplicationWindow {
 	}
 	
 	
-	public void startMainMenu() {
-		
+	public void startMainMenu(LoginPanel lP) {
+		MainMenuPanel mainMenu = new MainMenuPanel();
+		this.frame.remove(lP);
+		this.frame.add(mainMenu);
 		
 	}
 	

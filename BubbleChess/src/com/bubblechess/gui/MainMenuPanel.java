@@ -20,9 +20,9 @@ public class MainMenuPanel extends JPanel {
 
 	/**
 	 * Create the panel.
-	 * @throws IOException 
+	 * 
 	 */
-	public MainMenuPanel() throws IOException {
+	public MainMenuPanel() {
 		setBackground(Color.LIGHT_GRAY);
 		setPreferredSize(new Dimension(1024,768));
 		setLayout(null);
