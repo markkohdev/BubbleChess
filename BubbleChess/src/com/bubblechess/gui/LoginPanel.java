@@ -108,7 +108,7 @@ public class LoginPanel extends JPanel {
 	}
 	
 	
-	
+	/*
 	@SuppressWarnings("deprecation")
 	public int loginFunction() {
 		
@@ -139,5 +139,5 @@ public class LoginPanel extends JPanel {
 			// change error label unknown result code
 		}
 		
-	}
+	}*/
 }
