@@ -9,7 +9,7 @@ import org.json.simple.*;
 
 public class BubbleChessDriver {
 	
-
+	
 	public static void main(String[] args){
 		//Run all the things here		
 		
@@ -23,6 +23,8 @@ public class BubbleChessDriver {
 
 		MainApplicationWindow mainAppWindow = new MainApplicationWindow(gameScreen);
 		// LoginPanel loginScreen = new LoginPanel(GUIBridge);
+		
+		
 	}
 	
 	
