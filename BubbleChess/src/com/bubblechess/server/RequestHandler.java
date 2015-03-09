@@ -164,20 +164,17 @@ public class RequestHandler extends Thread {
             		toClient.println(json.toJSONString());
             	break;
             	case "createGame":
-            		int newId = _server.getGames().size() + 1;
 
             		long userId = (long) obj.get("userID");
-            		
             		int playerNumber = (int)((long) obj.get("playerNumber"));
             		
-        			Game game = new Game(newId, playerNumber, (int) userId);
+            		cdb = new ChessDB();
+            		int newId = cdb.insertGame((int) userId, playerNumber);
             		
+        			Game game = new Game(newId, playerNumber, (int) userId);
+
             		_server.addGameThread(newId, game);
             		_server.addJoinableGame(newId);
-            		
-            		cdb = new ChessDB();
-            		cdb.insertGame((int) userId, playerNumber);
-            		
             		//Return gameid
             		json = new JSONObject();
             		json.put("result", "success");
@@ -211,25 +208,6 @@ public class RequestHandler extends Thread {
                 		toClient.println(json.toJSONString());
             		}
             	break;
-            	case "joinGame":
-            		userId = (long) obj.get("userID");
-            		gameId = (int)((long) obj.get("gameID"));
-            		
-            		game = _server.getGame((int) gameId);
-            		
-            		if(game.joinGame((int) userId, _clientSocket)) {
-            			_server.removeJoinableGame(gameId);
-            			
-            			json = new JSONObject();
-            			json.put("result","success");
-            			toClient.println(json.toJSONString());  
-            		}
-            		else {
-            			json = new JSONObject();
-            			json.put("result","failure");
-            			toClient.println(json.toJSONString());  
-            		}
-            	break;
             	case "getJoinableGames":
             		ArrayList<Integer> joinableGames = _server.getJoinableGames();
             		
@@ -243,7 +221,37 @@ public class RequestHandler extends Thread {
             		}
             		json.put("games", games);
             		
+            		toClient.println(json.toJSONString());
             		//TODO: Add failure method
+            	break;
+            	case "joinGame":
+            		userId = (long) obj.get("userID");
+            		gameId = (int)((long) obj.get("gameID"));
+            		
+            		game = _server.getGame((int) gameId);
+            		
+            		cdb = new ChessDB();
+            		
+            		int otherPlayer = game.getOtherUser();
+            		String otherUsername = cdb.getUsername(otherPlayer);
+            		
+            		if(game.joinGame((int) userId, _clientSocket)) {
+            			playerNumber = game.getPlayerNumber((int) userId);
+            			
+            			_server.removeJoinableGame(gameId);
+            			
+            			json = new JSONObject();
+            			json.put("result", "success");
+            			json.put("userID", otherPlayer);
+            			json.put("username", otherUsername);
+            			json.put("playerNumber", playerNumber);
+            			toClient.println(json.toJSONString());  
+            		}
+            		else {
+            			json = new JSONObject();
+            			json.put("result","game does not exist");
+            			toClient.println(json.toJSONString());  
+            		}
             	break;
             	case "insertMove":
             		//Need to cast from long to int
@@ -264,6 +272,23 @@ public class RequestHandler extends Thread {
             		//Talk to gameThread
             		game = _server.getGame(gameId);
             		game.insertMove((int) userId, (int) colFrom, (int) rowFrom, (int) colTo, (int) rowTo, _clientSocket);
+            	break;
+            	case "checkForMove":
+            		gameId = (int)((long) obj.get("gameID"));
+            		playerNumber = (int)((long) obj.get("playerNumber"));
+            		
+            		json = new JSONObject();
+            		game = _server.getGame(gameId);
+            		
+            		if(game.getCurrentPlayer() == playerNumber) {
+                		json.put("result","success");
+                		// TODO: Get move info as json
+                		//json.put("move", getUserId);
+            		}
+            		else {
+            			json.put("result","waiting");
+            		}
+            		toClient.println(json.toJSONString());
             	break;
             	case "getAllMoves":
             		gameId = (int)((long) obj.get("gameID"));

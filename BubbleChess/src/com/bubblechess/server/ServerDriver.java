@@ -5,13 +5,17 @@ import java.net.*;
 import java.util.*;
 
 public class ServerDriver {
+	
+	protected static Socket _client;
+	protected static ServerSocket _server;
+	protected static RequestHandler _rh;
 	/**
 	 * Main method to run the server on port 430
 	 * @param args
 	 * @throws IOException
 	 */
 	public static void main (String[] args) throws IOException{
-		ServerSocket server = new ServerSocket(8080);
+		_server = new ServerSocket(8080);
 		
 		ChessDB cdb = new ChessDB();
 		cdb.createTables();
@@ -20,10 +24,24 @@ public class ServerDriver {
 		ServerInstance si = new ServerInstance();
 		
 		while (true) {
-			Socket client = server.accept();
+			_client = _server.accept();
 		      
-			RequestHandler rh = new RequestHandler(client, si);
-			rh.start();
+			_rh = new RequestHandler(_client, si);
+			_rh.start();
+		}
+	}
+	
+	/**
+	 * Closes all of the open connections in the server
+	 */
+	public void closeConnections() {
+		_rh.interrupt();
+		try {
+			_client.close();
+			_server.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }
