@@ -7,10 +7,12 @@ import org.json.simple.JSONObject;
 
 public class ChessDB {
 	
+	private boolean _isTest = false;
 	/**
 	 * Constructor
 	 */
-	public ChessDB() {
+	public ChessDB(boolean isTest) {
+		_isTest = isTest;
 	}
 	
 	/**
@@ -21,7 +23,17 @@ public class ChessDB {
 		 Connection c = null;
 		 try {
 		   	Class.forName("org.sqlite.JDBC");
-		    c = DriverManager.getConnection("jdbc:sqlite:Chess.db");
+		    
+		   	String fileName = "";
+		   	
+		   	if(_isTest) {
+		   		fileName = "test";
+		   	}
+		   	else {
+		   		fileName = "Chess";
+		   	}
+		   	
+		   	c = DriverManager.getConnection("jdbc:sqlite:"+fileName+".db");
 		    c.setAutoCommit(true);
 		    //System.out.println("Opened database successfully");
 		} catch (ClassNotFoundException | SQLException e) {
@@ -242,7 +254,7 @@ public class ChessDB {
 	 * @param colTo
 	 * @param rowTo
 	 */
-	public void insertMove(int userId, int gameId, int colFrom, int rowFrom, int colTo, int rowTo)
+	public boolean insertMove(int userId, int gameId, int colFrom, int rowFrom, int colTo, int rowTo)
 	{
 		Connection c = dbConnect();
 		Statement stmt = null;
@@ -253,9 +265,11 @@ public class ChessDB {
 			stmt.executeUpdate(sql);
 			stmt.close();
 			c.close();
+			return true;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
 		}
 	   
 	}
