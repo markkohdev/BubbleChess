@@ -253,7 +253,7 @@ public class GUIBridge {
 			return null;
 		
 		//We may wait here
-		Move next = server.CheckForMove(game.getID(),player.getID());
+		Move next = server.CheckForMove(game.getID(),GetPlayerNumber());
 		
 		return next;
 	}
@@ -285,14 +285,17 @@ public class GUIBridge {
 		
 		System.out.println("Login code: " + this.Login(testuser, testpass));
 		
-		//System.out.println("GameID: " + this.CreateGame(1));
+		System.out.println("GameID: " + this.CreateGame(1));
 		
-		ArrayList<Integer> games = this.GetJoinableGames();
+		/*ArrayList<Integer> games = this.GetJoinableGames();
 		for(int gameid : games){
 			System.out.println("Joinable: " + gameid);
-		}
+		}*/
 		
-		System.out.println("Game Join: " + this.JoinGame(games.get(0)));
+		//System.out.println("Game Join: " + this.JoinGame(games.get(0)));
+		
+		this.PlayMove(new Move(new int[]{0,0},new int[]{0,1}));
+		System.out.println(this.WaitForNextMove());
 	}
 
 }

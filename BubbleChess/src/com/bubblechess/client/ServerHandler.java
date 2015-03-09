@@ -404,7 +404,7 @@ public class ServerHandler {
 			return false;
 	}
 	
-	public Move CheckForMove(int gameID, int userID){
+	public Move CheckForMove(int gameID, int playerNumber){
 		Move retVal = null;
 		
 		int attempts = 0;
@@ -416,7 +416,7 @@ public class ServerHandler {
 			
 			json.put("request", "checkForMove");
 			json.put("gameID", gameID);
-			json.put("user", userID);
+			json.put("playerNumber", playerNumber);
 			
 			toServer.println(json.toJSONString());
 		
