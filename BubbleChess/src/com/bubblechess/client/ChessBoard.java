@@ -415,27 +415,26 @@ public class ChessBoard implements Board, Cloneable {
 		//Cycle through the board
 		for (int col=0;col<boardWidth;col++){
 			for (int row=0;row<boardHeight;row++){
-				ChessPiece piece = (ChessPiece)this.getPiece(col, row);
-				if (piece == null){
-					break;
-				}
 				
-				//Get attacking moves
-				if (piece.color != color){
-					//Don't consider special moves (castling, move pawn forward 2)
-					//because they don't attack destination squares
-					moves = this.getPiece(col, row).getMoves(col, row);
-					for (Move m : moves){
-						if (validAttack(m)){
-							validAttacks.add(m);
+				ChessPiece piece = (ChessPiece)this.getPiece(col, row);
+				if (piece != null){
+					//Get attacking moves
+					if (piece.color != color){
+						//Don't consider special moves (castling, move pawn forward 2)
+						//because they don't attack destination squares
+						moves = this.getPiece(col, row).getMoves(col, row);
+						for (Move m : moves){
+							if (validAttack(m)){
+								validAttacks.add(m);
+							}
 						}
 					}
-				}
-				
-				//Find the king
-				if (piece instanceof King && piece.color == color){
-					kingLoc[0] = col;
-					kingLoc[1] = row;
+					
+					//Find the king
+					if (piece instanceof King && piece.color == color){
+						kingLoc[0] = col;
+						kingLoc[1] = row;
+					}
 				}
 			}
 		}
