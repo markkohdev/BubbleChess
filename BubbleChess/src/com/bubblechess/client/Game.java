@@ -99,7 +99,7 @@ public class Game {
 	}
 	
 	public ArrayList<Move> getMoves(int col, int row){
-		return board.getMoves(row, col);
+		return board.getMoves(col, row);
 	}
 
 

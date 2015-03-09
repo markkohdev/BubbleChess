@@ -20,19 +20,25 @@ public interface Board {
 	 */
 	public int getHeight();
 	
+	public boolean applyMove(Move m);
+	
 	/**
 	 * Apply the passed move to the game board
 	 * @param m The Move to be applied
+	 * @param validate TODO
 	 * @return True if move was successful, False if move invalid
 	 */
-	public boolean applyMove(Move m);
+	public boolean applyMove(Move m, boolean validate);
+	
+	public Board applyMoveCloning(Move m);
 	
 	/**
 	 * Apply the passed move to a clone of the game board
 	 * @param m
+	 * @param validate TODO
 	 * @return
 	 */
-	public Board applyMoveCloning(Move m);
+	public Board applyMoveCloning(Move m, boolean validate);
 	
 	/**
 	 * Get a deep copy of the current board
@@ -46,7 +52,7 @@ public interface Board {
 	 * @param y
 	 * @return A list of moves
 	 */
-	public ArrayList<Move> getMoves(int row, int col);
+	public ArrayList<Move> getMoves(int col, int row);
 	
 	/**
 	 * Get all moves for a given piece in a board
@@ -54,7 +60,7 @@ public interface Board {
 	 * @param y
 	 * @return A list of moves
 	 */
-	public ArrayList<Move> getMoves(char row, char col);
+	public ArrayList<Move> getMoves(char col, char row);
 	
 
 	/**

@@ -14,6 +14,10 @@ public class BubbleChessDriver {
 		ServerHandler server = new ServerHandler("tux.cs.drexel.edu",8080);
 		
 		//Spawn GUI here.  Pass it into GUIBridge.  Let it roll from there?
+		
+		//Eric's stuff
+		//GUIBridge bridge = new GUIBridge();
+		//bridge.TestGame();
 	}
 	
 	
