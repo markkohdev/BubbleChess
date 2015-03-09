@@ -54,22 +54,22 @@ public class ChessDB {
 	    	stmt = c.createStatement();
 	    	sql = "CREATE TABLE IF NOT EXISTS MOVES " +
 	    			"(ID INTEGER PRIMARY 	KEY   	AUTOINCREMENT," +
-	    			"GAMEID           		INT   NOT NULL," + 
-	    			"USERID           		INT   NOT NULL," + 
-	    			"COLFROM           		INT   NOT NULL," + 
-	    			"ROWFROM           		INT   NOT NULL," + 
-	    			"COLTO           		INT   NOT NULL," + 
-	    			"ROWTO           		INT   NOT NULL)";
+	    			"GAMEID           		INTEGER   NOT NULL," + 
+	    			"USERID           		INTEGER   NOT NULL," + 
+	    			"COLFROM           		INTEGER   NOT NULL," + 
+	    			"ROWFROM           		INTEGER   NOT NULL," + 
+	    			"COLTO           		INTEGER   NOT NULL," + 
+	    			"ROWTO           		INTEGER   NOT NULL)";
 	    	stmt.executeUpdate(sql);
 	    	stmt.close();
 	    	
 	    	//Games Table
 	    	stmt = c.createStatement();
 	    	sql = "CREATE TABLE IF NOT EXISTS GAMES " +
-	    			"(ID INTEGER PRIMARY 	KEY   	AUTOINCREMENT," +
-	    			"USER1ID           		INT   NOT NULL," + 
-	    			"USER2ID           		INT   NOT NULL," + 
-	    			"GAMESTATUS           	INT   NOT NULL)";
+	    			"(ID INTEGER PRIMARY KEY	   	AUTOINCREMENT," +
+	    			"USER1ID           		INTEGER," + 
+	    			"USER2ID           		INTEGER," + 
+	    			"GAMESTATUS           	INTEGER   	NOT NULL)";
 	    	stmt.executeUpdate(sql);
 	    	stmt.close();
 	    	
@@ -174,6 +174,9 @@ public class ChessDB {
 		    	String dbPass = rs.getString("PASSWORD");
 		    	
 		    	if(password.equals(dbPass)) {
+		    		rs.close();
+				    stmt.close();
+				    c.close();
 		    		return true;
 		    	}
 		    }
@@ -258,6 +261,11 @@ public class ChessDB {
 	}
 	
 	//Game Information
+	/**
+	 * Will return a game object as a JSON String
+	 * @param gameId
+	 * @return
+	 */
 	public String getGame(int gameId) {
 		Connection c = dbConnect();
 		
@@ -288,10 +296,17 @@ public class ChessDB {
 		}
 		return game;
 	}
-	public void insertGame(int userId, int playerNumber)
+	
+	/**
+	 * Inserts a game into the database
+	 * @param userId
+	 * @param playerNumber
+	 */
+	public int insertGame(int userId, int playerNumber)
 	{
 		Connection c = dbConnect();
 		Statement stmt = null;
+		int gameId = -1;
 		try {
 			stmt = c.createStatement();
 			
@@ -304,15 +319,32 @@ public class ChessDB {
 				sql = "INSERT INTO GAMES (USER2ID, GAMESTATUS) " +
 					 	     "VALUES ('"+userId+"', '0');";
 			}
-			
 			stmt.executeUpdate(sql);
 			stmt.close();
+			
+			stmt = c.createStatement();
+			sql = "SELECT last_insert_rowid()";
+			
+			ResultSet generatedKeys = stmt.executeQuery(sql);
+			if(generatedKeys.next()) {
+				gameId = (int) generatedKeys.getLong(1);
+			}
+			
 			c.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		return gameId;
 	}
+	
+	/** 
+	 * Adds an opponent to a game in the DB
+	 * @param userId
+	 * @param playerNumber
+	 * @param gameId
+	 */
 	public void addOpponent(int userId, int playerNumber, int gameId) {
 		Connection c = dbConnect();
 		Statement stmt = null;
