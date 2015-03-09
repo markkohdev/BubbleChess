@@ -63,6 +63,14 @@ public class Game {
 	}
 	
 	/**
+	 * Returns the board
+	 * @return The board
+	 */
+	public Board getBoard(){
+		return board;
+	}
+	
+	/**
 	 * Add the passed move to the moves list, updates the turn
 	 * @param m The move
 	 * @return True if the move was successfully added, False if the game is in
