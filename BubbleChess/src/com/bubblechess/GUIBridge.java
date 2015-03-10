@@ -259,9 +259,9 @@ public class GUIBridge {
 		if(!valid)
 			return false;
 		
-		//If we've reached the endgame by playing a move, we won
+		//If we've reached the end of the game by playing a move, we won or drew
 		if(game.endState())
-			System.out.println("Game over, you are winner!");
+			System.out.println("Game over.");
 		
 		return server.SendMove(m, player.getID(), game.getID());
 		
@@ -277,9 +277,9 @@ public class GUIBridge {
 		
 		game.playMove(next);
 		
-		//If we've reached the endgame by playing a move, we won
+		//If we've reached the end of the game by playing a move, we won or drew
 		if(game.endState())
-			System.out.println("Game over, you lose.");
+			System.out.println("Game over.");
 		
 		return next;
 	}
