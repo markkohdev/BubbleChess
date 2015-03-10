@@ -284,6 +284,7 @@ public class ServerHandler {
 				}
 			}
 		}
+		CloseConnection();
 		return retVal;
 	}
 	
@@ -436,12 +437,12 @@ public class ServerHandler {
 			
 			if (response.get("result").equals("success")){
 				int[] from = {
-				              Integer.parseInt((String)response.get("colFrom")),
-				              Integer.parseInt((String)response.get("rowFrom"))
+				              (int)((long)response.get("colFrom")),
+				              (int)((long)response.get("rowFrom"))
 				};
 				int[] to = {
-			              Integer.parseInt((String)response.get("colTo")),
-			              Integer.parseInt((String)response.get("rowTo"))
+						(int)((long)response.get("colTo")),
+						(int)((long)response.get("rowTo"))
 				};
 				
 				Move m = new Move(from,to);
