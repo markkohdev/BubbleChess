@@ -129,7 +129,7 @@ public class ChessBoard implements Board, Cloneable {
 	}
 	
 	/**
-	 * Converts a square to a coordinate, e.g. e3 -> [4,2]
+	 * Converts a square to a coordinate, e.g. e3 becomes [4,2]
 	 * @param square
 	 * @return The square in [x, y] form
 	 */
@@ -349,8 +349,8 @@ public class ChessBoard implements Board, Cloneable {
 
 	/**
 	 * Get all moves for a given piece in a board
-	 * @param x
-	 * @param y
+	 * @param col
+	 * @param row
 	 * @return A list of moves
 	 */
 	@Override
@@ -411,7 +411,8 @@ public class ChessBoard implements Board, Cloneable {
 	/**
 	 * Get the piece at the passed coordinate
 	 * Returns null if empty
-	 * @param coord
+	 * @param col
+	 * @param row
 	 * @return The piece at the passed coordinate
 	 */
 	protected BoardPiece getPiece(int col, int row){

@@ -17,6 +17,7 @@ public class Game {
 
 	/**
 	 * Constructor
+	 * @param gameID Game ID
 	 * @param u1 First user
 	 * @param u2 Second user
 	 * @param b The initialize gameboard
@@ -32,7 +33,7 @@ public class Game {
 	
 	/**
 	 * Gets the ID of the game
-	 * @return
+	 * @return Game ID
 	 */
 	public int getID(){
 		return gameID;
@@ -40,7 +41,7 @@ public class Game {
 	
 	/**
 	 * Gets the first user object
-	 * @return
+	 * @return User 1
 	 */
 	public User getUser1(){
 		return user1;
@@ -48,7 +49,7 @@ public class Game {
 	
 	/**
 	 * Gets the second user object
-	 * @return
+	 * @return User 2
 	 */
 	public User getUser2(){
 		return user2;
@@ -139,7 +140,7 @@ public class Game {
 	
 	/**
 	 * Gets the user object who's turn it currently is
-	 * @return
+	 * @return User
 	 */
 	public User getTurn(){
 		return turn;
@@ -147,15 +148,15 @@ public class Game {
 	
 	/**
 	 * Checks if the board is currently an end State
-	 * @return
+	 * @return True if the board is in an end state, False otherwise
 	 */
 	public boolean endState(){
 		return board.endState();
 	}
 	
 	/**
-	 * Gets the current board state
-	 * @return
+	 * Gets the current board state as a String
+	 * @return The board's state
 	 */
 	public String getBoardState() {
 		return board.getState();
@@ -165,7 +166,7 @@ public class Game {
 	 * Gets all possible moves from a given coordinate
 	 * @param col
 	 * @param row
-	 * @return
+	 * @return A list of possible moves
 	 */
 	public ArrayList<Move> getMoves(int col, int row){
 		return board.getMoves(col, row);
@@ -173,7 +174,7 @@ public class Game {
 	
 	/**
 	 * Checks if the board is currently in state for a player
-	 * @return
+	 * @return 1 if white is in check, 2 if black is in check, 0 otherwise
 	 */
 	public int InCheck(){
 		if (board.inCheck(BoardPiece.Color.WHITE))

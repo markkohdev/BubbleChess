@@ -45,7 +45,7 @@ public interface Board {
 	/**
 	 * Apply the passed move to a clone of the game board
 	 * @param m
-	 * @return The new game board
+	 * @return A new game board
 	 */
 	public Board applyMoveCloning(Move m);
 	
@@ -53,7 +53,7 @@ public interface Board {
 	 * Apply the passed move to a clone of the game board
 	 * @param m
 	 * @param validate
-	 * @return
+	 * @return A new game board with the applied move
 	 */
 	public Board applyMoveCloning(Move m, boolean validate);
 	
@@ -65,16 +65,16 @@ public interface Board {
 	
 	/**
 	 * Get all moves for a given piece in a board
-	 * @param x
-	 * @param y
+	 * @param col
+	 * @param row
 	 * @return A list of moves
 	 */
 	public ArrayList<Move> getMoves(int col, int row);
 	
 	/**
 	 * Get all moves for a given piece in a board
-	 * @param x
-	 * @param y
+	 * @param col
+	 * @param row
 	 * @return A list of moves
 	 */
 	public ArrayList<Move> getMoves(char col, char row);
