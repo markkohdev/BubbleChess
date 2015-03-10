@@ -105,45 +105,53 @@ public class GUIBridge {
 	}
 	
 	/**
-	 * Create a game.  Will wait until opponent has joined to return true. 
-	 * @param color 1 if white selected, 2 if black selected
-	 * @return True if createGame successful, False if failed.  
+	 * Create a game and return the gameID
+	 * @param playerNumber 1 if white selected, 2 if black selected
+	 * @return The gameID if successful, -1 if error
 	 */
-	public boolean CreateGame(int color) {
+	public int CreateGame(int playerNumber) {
 		//We haven't logged in yet
 		assert(player != null);
 		
-		assert(color == 1 || color == 2);
+		assert(playerNumber == 1 || playerNumber == 2);
 		
-		int result = server.CreateGame(player.getID(), color);
+		int result = server.CreateGame(player.getID(), playerNumber);
 		
 		if (result >= 0) {
+			
 			//Create user
 			int gameID = result;
 			
-			//Get the second playerID.  The server will spin here?
-			String[] user2 = server.GetOpponent(gameID, player.getID(), color);
-			if (user2 != null) {
-				opponent = new User(Integer.parseInt(user2[0]),user2[1]);
-			}
-			else {
-				return false;
-			}
-			
 			//Set up the game.  User1 will be assumed white
-			if (color == 1)
+			if (playerNumber == 1)
 				//We are white
-				game = new Game(gameID,player,opponent,new ChessBoard());
+				game = new Game(gameID,player,null,new ChessBoard());
 			else
 				//Opponent is white
-				game = new Game(gameID,opponent,player,new ChessBoard());
+				game = new Game(gameID,null,player,new ChessBoard());
 			
-			return true; //success
+			return gameID; //success
+		}
+		else {
+			return result;
+		}
+		
+	}
+	
+	/**
+	 * Spin while waiting for opponent to the current game
+	 * @return True if an opponent joined, False if there was an issue
+	 */
+	public boolean WaitForOpponent(){
+		//Get the second playerID.  The server will spin here?
+		String[] user2 = server.GetOpponent(game.getID(), player.getID(), GetPlayerNumber());
+		if (user2 != null) {
+			opponent = new User(Integer.parseInt(user2[0]),user2[1]);
+			return true;
 		}
 		else {
 			return false;
 		}
-		
 	}
 	
 	/**
