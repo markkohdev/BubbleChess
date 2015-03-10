@@ -25,6 +25,7 @@ public class LoginPanel extends JPanel {
 	
 	private JTextField textUsername;
 	private JPasswordField passwordField;
+	private JLabel lblErrorLabel;
 	/**
 	 * Login states: 0 Waiting, 1 TryLogin, 2 CreateUser, 3 Continue as guest
 	 */
@@ -114,7 +115,10 @@ public class LoginPanel extends JPanel {
 		passwordField.setBounds(423, 298, 192, 20);
 		add(passwordField);
 		
-		
+		lblErrorLabel = new JLabel();
+		lblErrorLabel.setForeground(Color.RED);
+		lblErrorLabel.setFont(new Font("Dialog", Font.BOLD, 13));
+		lblErrorLabel.setBounds(423, 185, 70, 15);
 		
 
 
@@ -173,11 +177,7 @@ public class LoginPanel extends JPanel {
 	 * @param msg
 	 */
 	public void setErrorLabel(String msg) {
-		JLabel lblErrorLabel = new JLabel(msg);
-		lblErrorLabel.setForeground(Color.RED);
-		lblErrorLabel.setFont(new Font("Dialog", Font.BOLD, 13));
-		lblErrorLabel.setBounds(423, 185, 70, 15);
-		add(lblErrorLabel);
+		this.lblErrorLabel.setText(msg);
 	}
 	
 	/**

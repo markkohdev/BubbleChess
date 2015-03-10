@@ -28,14 +28,32 @@ public class MainMenuPanel extends JPanel {
 		setLayout(null);
 		
 		JButton btnCreateGame = new JButton("Create Game");
+		btnCreateGame.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				changePane(4);
+			}
+		});
 		btnCreateGame.setBounds(412, 246, 152, 58);
 		add(btnCreateGame);
 		
 		JButton btnJoinGame = new JButton("Join Game");
+		btnJoinGame.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				changePane(5);
+			}
+		});
 		btnJoinGame.setBounds(412, 341, 152, 58);
 		add(btnJoinGame);
 		
 		JButton btnLogout = new JButton("Logout");
+		btnLogout.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				changePane(1);
+			}
+		});
 		btnLogout.setBounds(412, 428, 152, 58);
 		add(btnLogout);
 		
@@ -43,11 +61,12 @@ public class MainMenuPanel extends JPanel {
 		lblMainMenu.setFont(new Font("Tahoma", Font.BOLD, 30));
 		lblMainMenu.setBounds(409, 90, 206, 70);
 		lblMainMenu.setEnabled(false);
-		add(lblMainMenu);
-		
+		add(lblMainMenu);	
 
-
-		
-
+	}
+	
+	public void changePane(int i) {
+		MainApplicationWindow mainWin = (MainApplicationWindow)this.getParent();
+		mainWin.setPaneResult(i);
 	}
 }

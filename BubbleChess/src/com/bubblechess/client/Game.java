@@ -41,6 +41,14 @@ public class Game {
 	public User getUser2(){
 		return user2;
 	}
+	
+	public void setUser1(User u1){
+		user1 = u1;
+	}
+	
+	public void setUser2(User u2){
+		user2 = u2;
+	}
 
 	/**
 	 * The move at the specified index
