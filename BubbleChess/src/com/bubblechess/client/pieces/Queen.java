@@ -38,4 +38,9 @@ public class Queen extends ChessPiece {
 		ChessPiece piece = new Queen(this.getColor());
 		return piece;
 	}
+
+	@Override
+	public String getType() {
+		return "Queen";
+	}
 }

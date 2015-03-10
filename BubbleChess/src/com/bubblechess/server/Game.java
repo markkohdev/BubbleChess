@@ -14,8 +14,11 @@ public class Game {
 	private int _user2Id = -1;
 	
 	private int _gameId;
+	private String _lastMove = "";
 	
 	private int _currentUser = 1;
+	private ChessDB _cdb;
+	
 	/**
 	 * Constructor
 	 * @param gameId
@@ -23,9 +26,11 @@ public class Game {
 	 * @param user
 	 * @param userId
 	 */
-	public Game(int gameId, int playerNumber, int userId) {
+	public Game(int gameId, int playerNumber, int userId, ChessDB cdb) {
 		setUser(userId, playerNumber);
 		_gameId = gameId;
+		_cdb = cdb;
+		
 	}
 	
 	//Getters
@@ -85,6 +90,15 @@ public class Game {
 			return -1;
 		}
 	}
+	
+	/**
+	 * Returns last move object as a String
+	 * @return
+	 */
+	public String getLastMove() {
+		return _lastMove;
+	}
+	
 	//Setters
 	/**
 	 * Sets a user to a socket and id in the thread
@@ -133,46 +147,8 @@ public class Game {
 	 * @param rowTo
 	 * @throws IOException
 	 */
-	public void insertMove(int userId, int colFrom, int rowFrom, int colTo, int rowTo, Socket client) throws IOException {
-		ChessDB cdb = new ChessDB();
-		cdb.insertMove(userId, _gameId, colFrom, rowFrom, colTo, rowTo);
-		
-		JSONObject move = new JSONObject();
-		move.put("userID", userId);
-		move.put("colFrom", colFrom);
-		move.put("rowFrom", rowFrom);
-		move.put("colTo", colTo);
-		move.put("rowTo", rowTo);
-		
-		//Respond to the right user
-		if(userId == _user1Id) {
-			DataOutputStream out = new DataOutputStream(client.getOutputStream());
-			
-			JSONObject json = new JSONObject();
-    		json.put("result","success");
-    		out.writeUTF(json.toJSONString());  
-    		
-    		//send move to opposite user
-    		JSONObject oppJson = new JSONObject();
-    		oppJson.put("message","newMove");
-    		oppJson.put("move", move);
-    		out = new DataOutputStream(client.getOutputStream());
-    		out.writeUTF(oppJson.toJSONString());
-		}
-		else if(userId == _user2Id) {
-			DataOutputStream out = new DataOutputStream(client.getOutputStream());
-			
-			JSONObject json = new JSONObject();
-    		json.put("result","success");
-    		out.writeUTF(json.toJSONString());  
-    		
-    		//send move to opposite user
-    		JSONObject oppJson = new JSONObject();
-    		oppJson.put("message","newMove");
-    		oppJson.put("move", move);
-    		out = new DataOutputStream(client.getOutputStream());
-    		out.writeUTF(oppJson.toJSONString());
-		}
+	public boolean insertMove(int userId, int colFrom, int rowFrom, int colTo, int rowTo) throws IOException {
+		boolean moveCheck = _cdb.insertMove(userId, _gameId, colFrom, rowFrom, colTo, rowTo);
 		
 		if(_currentUser == 1) {
 			_currentUser = 2;
@@ -180,16 +156,32 @@ public class Game {
 		else {
 			_currentUser = 1;
 		}
+		
+		JSONObject move = new JSONObject();
+		move.put("userID", userId);
+		move.put("colFrom", colFrom);
+		move.put("rowFrom", rowFrom);
+		move.put("colTo", colTo);
+		move.put("rowTo", rowTo);
+
+		_lastMove = move.toJSONString();
+
+		if(moveCheck) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 	
+	/**/
 	/**
 	 * Method to return all moves from a game
 	 * @param userSocket
 	 * @throws IOException
 	 */
 	public void getAllMoves(Socket userSocket) throws IOException {
-		ChessDB cdb = new ChessDB();
-		String moves = cdb.getAllMoves(_gameId);
+		String moves = _cdb.getAllMoves(_gameId);
 		
 		DataOutputStream out = new DataOutputStream(userSocket.getOutputStream());
 	

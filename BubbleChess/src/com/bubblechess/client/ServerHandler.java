@@ -284,6 +284,7 @@ public class ServerHandler {
 				}
 			}
 		}
+		CloseConnection();
 		return retVal;
 	}
 	
@@ -375,11 +376,12 @@ public class ServerHandler {
 	
 	
 	public boolean SendMove(Move m, int userID, int gameID){
+		SetupConnection();
 		JSONObject json = new JSONObject();
 		
 		json.put("request", "insertMove");
 		json.put("gameID", gameID);
-		json.put("user", userID);
+		json.put("userID", userID);
 		json.put("colFrom", m.colFrom());
 		json.put("rowFrom", m.rowFrom());
 		json.put("colTo", m.colTo());
@@ -394,13 +396,16 @@ public class ServerHandler {
 		} catch (IOException e) {
 			System.err.println("Error recieving data from server.");
 			e.printStackTrace();
+			CloseConnection();
 			return false;
 		}
 		
 		if (response.get("result").equals("success")){
+			CloseConnection();
 			return true;
 		}
 		else
+			CloseConnection();
 			return false;
 	}
 	
@@ -432,12 +437,12 @@ public class ServerHandler {
 			
 			if (response.get("result").equals("success")){
 				int[] from = {
-				              Integer.parseInt((String)response.get("colFrom")),
-				              Integer.parseInt((String)response.get("rowFrom"))
+				              (int)((long)response.get("colFrom")),
+				              (int)((long)response.get("rowFrom"))
 				};
 				int[] to = {
-			              Integer.parseInt((String)response.get("colTo")),
-			              Integer.parseInt((String)response.get("rowTo"))
+						(int)((long)response.get("colTo")),
+						(int)((long)response.get("rowTo"))
 				};
 				
 				Move m = new Move(from,to);
@@ -463,12 +468,6 @@ public class ServerHandler {
 	public boolean EndGame() {
 		CloseConnection();
 		return false;
-	}
-	
-	public void TestConnection() {
-		String hello = "Hello, world.";
-		
-		toServer.println(hello);
 	}
 	
 	

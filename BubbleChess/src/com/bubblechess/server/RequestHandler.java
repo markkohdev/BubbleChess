@@ -16,11 +16,13 @@ public class RequestHandler extends Thread {
 	private Socket _clientSocket = null;
 	private ServerInstance _server = null;
 	protected PrintWriter toClient;
+	protected ChessDB _cdb;
 	
-	public RequestHandler(Socket clientSocket, ServerInstance server) {
+	public RequestHandler(Socket clientSocket, ServerInstance server, boolean testDb) {
 		// TODO Auto-generated constructor stub
 		_clientSocket = clientSocket;
 		_server = server;
+		_cdb = new ChessDB(testDb);
 		
 		try {
 			toClient = new PrintWriter(_clientSocket.getOutputStream(), true);
@@ -116,17 +118,16 @@ public class RequestHandler extends Thread {
 		    		
 		    		// TODO: Confirm no user
 		    		//Method to create a user
-		    		ChessDB cdb = new ChessDB();
 		    		JSONObject json;
 		    		
 		    		//Check if user exists
-		    		if(cdb.getUser(username) != -1) {
+		    		if(_cdb.getUser(username) != -1) {
 		    			json = new JSONObject();
 			    		json.put("result", "username already exists");
 		    		}
 		    		else {
-			    		cdb.insertUser(username, password);
-			    		int userid = cdb.getUser(username);
+			    		_cdb.insertUser(username, password);
+			    		int userid = _cdb.getUser(username);
 			    		
 			    		json = new JSONObject();
 			    		json.put("result", "success");
@@ -140,8 +141,7 @@ public class RequestHandler extends Thread {
             		password = (String) obj.get("password");
 
             		//get userid for login
-            		cdb = new ChessDB();
-            		int loginUserId = cdb.getUser(userName);
+            		int loginUserId = _cdb.getUser(userName);
             		
             		if(loginUserId == -1) {
             			json = new JSONObject();
@@ -149,7 +149,7 @@ public class RequestHandler extends Thread {
             		}
             		else {
             			//Method to check if user password is right
-                		boolean loginStatus = cdb.checkLogin(loginUserId, password); 		
+                		boolean loginStatus = _cdb.checkLogin(loginUserId, password); 		
                 		
                 		if(loginStatus == true) {
                 			json = new JSONObject();
@@ -168,10 +168,9 @@ public class RequestHandler extends Thread {
             		long userId = (long) obj.get("userID");
             		int playerNumber = (int)((long) obj.get("playerNumber"));
             		
-            		cdb = new ChessDB();
-            		int newId = cdb.insertGame((int) userId, playerNumber);
+            		int newId = _cdb.insertGame((int) userId, playerNumber);
             		
-        			Game game = new Game(newId, playerNumber, (int) userId);
+        			Game game = new Game(newId, playerNumber, (int) userId, _cdb);
 
             		_server.addGameThread(newId, game);
             		_server.addJoinableGame(newId);
@@ -191,8 +190,7 @@ public class RequestHandler extends Thread {
             		
             		if(oppId != -1) {
             			//Method to return userid
-                		cdb = new ChessDB();
-                		username = cdb.getUsername((int) userId);
+                		username = _cdb.getUsername((int) userId);
                 		
                 		//This will come through as a JSON String
                 		json = new JSONObject();
@@ -230,13 +228,11 @@ public class RequestHandler extends Thread {
             		
             		game = _server.getGame((int) gameId);
             		
-            		cdb = new ChessDB();
-            		
             		int otherPlayer = game.getOtherUser();
-            		String otherUsername = cdb.getUsername(otherPlayer);
+            		String otherUsername = _cdb.getUsername(otherPlayer);
             		
             		if(game.joinGame((int) userId, _clientSocket)) {
-            			playerNumber = game.getPlayerNumber((int) userId);
+            			playerNumber = game.getPlayerNumber(otherPlayer);
             			
             			_server.removeJoinableGame(gameId);
             			
@@ -262,16 +258,18 @@ public class RequestHandler extends Thread {
             		long colTo = (long) obj.get("colTo");
             		long rowTo = (long) obj.get("rowTo");
             		
-            		/*System.out.println(userId);
-            		System.out.println(gameId);
-            		System.out.println(colFrom);
-            		System.out.println(rowFrom);
-            		System.out.println(colTo);
-            		System.out.println(rowTo);*/
-            		
-            		//Talk to gameThread
             		game = _server.getGame(gameId);
-            		game.insertMove((int) userId, (int) colFrom, (int) rowFrom, (int) colTo, (int) rowTo, _clientSocket);
+            		boolean moveStatus = game.insertMove((int) userId, (int) colFrom, (int) rowFrom, (int) colTo, (int) rowTo);
+            		
+            		if(moveStatus){
+            			json = new JSONObject();
+            			json.put("result", "success");
+            		}
+            		else {
+            			json = new JSONObject();
+            			json.put("result", "failure");
+            		}
+            		toClient.println(json.toJSONString()); 
             	break;
             	case "checkForMove":
             		gameId = (int)((long) obj.get("gameID"));
@@ -282,8 +280,7 @@ public class RequestHandler extends Thread {
             		
             		if(game.getCurrentPlayer() == playerNumber) {
                 		json.put("result","success");
-                		// TODO: Get move info as json
-                		//json.put("move", getUserId);
+                		json.put("move", game.getLastMove());
             		}
             		else {
             			json.put("result","waiting");
@@ -301,8 +298,7 @@ public class RequestHandler extends Thread {
             		System.out.println(username);
             		
             		//Method to return userid
-            		cdb = new ChessDB();
-            		int getUserId = cdb.getUser(username);
+            		int getUserId = _cdb.getUser(username);
             		
             		//This will come through as a JSON String
             		json = new JSONObject();
@@ -312,7 +308,6 @@ public class RequestHandler extends Thread {
             		
             		//TODO: Add failure
             	break;
-            	
             	
             }
 		}

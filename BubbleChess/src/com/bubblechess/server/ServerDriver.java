@@ -9,6 +9,8 @@ public class ServerDriver {
 	protected static Socket _client;
 	protected static ServerSocket _server;
 	protected static RequestHandler _rh;
+	protected static boolean _testDb = false;
+	
 	/**
 	 * Main method to run the server on port 430
 	 * @param args
@@ -17,7 +19,7 @@ public class ServerDriver {
 	public static void main (String[] args) throws IOException{
 		_server = new ServerSocket(8080);
 		
-		ChessDB cdb = new ChessDB();
+		ChessDB cdb = new ChessDB(false);
 		cdb.createTables();
 		System.out.println("Server Open");
 		
@@ -26,7 +28,7 @@ public class ServerDriver {
 		while (true) {
 			_client = _server.accept();
 		      
-			_rh = new RequestHandler(_client, si);
+			_rh = new RequestHandler(_client, si, _testDb);
 			_rh.start();
 		}
 	}
@@ -43,6 +45,14 @@ public class ServerDriver {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Method to set if the db is in test or not
+	 * @param testDb
+	 */
+	public void setTestDB(boolean testDb) {
+		_testDb = testDb;
 	}
 }
 

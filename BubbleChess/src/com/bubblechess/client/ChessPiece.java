@@ -51,6 +51,11 @@ public abstract class ChessPiece implements BoardPiece {
 	}
 	
 	/**
+	 * @return A string representing the type of the piece
+	 */
+	public abstract String getType();
+	
+	/**
 	 * Returns the directional movements of this piece
 	 * @return An array of directional vectors
 	 */
