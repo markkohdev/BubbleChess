@@ -8,36 +8,51 @@ public interface Board {
 
 	public enum Player {PLAYER1, PLAYER2};
 	
+	/**
+	 * Get game board
+	 * @return A 2D array of BoardPieces
+	 */
 	public BoardPiece[][] getBoard();
 	
 	/**
-	 * Get gameboard width
+	 * Get game board width
 	 * @return Width
 	 */
 	public int getWidth();
 	
 	/**
-	 * Get gameboard height
+	 * Get game board height
 	 * @return Height
 	 */
 	public int getHeight();
 	
+	/**
+	 * Apply the passed move to the game board
+	 * @param m
+	 * @return True if move was successful, False if move is invalid
+	 */
 	public boolean applyMove(Move m);
 	
 	/**
-	 * Apply the passed move to the game board
-	 * @param m The Move to be applied
-	 * @param validate Validate the move
-	 * @return True if move was successful, False if move invalid
+	 * Apply the passed move to the game board and check that move is legal
+	 * if the validate flag is set to True
+	 * @param m
+	 * @param validate
+	 * @return True if move was successful, False if move is invalid
 	 */
 	public boolean applyMove(Move m, boolean validate);
 	
+	/**
+	 * Apply the passed move to a clone of the game board
+	 * @param m
+	 * @return The new game board
+	 */
 	public Board applyMoveCloning(Move m);
 	
 	/**
 	 * Apply the passed move to a clone of the game board
 	 * @param m
-	 * @param validate Validate the move
+	 * @param validate
 	 * @return
 	 */
 	public Board applyMoveCloning(Move m, boolean validate);
@@ -66,20 +81,20 @@ public interface Board {
 	
 
 	/**
-	 * Get the gameboard state string
+	 * Get the game board state string
 	 * @return The game board state
 	 */
 	public String getState();
 	
 	/**
-	 * Get whether or not the game is in over
+	 * Check if the game is over
 	 * @return True if the game is over, False otherwise
 	 */
 	public boolean endState();
 	
 	/**
-	 * Get a list of the captured pieces on the board
-	 * @return
+	 * Get a list of captured pieces
+	 * @return An array of captured pieces
 	 */
 	public BoardPiece[] getCaptured();
 
@@ -88,6 +103,11 @@ public interface Board {
 	 */
 	public void updateState();
 	
+	/**
+	 * Check to see if the passed player color is in check
+	 * @param color
+	 * @return True if the player color is in check, False otherwise
+	 */
 	public boolean inCheck(Color color);
 	
 }
