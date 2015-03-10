@@ -74,8 +74,16 @@ public class Game {
 	 * Returns the board
 	 * @return The board
 	 */
-	public Board getBoard(){
-		return board;
+	public BoardPiece[][] getBoard(){
+		return board.getBoard();
+	}
+	
+	/**
+	 * Return a list of captured pieces
+	 * @return An array of captured BoardPieces
+	 */
+	public BoardPiece[] getCaptured() {
+		return board.getCaptured();
 	}
 	
 	/**
@@ -115,6 +123,10 @@ public class Game {
 	
 	public boolean endState(){
 		return board.endState();
+	}
+	
+	public String getBoardState() {
+		return board.getState();
 	}
 	
 	public ArrayList<Move> getMoves(int col, int row){

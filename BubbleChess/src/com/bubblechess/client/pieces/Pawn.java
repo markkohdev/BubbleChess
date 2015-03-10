@@ -14,6 +14,7 @@ public class Pawn extends ChessPiece {
 	public Pawn(Color col) {
 		color = col;
 		hasMoved = false;
+		id=5;
 	}
 	
 	@Override

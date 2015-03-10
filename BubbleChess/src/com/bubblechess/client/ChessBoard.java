@@ -220,10 +220,8 @@ public class ChessBoard implements Board, Cloneable {
 	public boolean applyMove(Move m, boolean validate) {
 		if (!validate || validMove(m)) {
 			
-			//Apply the move
-			boolean specialCase = handleSpecialCase(m);
-		
-			if (specialCase) {							
+			//Apply the move		
+			if (handleSpecialCase(m)) {							
 				return true;
 			}
 			else {
@@ -350,12 +348,12 @@ public class ChessBoard implements Board, Cloneable {
 	}
 
 	/**
-	 * Checks if the board is an end-state (checkmate or stalemate)
-	 * @return True if there is checkmate or stalemate, False otherwise
+	 * Checks if the board is an end-state (checkmate, stalemate, or draw)
+	 * @return True if there is checkmate, stalemate, or draw, False otherwise
 	 */
 	@Override
 	public boolean endState() {
-		if (this.state==STATE.CHECKMATE || this.state==STATE.STALEMATE) {
+		if (this.state==STATE.CHECKMATE || this.state==STATE.STALEMATE || this.state==STATE.DRAW) {
 			return true;
 		}
 		return false;
