@@ -12,18 +12,16 @@ public class BubbleChessDriver {
 	
 	public static void main(String[] args){
 
-		//Run all the things here
-		int close = 0;
 		
-		//ServerHandler server = new ServerHandler("tux.cs.drexel.edu",8080);
+		int close = 0;
 		ServerHandler server = new ServerHandler("144.118.117.17",8080);		
 		GUIBridge bridge = new GUIBridge(server);
-		LoginPanel login = new LoginPanel();
 		MainApplicationWindow mainAppWindow = MainApplicationWindow.getInstance();
 		mainAppWindow.setBridge(bridge);
+		LoginPanel login = new LoginPanel();
 		mainAppWindow.addPanel(login);
 		mainAppWindow.setFrameVisible(true);
-		close = 0;
+
 		
 		while (close != 1) {
 			int gameID = 0;

@@ -12,7 +12,7 @@ public class Rook extends ChessPiece {
 	 * Constructor for the Rook Piece
 	 * @param col
 	 */
-	public Rook(Color col) {
+	public Rook(PieceColor col) {
 		color = col;
 		hasMoved = false;
 		

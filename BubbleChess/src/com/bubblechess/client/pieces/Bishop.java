@@ -12,7 +12,7 @@ public class Bishop extends ChessPiece {
 	 * Constructor for the Bishop Piece
 	 * @param col
 	 */
-	public Bishop(Color col) {
+	public Bishop(PieceColor col) {
 		color = col;
 		dirs = new int[][]{NE,SE,SW,NW};
 		id=3;

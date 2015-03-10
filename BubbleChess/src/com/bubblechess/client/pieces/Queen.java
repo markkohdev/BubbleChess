@@ -12,7 +12,7 @@ public class Queen extends ChessPiece {
 	 * Constructor for the Queen Piece
 	 * @param col
 	 */
-	public Queen(Color col) {
+	public Queen(PieceColor col) {
 		color = col;
 		dirs = new int[][]{N,NE,E,SE,S,SW,W,NW};
 		id=1;
