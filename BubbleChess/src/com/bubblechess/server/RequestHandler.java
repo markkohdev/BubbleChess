@@ -334,21 +334,6 @@ public class RequestHandler extends Thread {
             		Game allMovesThread = _server.getGame(gameId);
             		//allMovesThread.getAllMoves(_clientSocket);
             	break;
-            	case "getUser":
-            		username = (String) obj.get("username");
-            		System.out.println(username);
-            		
-            		//Method to return userid
-            		int getUserId = _cdb.getUser(username);
-            		
-            		//This will come through as a JSON String
-            		json = new JSONObject();
-            		json.put("result","success");
-            		json.put("userID", getUserId);
-            		sendToClient(json.toJSONString());
-            		
-            		//TODO: Add failure
-            	break;
             	
             }
 		}
