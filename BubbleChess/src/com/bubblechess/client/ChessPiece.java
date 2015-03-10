@@ -28,16 +28,16 @@ public abstract class ChessPiece implements BoardPiece {
 	
 	/**
 	 * Returns a list of possible moves (not guaranteed to be legal)
-	 * @param x x-coordinate of chessboard
-	 * @param y y-coordinate of chessboard
+	 * @param x
+	 * @param y
 	 * @return A list of moves
 	 */
 	public abstract ArrayList<Move> getMoves(int x, int y);
 	
 	/**
 	 * Returns a list of possible special moves (not guaranteed to be legal)
-	 * @param x x-coordinate of chessboard
-	 * @param y y-coordinate of chessboard
+	 * @param x
+	 * @param y
 	 * @return A list of special moves
 	 */
 	public ArrayList<Move> getSpecialMoves(int x, int y){
@@ -53,6 +53,7 @@ public abstract class ChessPiece implements BoardPiece {
 	}
 	
 	/**
+	 * Get the piece's type, e.g. Rook or Pawn
 	 * @return A string representing the type of the piece
 	 */
 	public abstract String getType();
@@ -68,14 +69,15 @@ public abstract class ChessPiece implements BoardPiece {
 	/**
 	 * Returns true if the piece has moved, false otherwise
 	 * Necessary information to determine if castling is legal
-	 * @return true if moved, false otherwise
+	 * @return True if moved, False otherwise
 	 */
 	public boolean getHasMoved() {
 		return hasMoved;
 	}
 	
 	/**
-	 * Get the pieceID
+	 * Get the piece ID number
+	 * @return the piece ID
 	 */
 	public int getPieceID(){
 		return id;

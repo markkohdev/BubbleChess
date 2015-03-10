@@ -22,6 +22,7 @@ public class CreateGamePanel extends JPanel {
 	
 	
 	/**
+	 * Default constructor for create Game Panel
 	 * Create the panel.
 	 */
 	public CreateGamePanel() {
@@ -66,7 +67,10 @@ public class CreateGamePanel extends JPanel {
 		add(colorDropDown);
 
 	}
-	
+	/**
+	 * Gets the color selected from the drop down
+	 * @return 1 is white, 2 is black
+	 */
 	public int getSelectedColor() {
 		int color = this.colorDropDown.getSelectedIndex();
 		
@@ -77,13 +81,25 @@ public class CreateGamePanel extends JPanel {
 		
 	}
 	
+	/**
+	 * sets the createResult to the gameID
+	 * @param i
+	 */
 	public void setGameID(int i) { 
 		this.createResult = i;
 	}
+	
+	/**
+	 * Gets the gameID from the createResult
+	 * @return gets the GameID from the create Result
+	 */
 	public int getGameID() { 
 		return this.createResult;
 	}
 	
+	/**
+	 * Tries to create the game using bridge function with options chosen from panel
+	 */
 	public void tryCreateGame() {
 		MainApplicationWindow mainWin = MainApplicationWindow.getInstance();
 		int color = this.getSelectedColor();

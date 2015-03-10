@@ -8,15 +8,16 @@ import org.json.simple.JSONObject;
 public class ChessDB {
 	
 	private boolean _isTest;
+	
 	/**
-	 * Constructor
+	 * Constructor for the ChessDB
 	 */
 	public ChessDB(boolean isTest) {
 		_isTest = isTest;
 	}
-	
+
 	/**
-	 * Method to set up db connection
+	 * Sets up connection to the sqlite database
 	 * @return
 	 */
 	public Connection dbConnect() {
@@ -40,10 +41,11 @@ public class ChessDB {
 			System.out.println("Database failed to open :(");
 			e.printStackTrace();
 		}
-		 return c;
+		return c;
 	}
+	
 	/**
-	 * Method to create basic tables
+	 * Creates the tables in the database
 	 */
 	public void createTables() {
 		//do I need this?
@@ -94,7 +96,7 @@ public class ChessDB {
 	
 	//User information
 	/**
-	 * Method to return a users id by username
+	 * Returns a userID from a username
 	 * @param userName
 	 * @return
 	 */
@@ -119,7 +121,7 @@ public class ChessDB {
 	}
 	
 	/**
-	 * Method to return a username
+	 * Returns a username from a userID
 	 * @param userId
 	 * @return
 	 */
@@ -146,7 +148,7 @@ public class ChessDB {
 	}
 	
 	/**
-	 * Method to create a user in the database
+	 * Creates a user in the database
 	 * @param userName
 	 * @param password
 	 */
@@ -166,8 +168,9 @@ public class ChessDB {
 			e.printStackTrace();
 		}
 	}
+	
 	/**
-	 * Method to check user login information
+	 * Checks the login information of a user
 	 * @param userId
 	 * @param password
 	 */
@@ -203,7 +206,7 @@ public class ChessDB {
 	
 	//Move information
 	/**
-	 * Method to get all moves from a game id
+	 * Gets all moves from a specific game
 	 * @param gameId
 	 * @return
 	 */
@@ -245,7 +248,7 @@ public class ChessDB {
 	}
 	
 	/**
-	 * Method to insert a move into the database
+	 * Inserts a move into the database for a game
 	 * @param userId
 	 * @param gameId
 	 * @param colFrom
@@ -275,7 +278,7 @@ public class ChessDB {
 	
 	//Game Information
 	/**
-	 * Will return a game object as a JSON String
+	 * Returns a game as a JSON string
 	 * @param gameId
 	 * @return
 	 */
@@ -345,7 +348,6 @@ public class ChessDB {
 			
 			c.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

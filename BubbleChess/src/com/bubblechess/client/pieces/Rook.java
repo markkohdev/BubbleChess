@@ -8,6 +8,10 @@ import com.bubblechess.client.Move;
 
 public class Rook extends ChessPiece {
 	
+	/**
+	 * Constructor for the Rook Piece
+	 * @param col
+	 */
 	public Rook(PieceColor col) {
 		color = col;
 		hasMoved = false;
@@ -16,6 +20,10 @@ public class Rook extends ChessPiece {
 		id=2;
 	}
 
+	/**
+	 * Gets possible moves a piece can make
+	 * @return
+	 */
 	@Override
 	public ArrayList<Move> getMoves(int x, int y) {
 		ArrayList<Move> moves = new ArrayList<Move>();
@@ -36,12 +44,20 @@ public class Rook extends ChessPiece {
 		return moves;
 	}
 
+	/**
+	 * Clones the piece object
+	 * @return
+	 */
 	@Override
 	public BoardPiece clone() {
 		ChessPiece piece = new Rook(this.getColor());
 		return piece;
 	}
 
+	/**
+	 * Returns the type of the piece
+	 * @return
+	 */
 	@Override
 	public String getType() {
 		return "Rook";

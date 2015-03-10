@@ -25,7 +25,9 @@ public class LoginPanel extends JPanel {
 	
 	private JTextField textUsername;
 	private JPasswordField passwordField;
+	private MainApplicationWindow appWin;
 	private JLabel lblErrorLabel;
+	private GUIBridge bridge;
 	/**
 	 * Login states: 0 Waiting, 1 TryLogin, 2 CreateUser, 3 Continue as guest
 	 */
@@ -38,6 +40,8 @@ public class LoginPanel extends JPanel {
 	 * Create the panel. Adds Listeners for all 3 Buttons and changes the login state when activated
 	 */
 	public LoginPanel() {
+		appWin = MainApplicationWindow.getInstance();
+		bridge = appWin.getBridge();
 		//this.setLoginState(0);
 		setBackground(Color.LIGHT_GRAY);
 		setPreferredSize(new Dimension(1024,768));
@@ -121,14 +125,15 @@ public class LoginPanel extends JPanel {
 
 	}
 	
-	
+	/**
+	 * function to try to login using the function on the GUIBridge
+	 * if error occurs, it displays it on screen
+	 */
 	public void tryLogin() {
-		MainApplicationWindow appWin = MainApplicationWindow.getInstance();
 		String userName = getUserName();
 		String password = getPassword();
-		GUIBridge b = appWin.getBridge();
 		
-		int result = b.Login(userName, password);
+		int result = bridge.Login(userName, password);
 		
 		if(result >= 0) {
 			appWin.setPaneResult(3);
@@ -141,10 +146,12 @@ public class LoginPanel extends JPanel {
 		}
 	}
 	
+	/**
+	 * Tries to continue as guest using GUIBridge function
+	 * if success will set next pane, else set the error label to something
+	 */
 	public void continueAsGuest() { 
-		MainApplicationWindow appWin = MainApplicationWindow.getInstance();
-		GUIBridge b = appWin.getBridge();
-		int result = b.ContinueAsGuest();
+		int result = bridge.ContinueAsGuest();
 		
 		if(result >= 0) { 
 			appWin.setPaneResult(3);
@@ -155,20 +162,13 @@ public class LoginPanel extends JPanel {
 		 
 	}
 	
-	public void goToRegister() {
-		MainApplicationWindow appWin = MainApplicationWindow.getInstance();
-		appWin.setPaneResult(2);
-	}
 	
 	/**
-	 * Chenges the login state and fires off a property Change
-	 * @param state
+	 * sets next pane to register pane
 	 */
-	/*public void setLoginState(int state) {
-		int oldValue = this.loginState;
-		this.loginState = state;
-		firePropertyChange("loginState", oldValue, this.loginState);
-	}*/
+	public void goToRegister() {
+		appWin.setPaneResult(2);
+	}
 	
 
 	/**
@@ -179,13 +179,6 @@ public class LoginPanel extends JPanel {
 		this.lblErrorLabel.setText(msg);
 	}
 	
-	/**
-	 * gets login state
-	 * @return loginState
-	 */
-	/*public int getLoginState() {
-		return this.loginState;
-	}*/
 	/**
 	 * gets username entered in textfield
 	 * @return username

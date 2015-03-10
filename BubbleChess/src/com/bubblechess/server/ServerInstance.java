@@ -10,7 +10,7 @@ public class ServerInstance {
 	private ArrayList<Integer> _joinableGames;
 
 	/**
-	 * Constructor
+	 * Constructor for Server instance
 	 */
 	public ServerInstance() {
 		_games = new HashMap();
@@ -19,7 +19,7 @@ public class ServerInstance {
 	
 	//getters
 	/**
-	 * Method to get correct game thread
+	 * Gets the game object of a specific game ID
 	 * @param gameId
 	 * @return
 	 */
@@ -28,7 +28,7 @@ public class ServerInstance {
 	}
 	
 	/**
-	 * Method to return games
+	 * Returns a list of games
 	 * @return
 	 */
 	public Map getGames() {
@@ -36,7 +36,7 @@ public class ServerInstance {
 	}
 	
 	/**
-	 * Method to return a list of joinable games
+	 * Returns a list of joinable games
 	 * @return
 	 */
 	public ArrayList<Integer> getJoinableGames() {
@@ -45,7 +45,7 @@ public class ServerInstance {
 	
 	//setters
 	/** 
-	 * Method to add a game thread to the games list
+	 * Adds a game object to the games list
 	 * @param gameId
 	 * @param game
 	 */
@@ -56,7 +56,7 @@ public class ServerInstance {
 	}
 	
 	/**
-	 * Method to add a gameid to a joinable games list
+	 * Adds a game object to the joinable games list
 	 * @param gameId
 	 */
 	public void addJoinableGame(int gameId) {
@@ -65,7 +65,7 @@ public class ServerInstance {
 	
 	//methods
 	/**
-	 * Method to remove a game from the joinable games list
+	 * Removes a game from the joinable games list
 	 * @param gameId
 	 */
 	public void removeJoinableGame(int gameId) {

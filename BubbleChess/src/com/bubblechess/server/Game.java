@@ -20,11 +20,11 @@ public class Game {
 	private ChessDB _cdb;
 	
 	/**
-	 * Constructor
+	 * Constructor for the Game Object
 	 * @param gameId
-	 * @param id
-	 * @param user
+	 * @param playerNumber
 	 * @param userId
+	 * @param cdb
 	 */
 	public Game(int gameId, int playerNumber, int userId, ChessDB cdb) {
 		setUser(userId, playerNumber);
@@ -35,7 +35,7 @@ public class Game {
 	
 	//Getters
 	/**
-	 * Method to get opponent of a player by id
+	 * Gets an opponents userID from a playerNumber
 	 * @param playerNumber
 	 * @return
 	 */
@@ -52,7 +52,7 @@ public class Game {
 	}
 	
 	/**
-	 * Method used to get the other user id for joining
+	 * Gets the id of the user that is in the game waiting for an opponent
 	 * @return
 	 */
 	public int getOtherUser() {
@@ -67,7 +67,7 @@ public class Game {
 		}
 	}
 	/**
-	 * Returns the current player number
+	 * Gets the current player number for the turn
 	 * @return
 	 */
 	public int getCurrentPlayer() {
@@ -75,7 +75,7 @@ public class Game {
 	}
 	
 	/**
-	 * Method to get player number based off ID
+	 * Gets the player number from the userID
 	 * @param userId
 	 * @return
 	 */
@@ -92,7 +92,7 @@ public class Game {
 	}
 	
 	/**
-	 * Returns last move object as a String
+	 * Gets the last move that was executed in the game as JSON
 	 * @return
 	 */
 	public JSONObject getLastMove() {
@@ -101,10 +101,9 @@ public class Game {
 	
 	//Setters
 	/**
-	 * Sets a user to a socket and id in the thread
-	 * @param id
-	 * @param user
+	 * Sets a user id to a player
 	 * @param userId
+	 * @param playerNumber
 	 */
 	public void setUser(int userId, int playerNumber) {
 		if(playerNumber == 1) {
@@ -117,8 +116,7 @@ public class Game {
 	
 	//Methods
 	/**
-	 * Method to join a game thread
-	 * @param user
+	 * Allows a user to join an existing game and become a player
 	 * @param userId
 	 * @return
 	 */
@@ -139,7 +137,7 @@ public class Game {
 	
 	//Game Methods
 	/**
-	 * Method to insert move into a game
+	 * Inserts a move into a game and sets it as the last move. After this it will add it to the database
 	 * @param userId
 	 * @param colFrom
 	 * @param rowFrom
@@ -172,25 +170,5 @@ public class Game {
 		else {
 			return false;
 		}
-	}
-	
-	/**/
-	/**
-	 * Method to return all moves from a game
-	 * @param userSocket
-	 * @throws IOException
-	 */
-	public void getAllMoves(Socket userSocket) throws IOException {
-		String moves = _cdb.getAllMoves(_gameId);
-		
-		DataOutputStream out = new DataOutputStream(userSocket.getOutputStream());
-	
-		//This will come through as a JSON String
-		JSONObject json = new JSONObject();
-		json.put("result","success");
-		json.put("moves", moves);
-		out.writeUTF(json.toJSONString());
-		
-		//TODO: Add failure
 	}
 }

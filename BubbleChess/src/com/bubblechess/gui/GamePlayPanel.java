@@ -1,5 +1,7 @@
 package com.bubblechess.gui;
 
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 
 import java.awt.Color;
@@ -28,6 +30,9 @@ public class GamePlayPanel extends JPanel {
 	protected GUIBridge bridge;
 	protected ArrayList<Move> PlayableMoves;
 	
+	private DefaultListModel p1CaptureListModel;
+	private DefaultListModel p2CaptureListModel; 
+	
 	
 	// Flip Board if player is black pieces
 	/**
@@ -55,6 +60,17 @@ public class GamePlayPanel extends JPanel {
 		board.setLocation(50, 50);	
 		add(board);
 		
+		//Add our captured lists
+		p1CaptureListModel = new DefaultListModel();
+		p2CaptureListModel = new DefaultListModel();
+		JList p1CaptureList = new JList(p1CaptureListModel);
+		p1CaptureList.setBounds(900, 38, 100, 250);
+		add(p1CaptureList);
+		
+		JList p2CaptureList = new JList(p2CaptureListModel);
+		p2CaptureList.setBounds(900, 328, 100, 250);
+		add(p2CaptureList);
+		
 		refreshBoard();
 		
 		
@@ -64,7 +80,7 @@ public class GamePlayPanel extends JPanel {
 	public void refreshBoard() {
 		if (!bridge.EndState()) {
 			board.RefreshBoard(getClientBoard());
-			//updateCapturedList();
+			updateCapturedList();
 		}
 		else {
 			//MainAppWindow.setPaneResult(8);
@@ -132,5 +148,23 @@ public class GamePlayPanel extends JPanel {
 		bridge.WaitForNextMove();
 		refreshBoard();
 		
+	}
+	
+	public void updateCapturedList() {
+		BoardPiece[] piecesCaptured = bridge.GetCaptured();
+		int pNum = getPlayerNum();
+		BoardPiece.PieceColor pColor;
+		pColor = BoardPiece.PieceColor.WHITE;
+		for(BoardPiece piece : piecesCaptured) {
+			int pieceNum = piece.getPieceID();
+			BoardPiece.PieceColor pieceColor = piece.getColor();
+			String[] pieces = {"King", "Queen", "Rook", "Bishop", "Knight", "Pawn" };
+			if (pColor.equals(pieceColor)) {
+				p1CaptureListModel.addElement(pieces[pieceNum]);
+			}
+			else {
+				p2CaptureListModel.addElement(pieces[pieceNum]);
+			}
+		}
 	}
 }

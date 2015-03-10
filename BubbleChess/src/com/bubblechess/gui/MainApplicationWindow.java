@@ -50,22 +50,6 @@ public class MainApplicationWindow extends JFrame {
 	public GUIBridge getBridge(){ 
 		return this.bridge;
 	}
-	
-	/**
-	 * Function to launch the application. Created from old main function.
-	 */
-	/*public static void launchApplicationWindow(final GUIBridge b) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					MainApplicationWindow mainWindow = new MainApplicationWindow(b);
-					mainWindow.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}*/
 
 	/**
 	 * sets the JFrame of the window as visible
@@ -104,92 +88,6 @@ public class MainApplicationWindow extends JFrame {
 		panel.setVisible(b);
 	}
 	
-	public int isGamePlaying() { 
-		return this.gamePlaying;
-	}
-	
-	public void setGamePlaying(int i) { 
-		this.gamePlaying = i;
-	}
-	
-
-	
-	/** 
-	 * Starts the login Panel. Property Listens is watching for when the loginState
-	 * of the LoginPanel is changed the the change event is fired off.
-	 * @param p
-	 */
-	/*public void startLogin(LoginPanel p) {
-		p.addPropertyChangeListener("loginState", new PropertyChangeListener() {
-
-			public void propertyChange(PropertyChangeEvent evt) { 
-				int newStateValue = (int) evt.getNewValue();
-				LoginPanel lP = (LoginPanel) evt.getSource();
-				// if value is 1 it will try to login and start main menu if sucess
-				if(newStateValue == 1) {
-					int result = loginFunction(lP);
-					/*if(result >= 0) { 
-						startMainMenu();
-						
-					}
-					if(result >= 0) {
-						setPaneResult(result);
-					}
-					
-					
-				}
-				// fires off create new user screen
-				else if(newStateValue == 2) {
-					setPaneResult(newStateValue);
-					
-				}
-				// fires off continue as guest and if success starts main menu
-				else if(newStateValue == 3) {
-					int result = continueAsGuest();
-					
-					if(result >= 0) {
-						setPaneResult(result);
-					}
-					
-				}
-			}
-		});
-	}*/
-	
-	/**
-	 * Tries to login to server using login function from GUIBridge.
-	 * @param lP
-	 * @returns 0 Sucess, -1 Incorrect Pass, -2 User Not Found
-	 */
-	/*public int loginFunction(LoginPanel lP) {
-		String user = lP.getUserName();
-		String pass = lP.getPassword();
-		
-		int result = this.bridge.Login(user, pass);
-		if(result == -1) {
-			lP.setErrorLabel("Incorrect Password");
-		}
-		else if (result == -2) {
-			lP.setErrorLabel("User Not Found");
-		}
-		
-		
-		return result;
-	}
-	
-	/**
-	 * calls Continue as guest from bridge
-	 * @return 0 success, -1 failure
-	 */
-	/*public int continueAsGuest() { 
-		return bridge.ContinueAsGuest();
-	}
-	
-	public int registerUser() { 
-		return 0;
-	} */
-	
-	
 	public void setPaneResult(int i) {
 		paneResult = i;
 	}
@@ -200,6 +98,7 @@ public class MainApplicationWindow extends JFrame {
 	public int getPaneResult() {
 		return this.paneResult;
 	}
+	
 	public void startMainMenu() {
 		
 	}

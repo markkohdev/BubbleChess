@@ -10,8 +10,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.bubblechess.client.Board;
-import com.bubblechess.client.BoardPiece.Color;
+import com.bubblechess.client.BoardPiece;
+import com.bubblechess.client.BoardPiece.PieceColor;
 import com.bubblechess.client.ChessBoard;
+import com.bubblechess.client.ChessPiece;
 import com.bubblechess.client.Game;
 import com.bubblechess.client.Move;
 import com.bubblechess.client.User;
@@ -78,14 +80,14 @@ public class MoveValidationTest {
 		fen = "k-------/--------/--------/---q----/--------/---K----/--------/-------- w KQkq - 0 1";
 		setUp();
 		
-		Assert.assertEquals(true, chessboard.inCheck(Color.WHITE));
+		Assert.assertEquals(true, chessboard.inCheck(PieceColor.WHITE));
 		
 		tearDown();
 		
 		fen = "K-------/--------/--------/---Q----/--------/---k----/--------/-------- b KQkq - 0 1";
 		setUp();
 		
-		Assert.assertEquals(true, chessboard.inCheck(Color.BLACK));
+		Assert.assertEquals(true, chessboard.inCheck(PieceColor.BLACK));
 		
 		tearDown();
 	}
@@ -620,12 +622,57 @@ public class MoveValidationTest {
 	}
 	
 	/**
+	 * Test that the game ends in a draw in the case of a three-fold repetition
+	 * Test #13 - 1.4.3.5
+	 */
+	@Test
+	public void threeFoldRepetition(){
+		setUp();
+		
+		//#1
+		game.playMove(new Move(new int[]{1,0}, new int[]{2,2}));
+		game.playMove(new Move(new int[]{6,7}, new int[]{5,5}));
+		game.playMove(new Move(new int[]{2,2}, new int[]{1,0}));
+		game.playMove(new Move(new int[]{5,5}, new int[]{6,7}));
+		//#2
+		game.playMove(new Move(new int[]{1,0}, new int[]{2,2}));
+		game.playMove(new Move(new int[]{6,7}, new int[]{5,5}));
+		game.playMove(new Move(new int[]{2,2}, new int[]{1,0}));
+		game.playMove(new Move(new int[]{5,5}, new int[]{6,7}));
+		//#3
+	
+		//Starting position with white to move has been reached three times = draw	
+		Assert.assertEquals("Draw", chessboard.getState());
+		
+		tearDown();		
+	}
+	
+	/**
 	 * Test that the pawn can promote to a queen, rook, knight, or bishop when
 	 * advanced to the last rank
 	 * Test #28 - 1.5.9.4
 	 */
 	@Test
 	public void promotion(){
-		//TODO: Enhancement
+		fen = "-----k--/---PP---/--------/--------/--------/--------/--------/-------K w KQkq - 0 60";
+		setUp();
+		
+		game.playMove(new Move(new int[]{4,6}, new int[]{4,7}));
+		game.playMove(new Move(new int[]{5,7}, new int[]{4,7}));
+		//Workaround to check the piece type
+		BoardPiece[] captured = chessboard.getCaptured();
+		ChessPiece piece = (ChessPiece)captured[0];
+		
+		//default
+		Assert.assertEquals("Queen", piece.getType());
+		
+		//Promote to knight (will also fail for bishop and rook)
+		game.playMove(new Move(new int[]{3,6}, new int[]{3,7}));
+		game.playMove(new Move(new int[]{4,7}, new int[]{3,7}));
+		piece = (ChessPiece)captured[1];
+		
+		Assert.assertEquals("Knight", piece.getType());
+		
+		tearDown();
 	}
 }

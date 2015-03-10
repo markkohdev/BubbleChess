@@ -36,6 +36,12 @@ public class ChessBoard implements Board, Cloneable {
 		init();
 	}
 	
+	/**
+	 * Constructor to make a copy of an existing ChessBoard
+	 * @param board
+	 * @param captured
+	 * @param state
+	 */
 	public ChessBoard(BoardPiece[][] board,BoardPiece[] captured, STATE state){
 		this.board = board;
 		this.captured = new ArrayList<BoardPiece>(Arrays.asList(captured));
@@ -43,10 +49,11 @@ public class ChessBoard implements Board, Cloneable {
 	}
 	
 	/**
-	 * Allows the user to load a game with all the information needed
-	 * to restart the game from the given position
+	 * Constructor to load a custom game
+	 * Allows the user to load a game with all the information needed to restart the
+	 * game from a given position, using Forsyth-Edwards notation
 	 * Undefined behavior for invalid FEN strings
-	 * @param fen A string in modified Forsyth-Edwards notation
+	 * @param fen
 	 */
 	public ChessBoard(String fen){
 		String pieces, toMove, castling, enPassant, halfMoveClock, moveNumber;
@@ -111,13 +118,6 @@ public class ChessBoard implements Board, Cloneable {
 		
 		updateState();
 		
-		if (castling.equals("-")){
-			//TODO
-		}
-		else{
-			//TODO: parse castling input and do things
-		}
-		
 		if (enPassant.equals("-")){
 			this.enPassant = false;
 		}
@@ -126,13 +126,12 @@ public class ChessBoard implements Board, Cloneable {
 			enPassantSquare = convertToCoord(enPassant);
 		}
 		
-		//TODO: do something with halfmove clock and move numbers?
 	}
 	
 	/**
-	 * Converts a square to a coordinate, ex: e3 -> [4,2]
+	 * Converts a square to a coordinate, e.g. e3 becomes [4,2]
 	 * @param square
-	 * @return The square in coordiante form
+	 * @return The square in [x, y] form
 	 */
 	protected int[] convertToCoord(String square){
 		int[] result = new int[2];
@@ -144,7 +143,7 @@ public class ChessBoard implements Board, Cloneable {
 	}
 
 	/**
-	 * Board initializer. Sets up pieces and initial state.
+	 * Board initializer. Sets up the pieces and initial state.
 	 */
 	protected void init(){
 		board = new BoardPiece[boardWidth][boardHeight];
@@ -174,6 +173,10 @@ public class ChessBoard implements Board, Cloneable {
 		enPassantEligible = false;
 	}
 
+	/**
+	 * Get game board
+	 * @return A 2D array of BoardPieces
+	 */
 	@Override
 	public BoardPiece[][] getBoard() {
 		BoardPiece[][] newBoard = new BoardPiece[boardWidth][boardHeight];
@@ -191,9 +194,11 @@ public class ChessBoard implements Board, Cloneable {
 	}
 	
 	/**
-	 * We wanna use BoardPiece[] here because it makes copies and not references
+	 * Get captured pieces
+	 * @return An array of captured pieces
 	 */
 	public BoardPiece[] getCaptured() {
+		//We want to use BoardPiece[] here because it makes copies and not references
 		if (this.captured==null){			
 			return new BoardPiece[0];
 		}
@@ -202,20 +207,40 @@ public class ChessBoard implements Board, Cloneable {
 		return result;
 	}
 	
+	/**
+	 * Get game board width
+	 * @return width
+	 */
 	@Override
 	public int getWidth() {
 		return boardWidth;
 	}
 
+	/**
+	 * Get game board height
+	 * @return height
+	 */
 	@Override
 	public int getHeight() {
 		return boardHeight;
 	}
 
+	/**
+	 * Apply the passed move to the game board
+	 * @param m
+	 * @return True if move was successful, False if move is invalid
+	 */
 	public boolean applyMove(Move m){
 		return applyMove(m, true);
 	}
 	
+	/**
+	 * Apply the passed move to the game board and check that move is legal
+	 * if the validate flag is set to True
+	 * @param m
+	 * @param validate
+	 * @return True if move was successful, False if move is invalid
+	 */
 	@Override
 	public boolean applyMove(Move m, boolean validate) {
 		if (!validate || validMove(m)) {
@@ -260,13 +285,18 @@ public class ChessBoard implements Board, Cloneable {
 		return false;
 	}
 	
+	/**
+	 * Apply the passed move to a clone of the game board
+	 * @param m
+	 * @return The new game board
+	 */
 	public Board applyMoveCloning(Move m){
 		return applyMoveCloning(m, true);
 	}
 
 	/**
 	 * Returns a new copy of the board with the given move applied
-	 * @return A new, udpated ChessBoard
+	 * @return A copy of the updated board 
 	 */
 	@Override
 	public Board applyMoveCloning(Move m, boolean validate) {
@@ -317,6 +347,12 @@ public class ChessBoard implements Board, Cloneable {
 		}
 	}
 
+	/**
+	 * Get all moves for a given piece in a board
+	 * @param col
+	 * @param row
+	 * @return A list of moves
+	 */
 	@Override
 	public ArrayList<Move> getMoves(char col, char row) {
 		//col will be letter from a-z, convert to 0-n
@@ -327,6 +363,7 @@ public class ChessBoard implements Board, Cloneable {
 	}
 
 	/**
+	 * Get the game state
 	 * @return The current state as a string
 	 */
 	@Override
@@ -359,22 +396,35 @@ public class ChessBoard implements Board, Cloneable {
 		return false;
 	}
 	
+	/**
+	 * Get the piece at the passed coordinate
+	 * Returns null if empty
+	 * @param coord
+	 * @return The piece at the passed coordinate
+	 */
 	protected BoardPiece getPiece(int[] coord){
 		if (coord.length != 2)
 			return null;
 		return board[coord[0]][coord[1]];
 	}
 
+	/**
+	 * Get the piece at the passed coordinate
+	 * Returns null if empty
+	 * @param col
+	 * @param row
+	 * @return The piece at the passed coordinate
+	 */
 	protected BoardPiece getPiece(int col, int row){
 		return board[col][row];
 	}
 
 	/**
-	 * Returns true if the piece on the origin square attacks the destination square,
-	 * e.g. it is unblocked
-	 * Note that for castling and moving a pawn forward two spaces this function
+	 * Determine if a move is a valid attack, e.g., the piece on the origin square
+	 * threatens the destination square
+	 * Note: For castling and moving a pawn forward two spaces this function
 	 * will return true, even though they don't attack the destination square
-	 * @param m A move
+	 * @param m
 	 * @return True if the piece can attack this square, False otherwise
 	 */
 	protected boolean validAttack(Move m){
@@ -410,7 +460,7 @@ public class ChessBoard implements Board, Cloneable {
 	
 	/**
 	 * Determine if the given move is legal
-	 * @param m A move
+	 * @param m
 	 * @return True if move is legal, False otherwise
 	 */
 	protected boolean validMove(Move m){
@@ -513,8 +563,8 @@ public class ChessBoard implements Board, Cloneable {
 	}
 	
 	/**
-	 * Return true if the given player is in check
-	 * @param color Color.WHITE or Color.BLACK
+	 * Return true if the passed player is in check
+	 * @param color
 	 * @return True if the player's king is attacked, False otherwise
 	 */
 	public boolean inCheck(PieceColor color){
@@ -562,8 +612,8 @@ public class ChessBoard implements Board, Cloneable {
 	/**
 	 * Return an ordered list of squares between origin and destination squares
 	 * or an empty list if the squares are adjacent
-	 * @param m A move
-	 * @return A list of squares between origin and destination
+	 * @param m
+	 * @return A list of squares between the origin and destination
 	 */
 	protected ArrayList<int[]> getSquaresOnPath(Move m){
 		ArrayList<int[]> squares = new ArrayList<int[]>();
@@ -605,8 +655,8 @@ public class ChessBoard implements Board, Cloneable {
 	
 	/**
 	 * Recognize and handle castling, en passant, and promotion
-	 * @param m A move
-	 * @return True if special case if recognized and handled, False otherwise
+	 * @param m A
+	 * @return True if special case is recognized and handled, False otherwise
 	 */
 	protected boolean handleSpecialCase(Move m){
 		if (!(castling || enPassant || promotion)){
@@ -649,8 +699,7 @@ public class ChessBoard implements Board, Cloneable {
 	}
 	
 	/**
-	 * Updates the board state variable
-	 * WHITE_MOVE, BLACK_MOVE, CHECKMATE, or STALEMATE
+	 * Updates the board's state to WHITE_MOVE, BLACK_MOVE, CHECKMATE, STALEMATE, or DRAW
 	 */
 	@Override
 	public void updateState(){
@@ -695,7 +744,7 @@ public class ChessBoard implements Board, Cloneable {
 	 * 	- KB vs K
 	 *  - KN vs K
 	 *  - K vs K
-	 * @return True if there is insufficient mating material
+	 * @return True if there is insufficient mating material, False otherwise
 	 */
 	protected boolean checkInsufficientMaterial(){
 		ArrayList<BoardPiece> pieces = new ArrayList<BoardPiece>();	
@@ -726,8 +775,8 @@ public class ChessBoard implements Board, Cloneable {
 	}
 	
 	/**
-	 * Checks if the given side has at least one legal move
-	 * @param color Color.WHITE or Color.BLACK
+	 * Determine if the given side has at least one legal move
+	 * @param color
 	 * @return True if given side has at least one legal move, False otherwise
 	 */
 	protected boolean hasValidMove(PieceColor color) {

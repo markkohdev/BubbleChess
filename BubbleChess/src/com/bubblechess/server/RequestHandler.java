@@ -47,7 +47,8 @@ public class RequestHandler extends Thread {
 	 * Constructor used for testing purposes
 	 * @param clientSocket
 	 * @param server
-	 * @param isTest
+	 * @param request
+	 * @param stream
 	 */
 	public RequestHandler(Socket clientSocket, ServerInstance server, String request, PrintStream stream) {
 		_clientSocket = clientSocket;
@@ -59,75 +60,12 @@ public class RequestHandler extends Thread {
 		_isTest = true;
 	}
 	
+	/**
+	 * Main Thread method 
+	 */
 	public void run (){
 		try {
-            //Input
-            /* Basic Move JSON
-            { 
-            	"request": "insertMove"
-                "userID": 1234,
-                "gameID": 1,
-                "colFrom": 2,
-                "rowFrom": 2,
-                "colTo": 3,
-                "rowTo": 3
-            }
-            */
-            //String request="{ \"request\": \"insertMove\", \"userID\": 1234,\"gameID\": 1,\"colFrom\": 2,\"rowFrom\": 2,\"colTo\": 3,\"rowTo\": 3}";
-           
-            /* getAllMoves JSON
-            { 
-            	"request": "getAllMoves",
-                "gameID": 1
-            }
-            */
-            //String request = "{ \"request\": \"getAllMoves\",\"gameID\": 1}";
-            
-            
-            /* createUser JSON
-            { 
-            	"request": "getUser",
-                "username": "Test1",
-                "password": "pass1"
-            }
-            */
-            //String request = "{ \"request\": \"createUser\",\"username\": \"Test1\",\"password\": \"pass1\"}";
-            
-            /* getUser JSON
-            { 
-            	"request": "getUser",
-                "username": "Test1"
-            }
-            */
-            //String request = "{ \"request\": \"getUser\",\"username\": \"Test1\"}";
-            
-            /* checkUser JSON
-            { 
-            	"request": "checkUser",
-                "username": "Test1",
-                "password": "pass1"
-            }
-            */
-            //String request = "{ \"request\": \"checkUser\",\"username\": \"Test1\", \"password\": \"pass1\"}";
-            
-            /* createGame JSON
-            { 
-            	"request": "createGame",
-                "userID": "1234",
-                "userNumber": "user1"
-            }
-            */
-            //String request = "{ \"request\": \"createGame\",\"userID\": \"1234\",\"userNumber\": \"user1\"}";
-            
-            /* joinGame JSON
-            { 
-            	"request": "joinGame",
-                "userID": "1234",
-                "gameID": "1234"
-            }
-            */
-            //String request = "{ \"request\": \"joinGame\",\"userID\": \"1234\",\"gameID\": \"1234\"}";
-			
+
             //JSON parsing
 			System.out.println(_request);
 
@@ -329,7 +267,6 @@ public class RequestHandler extends Thread {
             }
 		}
 		catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
@@ -339,14 +276,13 @@ public class RequestHandler extends Thread {
 					_clientSocket.close();
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 	}
 	
 	/**
-	 * Sends a response to the client and the System.out
+	 * Sends a response to the client and set the result string
 	 * @param results
 	 */
 	public void sendToClient(String results) {
@@ -354,6 +290,10 @@ public class RequestHandler extends Thread {
 		_results = results;
 	}
 	
+	/**
+	 * Gets the result string that was sent to the client
+	 * @return
+	 */
 	public String getResults() {
 		return _results;
 	}

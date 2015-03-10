@@ -18,12 +18,18 @@ public class JoinPanel extends JPanel {
 	
 	private JLabel lblErrorLabel;
 	private JComboBox joinDropDown;
+	private MainApplicationWindow mainWin;
+	private GUIBridge bridge;
 
-	/**joinableGames
-	 * Create the panel.
+
+	/**
+	 * Constructor for Join Panel
+	 * Gets list of joinable games from the GUIbridge
 	 */
-	public JoinPanel(ArrayList<Integer> games) {
-		
+	public JoinPanel() {
+		mainWin = MainApplicationWindow.getInstance();
+		bridge = mainWin.getBridge();
+		ArrayList<Integer> games = bridge.GetJoinableGames();
 		int numGames = games.size();
 		String[] joinableGames = new String[numGames];
 		for (int i = 0; i < numGames; i++) {
@@ -65,12 +71,13 @@ public class JoinPanel extends JPanel {
 
 	}
 	
-	
+	/**
+	 * join game function, tries to join game using the bridge function join game
+	 * if success sets next panel to gameplay if not, sets error label text
+	 */
 	public void joinGame() {
-		MainApplicationWindow mainWin = MainApplicationWindow.getInstance();
 		int gameID = this.getSelectedID();
-		GUIBridge b = mainWin.getBridge();
-		boolean result = b.JoinGame(gameID);
+		boolean result = bridge.JoinGame(gameID);
 		if(!result) {
 			setErrorLabel("Error Joining Game");			
 		}
@@ -79,11 +86,19 @@ public class JoinPanel extends JPanel {
 		}
 		
 	}
-	
+	/**
+	 * function to set the error label to message inputted
+	 * @param msg
+	 */
 	public void setErrorLabel(String msg) {
 		this.lblErrorLabel.setText(msg);
 	}
 	
+	
+	/**
+	 * Used to get the ID selected from the dropdown
+	 * @return ID from selected Game
+	 */
 	public int getSelectedID() {
 		int gameID = (Integer)this.joinDropDown.getSelectedItem();		
 		return gameID;
