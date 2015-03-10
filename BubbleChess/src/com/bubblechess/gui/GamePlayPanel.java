@@ -14,6 +14,7 @@ import javax.swing.JButton;
 
 import com.bubblechess.GUIBridge;
 import com.bubblechess.client.BoardPiece;
+import javax.swing.JLayeredPane;
 
 public class GamePlayPanel extends JPanel {
 
@@ -33,13 +34,13 @@ public class GamePlayPanel extends JPanel {
 	 */
 	public GamePlayPanel() {
 		int color = this.getPlayerNum();
-		board = new GameBoard(color);
+		BoardPiece[][] clientBoard = this.getClientBoard();
+		board = new GameBoard(clientBoard, color);
 		setBackground(Color.LIGHT_GRAY);
 		setPreferredSize(new Dimension(1024,768));
 		setLayout(null);
 		board.setLocation(23, 38);	
-		add(board);
-		
+		add(board);		
 		JButton btnNewButton = new JButton("New button");
 		btnNewButton.addMouseListener(new MouseAdapter() {
 			@Override
@@ -50,13 +51,17 @@ public class GamePlayPanel extends JPanel {
 		});
 		btnNewButton.setBounds(743, 396, 117, 25);
 		add(btnNewButton);
-			
 		
+		JLayeredPane layeredPane = new JLayeredPane();
+		layeredPane.setBounds(0, 0, 1, 1);
+		add(layeredPane);	
 	}
 	
 	public void refreshBoard() {
 		this.remove(board);
-		board.refreshBoard();
+		BoardPiece[][] clientBoard = this.getClientBoard();
+		int color = this.getPlayerNum();
+		board = new GameBoard(clientBoard, color);
 		this.add(board);
 		//this.invalidate();
 		//this.validate();
