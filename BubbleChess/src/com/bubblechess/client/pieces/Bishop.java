@@ -8,7 +8,7 @@ import com.bubblechess.client.Move;
 
 public class Bishop extends ChessPiece {
 
-	public Bishop(Color col) {
+	public Bishop(PieceColor col) {
 		color = col;
 		dirs = new int[][]{NE,SE,SW,NW};
 		id=3;

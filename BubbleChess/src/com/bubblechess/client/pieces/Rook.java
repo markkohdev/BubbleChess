@@ -8,7 +8,7 @@ import com.bubblechess.client.Move;
 
 public class Rook extends ChessPiece {
 	
-	public Rook(Color col) {
+	public Rook(PieceColor col) {
 		color = col;
 		hasMoved = false;
 		

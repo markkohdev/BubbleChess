@@ -2,7 +2,7 @@ package com.bubblechess.client;
 
 import java.util.ArrayList;
 
-import com.bubblechess.client.BoardPiece.Color;
+import com.bubblechess.client.BoardPiece.PieceColor;
 
 public interface Board {
 
@@ -88,6 +88,6 @@ public interface Board {
 	 */
 	public void updateState();
 	
-	public boolean inCheck(Color color);
+	public boolean inCheck(PieceColor color);
 	
 }

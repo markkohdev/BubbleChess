@@ -8,7 +8,7 @@ import com.bubblechess.client.Move;
 
 public class Queen extends ChessPiece {
 	
-	public Queen(Color col) {
+	public Queen(PieceColor col) {
 		color = col;
 		dirs = new int[][]{N,NE,E,SE,S,SW,W,NW};
 		id=1;

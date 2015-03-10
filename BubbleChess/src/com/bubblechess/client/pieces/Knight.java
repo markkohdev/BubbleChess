@@ -9,7 +9,7 @@ import com.bubblechess.client.Move;
 public class Knight extends ChessPiece {
 	
 	
-	public Knight(Color col) {
+	public Knight(PieceColor col) {
 		color = col;
 		
 		// Modify directional vectors for knight movement

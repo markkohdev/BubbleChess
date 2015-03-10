@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.bubblechess.client.pieces.*;
-import com.bubblechess.client.BoardPiece.Color;
+import com.bubblechess.client.BoardPiece.PieceColor;
 
 public class ChessBoard implements Board, Cloneable {
 	
@@ -70,29 +70,29 @@ public class ChessBoard implements Board, Cloneable {
 					
 					switch(piece){
 					case 'r':
-						board[col][Math.abs(row-7)] = new Rook(Color.BLACK); break;
+						board[col][Math.abs(row-7)] = new Rook(PieceColor.BLACK); break;
 					case 'R':
-						board[col][Math.abs(row-7)] = new Rook(Color.WHITE); break;
+						board[col][Math.abs(row-7)] = new Rook(PieceColor.WHITE); break;
 					case 'n':
-						board[col][Math.abs(row-7)] = new Knight(Color.BLACK); break;
+						board[col][Math.abs(row-7)] = new Knight(PieceColor.BLACK); break;
 					case 'N':
-						board[col][Math.abs(row-7)] = new Knight(Color.WHITE); break;
+						board[col][Math.abs(row-7)] = new Knight(PieceColor.WHITE); break;
 					case 'b':
-						board[col][Math.abs(row-7)] = new Bishop(Color.BLACK); break;
+						board[col][Math.abs(row-7)] = new Bishop(PieceColor.BLACK); break;
 					case 'B':
-						board[col][Math.abs(row-7)] = new Bishop(Color.WHITE); break;
+						board[col][Math.abs(row-7)] = new Bishop(PieceColor.WHITE); break;
 					case 'k':
-						board[col][Math.abs(row-7)] = new King(Color.BLACK); break;
+						board[col][Math.abs(row-7)] = new King(PieceColor.BLACK); break;
 					case 'K':
-						board[col][Math.abs(row-7)] = new King(Color.WHITE); break;
+						board[col][Math.abs(row-7)] = new King(PieceColor.WHITE); break;
 					case 'q':
-						board[col][Math.abs(row-7)] = new Queen(Color.BLACK); break;
+						board[col][Math.abs(row-7)] = new Queen(PieceColor.BLACK); break;
 					case 'Q':
-						board[col][Math.abs(row-7)] = new Queen(Color.WHITE); break;
+						board[col][Math.abs(row-7)] = new Queen(PieceColor.WHITE); break;
 					case 'p':
-						board[col][Math.abs(row-7)] = new Pawn(Color.BLACK); break;
+						board[col][Math.abs(row-7)] = new Pawn(PieceColor.BLACK); break;
 					case 'P':
-						board[col][Math.abs(row-7)] = new Pawn(Color.WHITE); break;
+						board[col][Math.abs(row-7)] = new Pawn(PieceColor.WHITE); break;
 					default:
 						board[col][Math.abs(row-7)] = null;
 					}
@@ -149,25 +149,25 @@ public class ChessBoard implements Board, Cloneable {
 	protected void init(){
 		board = new BoardPiece[boardWidth][boardHeight];
 		for (int i=0;i<8;i++) {
-			board[i][1] = new Pawn(Color.WHITE);
-			board[i][6] = new Pawn(Color.BLACK);
+			board[i][1] = new Pawn(PieceColor.WHITE);
+			board[i][6] = new Pawn(PieceColor.BLACK);
 		}
-		board[0][0] = new Rook(Color.WHITE);
-		board[0][7] = new Rook(Color.BLACK);
-		board[1][0] = new Knight(Color.WHITE);
-		board[1][7] = new Knight(Color.BLACK);
-		board[2][0] = new Bishop(Color.WHITE);
-		board[2][7] = new Bishop(Color.BLACK);
-		board[3][0] = new Queen(Color.WHITE);
-		board[3][7] = new Queen(Color.BLACK);
-		board[4][0] = new King(Color.WHITE);
-		board[4][7] = new King(Color.BLACK);
-		board[5][0] = new Bishop(Color.WHITE);
-		board[5][7] = new Bishop(Color.BLACK);
-		board[6][0] = new Knight(Color.WHITE);
-		board[6][7] = new Knight(Color.BLACK);
-		board[7][0] = new Rook(Color.WHITE);
-		board[7][7] = new Rook(Color.BLACK);	
+		board[0][0] = new Rook(PieceColor.WHITE);
+		board[0][7] = new Rook(PieceColor.BLACK);
+		board[1][0] = new Knight(PieceColor.WHITE);
+		board[1][7] = new Knight(PieceColor.BLACK);
+		board[2][0] = new Bishop(PieceColor.WHITE);
+		board[2][7] = new Bishop(PieceColor.BLACK);
+		board[3][0] = new Queen(PieceColor.WHITE);
+		board[3][7] = new Queen(PieceColor.BLACK);
+		board[4][0] = new King(PieceColor.WHITE);
+		board[4][7] = new King(PieceColor.BLACK);
+		board[5][0] = new Bishop(PieceColor.WHITE);
+		board[5][7] = new Bishop(PieceColor.BLACK);
+		board[6][0] = new Knight(PieceColor.WHITE);
+		board[6][7] = new Knight(PieceColor.BLACK);
+		board[7][0] = new Rook(PieceColor.WHITE);
+		board[7][7] = new Rook(PieceColor.BLACK);	
 		
 		state = STATE.WHITE_MOVE;
 		captured = new ArrayList<BoardPiece>();
@@ -517,7 +517,7 @@ public class ChessBoard implements Board, Cloneable {
 	 * @param color Color.WHITE or Color.BLACK
 	 * @return True if the player's king is attacked, False otherwise
 	 */
-	public boolean inCheck(Color color){
+	public boolean inCheck(PieceColor color){
 		ArrayList<Move> moves = new ArrayList<Move>();
 		ArrayList<Move> validAttacks = new ArrayList<Move>();
 		int[] kingLoc = new int[2];
@@ -661,12 +661,12 @@ public class ChessBoard implements Board, Cloneable {
 		
 		if (state==STATE.WHITE_MOVE){
 			
-			if (hasValidMove(Color.BLACK)){
+			if (hasValidMove(PieceColor.BLACK)){
 				state = STATE.BLACK_MOVE;
 				return;
 			}
 			
-			if (inCheck(Color.BLACK)){	
+			if (inCheck(PieceColor.BLACK)){	
 				state = STATE.CHECKMATE;
 			}
 			else {
@@ -676,12 +676,12 @@ public class ChessBoard implements Board, Cloneable {
 		
 		if (state==STATE.BLACK_MOVE){
 						
-			if (hasValidMove(Color.WHITE)){
+			if (hasValidMove(PieceColor.WHITE)){
 				state = STATE.WHITE_MOVE;
 				return;
 			}
 			
-			if (inCheck(Color.WHITE)){
+			if (inCheck(PieceColor.WHITE)){
 				state = STATE.CHECKMATE;
 			}
 			else {
@@ -730,7 +730,7 @@ public class ChessBoard implements Board, Cloneable {
 	 * @param color Color.WHITE or Color.BLACK
 	 * @return True if given side has at least one legal move, False otherwise
 	 */
-	protected boolean hasValidMove(Color color) {
+	protected boolean hasValidMove(PieceColor color) {
 		for (int col=0;col<boardWidth;col++){
 			for (int row=0;row<boardHeight;row++){
 				ChessPiece piece = (ChessPiece)getPiece(col, row);

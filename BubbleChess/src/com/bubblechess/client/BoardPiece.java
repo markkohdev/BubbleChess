@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public interface BoardPiece {
 
-	public enum Color {WHITE, BLACK};
+	public enum PieceColor {WHITE, BLACK};
 		
 	public BoardPiece clone();
 	
@@ -12,7 +12,7 @@ public interface BoardPiece {
 	
 	public ArrayList<Move> getSpecialMoves(int x, int y);
 	
-	public Color getColor();
+	public PieceColor getColor();
 	
 	public int getPieceID();
 }

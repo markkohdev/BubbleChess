@@ -134,9 +134,9 @@ public class Game {
 	}
 	
 	public int InCheck(){
-		if (board.inCheck(BoardPiece.Color.WHITE))
+		if (board.inCheck(BoardPiece.PieceColor.WHITE))
 			return 1;
-		else if (board.inCheck(BoardPiece.Color.BLACK))
+		else if (board.inCheck(BoardPiece.PieceColor.BLACK))
 			return 2;
 		else
 			return 0;
