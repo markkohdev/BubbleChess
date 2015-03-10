@@ -11,23 +11,25 @@ import javax.swing.JPanel;
 import com.bubblechess.GUIBridge;
 import com.bubblechess.client.ServerHandler;
 
-public class MainApplicationWindow {
+public class MainApplicationWindow extends JFrame {
 
 	
-	private JFrame frame;
-	private GUIBridge bridge;
+	// private JFrame frame;
+	protected GUIBridge bridge;
 	private int paneResult;
+	private JPanel previousPanel;
 
 	/**
 	 * Create the application.
 	 */
 	public MainApplicationWindow(GUIBridge b) {	
 		this.bridge = b;
-		frame = new JFrame();
-		frame.setBounds(0, 0, 1024, 768);
+		this.paneResult = -5;
+		//frame = new JFrame();
+		setBounds(0, 0, 1024, 768);
 		//frame.setBounds(100, 100, 450, 300);
 		//frame.setPreferredSize(new Dimension(1024,768));
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// LoginPanel lP = new LoginPanel();
 		// frame.setContentPane(lP);
 		// frame.setVisible(true);
@@ -52,8 +54,8 @@ public class MainApplicationWindow {
 	/**
 	 * sets the JFrame of the window as visible
 	 */
-	public void setFrameVisible() { 
-		this.frame.setVisible(true);
+	public void setFrameVisible(boolean f) { 
+		this.setVisible(f);
 	}
 	
 	/**
@@ -61,14 +63,19 @@ public class MainApplicationWindow {
 	 * @param panel
 	 */
 	public void removePanel(JPanel panel) {
-		this.frame.remove(panel);
+		this.remove(panel);
 	}
 	/**
 	 * adds panel received as param to the frame
 	 * @param panel
 	 */
 	public void addPanel(JPanel panel) {
-		this.frame.setContentPane(panel);		
+		this.setContentPane(panel);
+		this.previousPanel = panel;
+	}
+	
+	public void removePreviousPanel(){
+		this.remove(this.previousPanel);
 	}
 	/**
 	 * Sets panel received as paramter to visible or not
@@ -84,7 +91,7 @@ public class MainApplicationWindow {
 	 * of the LoginPanel is changed the the change event is fired off.
 	 * @param p
 	 */
-	public void startLogin(LoginPanel p) {
+	/*public void startLogin(LoginPanel p) {
 		p.addPropertyChangeListener("loginState", new PropertyChangeListener() {
 
 			public void propertyChange(PropertyChangeEvent evt) { 
@@ -96,8 +103,10 @@ public class MainApplicationWindow {
 					/*if(result >= 0) { 
 						startMainMenu();
 						
-					}*/
-					setPaneResult(result);
+					}
+					if(result >= 0) {
+						setPaneResult(result);
+					}
 					
 					
 				}
@@ -117,14 +126,14 @@ public class MainApplicationWindow {
 				}
 			}
 		});
-	}
+	}*/
 	
 	/**
 	 * Tries to login to server using login function from GUIBridge.
 	 * @param lP
 	 * @returns 0 Sucess, -1 Incorrect Pass, -2 User Not Found
 	 */
-	public int loginFunction(LoginPanel lP) {
+	/*public int loginFunction(LoginPanel lP) {
 		String user = lP.getUserName();
 		String pass = lP.getPassword();
 		
@@ -144,17 +153,20 @@ public class MainApplicationWindow {
 	 * calls Continue as guest from bridge
 	 * @return 0 success, -1 failure
 	 */
-	public int continueAsGuest() { 
+	/*public int continueAsGuest() { 
 		return bridge.ContinueAsGuest();
 	}
 	
 	public int registerUser() { 
 		return 0;
-	}
+	} */
 	
 	
 	public void setPaneResult(int i) {
 		paneResult = i;
+	}
+	public void resetPaneResult() { 
+		paneResult = 0;
 	}
 	
 	public int getPaneResult() {

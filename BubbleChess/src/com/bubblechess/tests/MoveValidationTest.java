@@ -1,5 +1,7 @@
 package com.bubblechess.tests;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 
 import org.junit.After;
@@ -18,13 +20,20 @@ public class MoveValidationTest {
 	private Board chessboard;
 	private User user1, user2;
 	private int gameid = 1;
+	private String fen = "";
 	
 	/**
 	 * Anything needed to be done before all tests
 	 */
 	@Before
 	public void setUp() {
-		chessboard = new ChessBoard();
+		if (fen.isEmpty()){
+			chessboard = new ChessBoard();
+		}
+		else{
+			chessboard = new ChessBoard(fen);
+		}		
+		
 		game = new Game(gameid, user1, user2, chessboard);
 	}
 	
@@ -33,7 +42,7 @@ public class MoveValidationTest {
 	 */
 	@After
 	public void tearDown() {
-		
+		fen = "";
 	}
 	
 	/**
@@ -42,8 +51,8 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void kingInCheck(){
-		String fen = "K-------/--------/--------/-q------/--------/--------/--------/-------k w KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
+		fen = "K-------/--------/--------/-q------/--------/--------/--------/-------k w KQkq - 0 1";
+		setUp();
 		
 		ArrayList<Move> legalMoves = new ArrayList<Move>();
 		legalMoves.add(new Move(new int[]{0,7}, new int[]{0,6}));
@@ -55,6 +64,8 @@ public class MoveValidationTest {
 		Assert.assertEquals(legalMoves.get(0).from()[1], generatedMoves.get(0).from()[1]);
 		Assert.assertEquals(legalMoves.get(0).to()[0], generatedMoves.get(0).to()[0]);
 		Assert.assertEquals(legalMoves.get(0).to()[1], generatedMoves.get(0).to()[1]);
+		
+		tearDown();
 	}
 	
 	/**
@@ -64,7 +75,25 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void moveOnFriendlyPiece(){
-		//TODO
+		fen = "k-------/---p----/--prp---/--------/--------/---p----/--------/-------K b KQkq - 0 1";
+		setUp();
+		
+		ArrayList<Move> generatedMoves = chessboard.getMoves(3,5);
+		ArrayList<Move> legalMoves = new ArrayList<Move>();
+		legalMoves.add(new Move(new int[]{3,5}, new int[]{3,4}));
+		legalMoves.add(new Move(new int[]{3,5}, new int[]{3,3}));
+
+		if (generatedMoves.size()!=legalMoves.size()){
+			fail();
+		}
+		for (int i=0;i<generatedMoves.size();i++){
+			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);
+			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);
+			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);
+			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
+		}
+		
+		tearDown();
 	}
 	
 	/**
@@ -73,7 +102,23 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void movePastEnemyPiece(){
-		//TODO
+		fen = "k-------/---p----/--prp---/--------/--------/---P----/--------/-------K b KQkq - 0 1";
+		setUp();
+		
+		Move illegalMove = new Move(new int[]{3,5}, new int[]{3,1});
+		ArrayList<Move> generatedMoves = chessboard.getMoves(3,5);
+		
+		for (int i=0;i<generatedMoves.size();i++){
+			if (illegalMove.from()[0]==generatedMoves.get(i).from()[0] &&
+				illegalMove.from()[1]==generatedMoves.get(i).from()[1] &&
+				illegalMove.to()[0]==generatedMoves.get(i).to()[0] &&
+				illegalMove.to()[1]==generatedMoves.get(i).to()[1]){
+				
+				fail();
+			}
+		}
+
+		tearDown();
 	}
 	
 	/**
@@ -82,7 +127,31 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void kingMoves(){
-		//TODO
+		fen = "-----k--/--------/--------/---K----/--------/--------/--P-----/-------- b KQkq - 0 1";
+		setUp();
+		
+		ArrayList<Move> generatedMoves = chessboard.getMoves(3,4);
+		ArrayList<Move> legalMoves = new ArrayList<Move>();
+		legalMoves.add(new Move(new int[]{3,4}, new int[]{3,5}));
+		legalMoves.add(new Move(new int[]{3,4}, new int[]{4,5}));
+		legalMoves.add(new Move(new int[]{3,4}, new int[]{4,4}));
+		legalMoves.add(new Move(new int[]{3,4}, new int[]{4,3}));
+		legalMoves.add(new Move(new int[]{3,4}, new int[]{3,3}));
+		legalMoves.add(new Move(new int[]{3,4}, new int[]{2,3}));
+		legalMoves.add(new Move(new int[]{3,4}, new int[]{2,4}));
+		legalMoves.add(new Move(new int[]{3,4}, new int[]{2,5}));
+		
+		if (generatedMoves.size()!=legalMoves.size()){
+			fail();
+		}
+		for (int i=0;i<generatedMoves.size();i++){
+			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);
+			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);
+			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);
+			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
+		}
+		
+		tearDown();
 	}
 	
 	/**
@@ -91,7 +160,161 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void castling(){
-		//TODO
+		setUp();
+		
+		//Sample game
+		game.playMove(new Move(new int[]{4,1}, new int[]{4,3}));
+		game.playMove(new Move(new int[]{4,6}, new int[]{4,4}));
+		game.playMove(new Move(new int[]{6,0}, new int[]{5,2}));
+		game.playMove(new Move(new int[]{1,7}, new int[]{2,5}));
+		game.playMove(new Move(new int[]{5,0}, new int[]{2,3}));
+		game.playMove(new Move(new int[]{5,7}, new int[]{2,4}));
+		
+		Move whitecastle = new Move(new int[]{4,0}, new int[]{6,0});
+		Move blackcastle = new Move(new int[]{4,7}, new int[]{6,7});
+		
+		ArrayList<Move> whiteKingMoves = chessboard.getMoves(4,0);
+		ArrayList<Move> blackKingMoves = chessboard.getMoves(4,7);
+		
+		for (int i=0;i<whiteKingMoves.size();i++){
+			if (whitecastle.from()[0]==whiteKingMoves.get(i).from()[0] &&
+				whitecastle.from()[1]==whiteKingMoves.get(i).from()[1] &&
+				whitecastle.to()[0]==whiteKingMoves.get(i).to()[0] &&
+				whitecastle.to()[1]==whiteKingMoves.get(i).to()[1]){
+				
+				return;
+			}	
+		}
+		
+		fail();
+		
+		for (int i=0;i<blackKingMoves.size();i++){
+			if (blackcastle.from()[0]==blackKingMoves.get(i).from()[0] &&
+				blackcastle.from()[1]==blackKingMoves.get(i).from()[1] &&
+				blackcastle.to()[0]==blackKingMoves.get(i).to()[0] &&
+				blackcastle.to()[1]==blackKingMoves.get(i).to()[1]){
+				
+				return;
+			}	
+		}
+		fail();
+		
+		tearDown();
+	}
+	
+	/**
+	 * Test that castling is illegal when:
+	 *  - castling into check
+	 *  - castling through check
+	 *  - castling out of check
+	 * Test #20 - 1.5.4.2
+	 */
+	@Test
+	public void castlingBlocked(){
+		fen = "-----k--/--------/--------/--------/--------/------r-/--------/----K--R w KQkq - 0 1";
+		setUp();
+		
+		Move whitecastle = new Move(new int[]{4,0}, new int[]{6,0});
+		ArrayList<Move> whiteKingMoves = chessboard.getMoves(4,0);
+		
+		for (int i=0;i<whiteKingMoves.size();i++){
+			if (whitecastle.from()[0]==whiteKingMoves.get(i).from()[0] &&
+				whitecastle.from()[1]==whiteKingMoves.get(i).from()[1] &&
+				whitecastle.to()[0]==whiteKingMoves.get(i).to()[0] &&
+				whitecastle.to()[1]==whiteKingMoves.get(i).to()[1]){
+				
+				fail();
+			}
+		}
+		
+		fen = "-----k--/--------/--------/--------/--------/-----r--/--------/----K--R w KQkq - 0 1";
+		setUp();
+		
+		whitecastle = new Move(new int[]{4,0}, new int[]{6,0});
+		whiteKingMoves = chessboard.getMoves(4,0);
+		
+		for (int i=0;i<whiteKingMoves.size();i++){
+			if (whitecastle.from()[0]==whiteKingMoves.get(i).from()[0] &&
+				whitecastle.from()[1]==whiteKingMoves.get(i).from()[1] &&
+				whitecastle.to()[0]==whiteKingMoves.get(i).to()[0] &&
+				whitecastle.to()[1]==whiteKingMoves.get(i).to()[1]){
+				
+				fail();
+			}
+		}
+		
+		fen = "-----k--/--------/--------/--------/--------/----r---/--------/----K--R w KQkq - 0 1";
+		setUp();
+		
+		whitecastle = new Move(new int[]{4,0}, new int[]{6,0});
+		whiteKingMoves = chessboard.getMoves(4,0);
+		
+		for (int i=0;i<whiteKingMoves.size();i++){
+			if (whitecastle.from()[0]==whiteKingMoves.get(i).from()[0] &&
+				whitecastle.from()[1]==whiteKingMoves.get(i).from()[1] &&
+				whitecastle.to()[0]==whiteKingMoves.get(i).to()[0] &&
+				whitecastle.to()[1]==whiteKingMoves.get(i).to()[1]){
+				
+				fail();
+			}
+		}
+		
+		tearDown();		
+	}
+	
+	/**
+	 * Test that castling is illegal if either the king or rook has moved
+	 * Test #20 - 1.5.4.2
+	 */
+	@Test
+	public void castlingIfMoved(){
+		fen = "r----k--/--------/--------/--------/--------/--------/--------/R---K--R w KQkq - 0 1";
+		setUp();
+		
+		Move kingside = new Move(new int[]{4,0}, new int[]{6,0});
+		Move queenside = new Move(new int[]{4,0}, new int[]{2,0});
+		Move blackQueenside = new Move(new int[]{4,7}, new int[]{2,7});
+		
+	    game.playMove(new Move(new int[]{7,0}, new int[]{7,1}));
+	    game.playMove(new Move(new int[]{5,7}, new int[]{4,7}));
+	    game.playMove(new Move(new int[]{7,1}, new int[]{7,0}));
+		
+		ArrayList<Move> whiteKingMoves = chessboard.getMoves(4,0);
+		ArrayList<Move> blackKingMoves = chessboard.getMoves(4,7);
+		
+		for (int i=0;i<whiteKingMoves.size();i++){
+			if (kingside.from()[0]==whiteKingMoves.get(i).from()[0] &&
+				kingside.from()[1]==whiteKingMoves.get(i).from()[1] &&
+				kingside.to()[0]==whiteKingMoves.get(i).to()[0] &&
+				kingside.to()[1]==whiteKingMoves.get(i).to()[1]){
+				
+				fail();
+			}
+		}
+		
+		for (int i=0;i<blackKingMoves.size();i++){
+			if (blackQueenside.from()[0]==blackKingMoves.get(i).from()[0] &&
+				blackQueenside.from()[1]==blackKingMoves.get(i).from()[1] &&
+				blackQueenside.to()[0]==blackKingMoves.get(i).to()[0] &&
+				blackQueenside.to()[1]==blackKingMoves.get(i).to()[1]){
+				
+				fail();
+			}
+		}
+		
+		for (int i=0;i<whiteKingMoves.size();i++){
+			if (queenside.from()[0]==whiteKingMoves.get(i).from()[0] &&
+				queenside.from()[1]==whiteKingMoves.get(i).from()[1] &&
+				queenside.to()[0]==whiteKingMoves.get(i).to()[0] &&
+				queenside.to()[1]==whiteKingMoves.get(i).to()[1]){
+				
+				return;
+			}
+		}
+		
+		fail();
+		
+		tearDown();
 	}
 	
 	/**
@@ -100,7 +323,37 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void rookMoves(){
-		//TODO
+		fen = "k-------/--------/--------/----R---/--------/--------/--------/-------K w KQkq - 0 1";
+		setUp();
+		
+		ArrayList<Move> generatedMoves = chessboard.getMoves(4,4);
+		ArrayList<Move> legalMoves = new ArrayList<Move>();
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,5}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,6}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,7}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{5,4}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{6,4}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{7,4}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,3}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,2}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,1}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,0}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,4}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{2,4}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{1,4}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{0,4}));
+
+		if (generatedMoves.size()!=legalMoves.size()){
+			fail();
+		}
+		for (int i=0;i<generatedMoves.size();i++){
+			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);
+			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);
+			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);
+			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
+		}
+		
+		tearDown();
 	}
 	
 	/**
@@ -109,7 +362,31 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void knightMoves(){
-		//TODO
+		fen = "k-------/--------/--------/----N---/--------/--------/--------/-------K w KQkq - 0 1";
+		setUp();
+		
+		ArrayList<Move> generatedMoves = chessboard.getMoves(4,4);
+		ArrayList<Move> legalMoves = new ArrayList<Move>();
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{5,6}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{6,5}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{6,3}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{5,2}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,2}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{2,3}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{2,5}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,6}));
+
+		if (generatedMoves.size()!=legalMoves.size()){
+			fail();
+		}
+		for (int i=0;i<generatedMoves.size();i++){
+			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);
+			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);
+			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);
+			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
+		}
+		
+		tearDown();
 	}
 	
 	/**
@@ -118,7 +395,36 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void bishopMoves(){
-		//TODO
+		fen = "k-------/--------/--------/----B---/--------/--------/--------/-------K w KQkq - 0 1";
+		setUp();
+		
+		ArrayList<Move> generatedMoves = chessboard.getMoves(4,4);
+		ArrayList<Move> legalMoves = new ArrayList<Move>();
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{5,5}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{6,6}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{7,7}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{5,3}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{6,2}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{7,1}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,3}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{2,2}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{1,1}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{0,0}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,5}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{2,6}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{1,7}));
+
+		if (generatedMoves.size()!=legalMoves.size()){
+			fail();
+		}
+		for (int i=0;i<generatedMoves.size();i++){
+			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);
+			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);
+			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);
+			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
+		}
+		
+		tearDown();
 	}
 	
 	/**
@@ -127,7 +433,50 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void queenMoves(){
-		//TODO
+		fen = "k-------/--------/--------/----Q---/--------/--------/--------/-------K w KQkq - 0 1";
+		setUp();
+		
+		ArrayList<Move> generatedMoves = chessboard.getMoves(4,4);
+		ArrayList<Move> legalMoves = new ArrayList<Move>();
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,5}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,6}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,7}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{5,5}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{6,6}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{7,7}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{5,4}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{6,4}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{7,4}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{5,3}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{6,2}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{7,1}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,3}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,2}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,1}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,0}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,3}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{2,2}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{1,1}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{0,0}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,4}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{2,4}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{1,4}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{0,4}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,5}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{2,6}));
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{1,7}));
+
+		if (generatedMoves.size()!=legalMoves.size()){
+			fail();
+		}
+		for (int i=0;i<generatedMoves.size();i++){
+			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);
+			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);
+			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);
+			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
+		}
+		
+		tearDown();
 	}
 	
 	/**
@@ -137,17 +486,72 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void pawnMoves(){
-		//TODO
+		fen = "k-------/--------/--------/--------/--------/--------/---PP---/-------K w KQkq - 0 1";
+		setUp();
+		
+		game.playMove(new Move(new int[]{3,1}, new int[]{3,2}));
+		
+		ArrayList<Move> generatedMoves = chessboard.getMoves(4,1);
+		ArrayList<Move> legalMoves = new ArrayList<Move>();
+		
+		legalMoves.add(new Move(new int[]{4,1}, new int[]{4,2}));
+		legalMoves.add(new Move(new int[]{4,1}, new int[]{4,3}));
+		
+		if (generatedMoves.size()!=legalMoves.size()){
+			fail();
+		}
+		for (int i=0;i<generatedMoves.size();i++){
+			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);
+			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);
+			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);
+			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
+		}
+		
+		generatedMoves = chessboard.getMoves(3,2);
+		legalMoves.clear();
+		legalMoves.add(new Move(new int[]{3,2}, new int[]{3,3}));
+		
+		if (generatedMoves.size()!=legalMoves.size()){
+			fail();
+		}
+		for (int i=0;i<generatedMoves.size();i++){
+			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);
+			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);
+			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);
+			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
+		}
+		
+		tearDown();
 	}
 	
 	/**
 	 * Test that the pawn can move one space forward diagonally when capturing
-	 * an enemy piece
+	 * an enemy piece, and cannot capture a piece directly ahead
 	 * Test #26 - 1.5.9.2
 	 */
 	@Test
 	public void pawnCapture(){
-		//TODO
+		fen = "k-------/--------/--------/---nn---/--------/----P---/--------/-------K w KQkq - 0 1";
+		setUp();
+		
+		game.playMove(new Move(new int[]{4,2}, new int[]{4,3}));
+		
+		ArrayList<Move> generatedMoves = chessboard.getMoves(4,3);
+		ArrayList<Move> legalMoves = new ArrayList<Move>();
+		
+		legalMoves.add(new Move(new int[]{4,3}, new int[]{3,4}));
+
+		if (generatedMoves.size()!=legalMoves.size()){
+			fail();
+		}
+		for (int i=0;i<generatedMoves.size();i++){
+			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);
+			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);
+			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);
+			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
+		}
+		
+		tearDown();
 	}
 	
 	/**
@@ -157,7 +561,36 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void enPassant(){
-		//TODO
+		setUp();
+		
+		game.playMove(new Move(new int[]{4,1}, new int[]{4,3}));
+		game.playMove(new Move(new int[]{4,6}, new int[]{4,5}));
+		game.playMove(new Move(new int[]{4,3}, new int[]{4,4}));
+		game.playMove(new Move(new int[]{3,6}, new int[]{3,4}));
+		
+		ArrayList<Move> generatedMoves = chessboard.getMoves(4,4);
+		ArrayList<Move> legalMoves = new ArrayList<Move>();
+		
+		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,5}));
+		
+		if (generatedMoves.size()!=legalMoves.size()){
+			fail();
+		}
+		for (int i=0;i<generatedMoves.size();i++){
+			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);
+			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);
+			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);
+			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
+		}
+		
+		game.playMove(generatedMoves.get(0));
+		
+		ArrayList<Move> empty = new ArrayList<Move>();
+		
+		//Roundabout way to check if the pawn has been removed
+		Assert.assertEquals(empty.size(), chessboard.getMoves(3,4).size());
+		
+		tearDown();
 	}
 	
 	/**
@@ -167,6 +600,6 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void promotion(){
-		//TODO
+		//TODO: Enhancement
 	}
 }
