@@ -47,7 +47,8 @@ public class RequestHandler extends Thread {
 	 * Constructor used for testing purposes
 	 * @param clientSocket
 	 * @param server
-	 * @param isTest
+	 * @param request
+	 * @param stream
 	 */
 	public RequestHandler(Socket clientSocket, ServerInstance server, String request, PrintStream stream) {
 		_clientSocket = clientSocket;

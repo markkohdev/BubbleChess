@@ -15,7 +15,7 @@ public class ChessDB {
 	public ChessDB(boolean isTest) {
 		_isTest = isTest;
 	}
-	
+
 	/**
 	 * Sets up connection to the sqlite database
 	 * @return
@@ -41,7 +41,7 @@ public class ChessDB {
 			System.out.println("Database failed to open :(");
 			e.printStackTrace();
 		}
-		 return c;
+		return c;
 	}
 	
 	/**

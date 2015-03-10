@@ -22,9 +22,9 @@ public class Game {
 	/**
 	 * Constructor for the Game Object
 	 * @param gameId
-	 * @param id
-	 * @param user
+	 * @param playerNumber
 	 * @param userId
+	 * @param cdb
 	 */
 	public Game(int gameId, int playerNumber, int userId, ChessDB cdb) {
 		setUser(userId, playerNumber);
@@ -102,9 +102,8 @@ public class Game {
 	//Setters
 	/**
 	 * Sets a user id to a player
-	 * @param id
-	 * @param user
 	 * @param userId
+	 * @param playerNumber
 	 */
 	public void setUser(int userId, int playerNumber) {
 		if(playerNumber == 1) {
@@ -118,7 +117,6 @@ public class Game {
 	//Methods
 	/**
 	 * Allows a user to join an existing game and become a player
-	 * @param user
 	 * @param userId
 	 * @return
 	 */
