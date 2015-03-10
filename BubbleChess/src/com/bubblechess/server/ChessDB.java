@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 
 public class ChessDB {
 	
-	private boolean _isTest = false;
+	private boolean _isTest;
 	/**
 	 * Constructor
 	 */
@@ -27,13 +27,12 @@ public class ChessDB {
 		   	String fileName = "";
 		   	
 		   	if(_isTest) {
-		   		fileName = "test";
+		   		c = DriverManager.getConnection("jdbc:sqlite:Test.db");
 		   	}
 		   	else {
-		   		fileName = "Chess";
+		   		c = DriverManager.getConnection("jdbc:sqlite:Chess.db");
 		   	}
 		   	
-		   	c = DriverManager.getConnection("jdbc:sqlite:"+fileName+".db");
 		    c.setAutoCommit(true);
 		    //System.out.println("Opened database successfully");
 		} catch (ClassNotFoundException | SQLException e) {
@@ -367,11 +366,11 @@ public class ChessDB {
 			
 			String sql = "";
 			if(playerNumber == 1) {
-				sql = "UPDATE GAMES SET USER1ID='"+userId+"', GAMESTATUS='0'," +
+				sql = "UPDATE GAMES SET USER1ID='"+userId+"', GAMESTATUS='0' " +
 						 	 "WHERE ID = '"+gameId+"';";
 			}
 			else if(playerNumber == 2) {
-				sql = "UPDATE GAMES SET USER2ID='"+userId+"', GAMESTATUS='0'," +
+				sql = "UPDATE GAMES SET USER2ID='"+userId+"', GAMESTATUS='0' " +
 					 	 "WHERE ID = '"+gameId+"';";
 			}
 			
