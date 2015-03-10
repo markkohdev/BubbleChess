@@ -1,0 +1,680 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>MoveValidationTest.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.tests</a> &gt; <span class="el_source">MoveValidationTest.java</span></div><h1>MoveValidationTest.java</h1><pre class="source lang-java linenums">package com.bubblechess.tests;
+
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.bubblechess.client.Board;
+import com.bubblechess.client.BoardPiece;
+import com.bubblechess.client.BoardPiece.Color;
+import com.bubblechess.client.ChessBoard;
+import com.bubblechess.client.ChessPiece;
+import com.bubblechess.client.Game;
+import com.bubblechess.client.Move;
+import com.bubblechess.client.User;
+
+<span class="fc" id="L21">public class MoveValidationTest {</span>
+	private Game game;
+	private Board chessboard;
+	private User user1, user2;
+<span class="fc" id="L25">	private int gameid = 1;</span>
+<span class="fc" id="L26">	private String fen = &quot;&quot;;</span>
+	
+	/**
+	 * Anything needed to be done before all tests
+	 */
+	@Before
+	public void setUp() {
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		if (fen.isEmpty()){</span>
+<span class="fc" id="L34">			chessboard = new ChessBoard();</span>
+<span class="fc" id="L35">		}</span>
+		else{
+<span class="fc" id="L37">			chessboard = new ChessBoard(fen);</span>
+		}		
+		
+<span class="fc" id="L40">		game = new Game(gameid, user1, user2, chessboard);</span>
+<span class="fc" id="L41">	}</span>
+	
+	/**
+	 * Anything needed to be done after all tests
+	 */
+	@After
+	public void tearDown() {
+<span class="fc" id="L48">		chessboard = null;</span>
+<span class="fc" id="L49">		game = null;</span>
+<span class="fc" id="L50">		fen = &quot;&quot;;</span>
+<span class="fc" id="L51">	}</span>
+	
+	/**
+	 * Test that no generated moves leave the king under attack
+	 * Test #16 - 1.5.1
+	 */
+	@Test
+	public void kingInCheck(){
+<span class="fc" id="L59">		fen = &quot;K-------/--------/--------/-q------/--------/--------/--------/-------k w KQkq - 0 1&quot;;</span>
+<span class="fc" id="L60">		setUp();</span>
+		
+<span class="fc" id="L62">		ArrayList&lt;Move&gt; legalMoves = new ArrayList&lt;Move&gt;();</span>
+<span class="fc" id="L63">		legalMoves.add(new Move(new int[]{0,7}, new int[]{0,6}));</span>
+		
+<span class="fc" id="L65">		ArrayList&lt;Move&gt; generatedMoves = chessboard.getMoves(0,7);</span>
+		
+<span class="fc" id="L67">		Assert.assertEquals(legalMoves.size(), generatedMoves.size());</span>
+<span class="fc" id="L68">		Assert.assertEquals(legalMoves.get(0).from()[0], generatedMoves.get(0).from()[0]);</span>
+<span class="fc" id="L69">		Assert.assertEquals(legalMoves.get(0).from()[1], generatedMoves.get(0).from()[1]);</span>
+<span class="fc" id="L70">		Assert.assertEquals(legalMoves.get(0).to()[0], generatedMoves.get(0).to()[0]);</span>
+<span class="fc" id="L71">		Assert.assertEquals(legalMoves.get(0).to()[1], generatedMoves.get(0).to()[1]);</span>
+		
+<span class="fc" id="L73">		tearDown();</span>
+<span class="fc" id="L74">	}</span>
+	
+	/**
+	 * Tests the ChessBoard.inCheck(Color color) method
+	 */
+	@Test
+	public void inCheck(){
+<span class="fc" id="L81">		fen = &quot;k-------/--------/--------/---q----/--------/---K----/--------/-------- w KQkq - 0 1&quot;;</span>
+<span class="fc" id="L82">		setUp();</span>
+		
+<span class="fc" id="L84">		Assert.assertEquals(true, chessboard.inCheck(Color.WHITE));</span>
+		
+<span class="fc" id="L86">		tearDown();</span>
+		
+<span class="fc" id="L88">		fen = &quot;K-------/--------/--------/---Q----/--------/---k----/--------/-------- b KQkq - 0 1&quot;;</span>
+<span class="fc" id="L89">		setUp();</span>
+		
+<span class="fc" id="L91">		Assert.assertEquals(true, chessboard.inCheck(Color.BLACK));</span>
+		
+<span class="fc" id="L93">		tearDown();</span>
+<span class="fc" id="L94">	}</span>
+	
+	/**
+	 * Test that no generated moves allow the player to move a piece
+	 * to occupy the square of a friendly piece
+	 * Test #17 - 1.5.2
+	 */
+	@Test
+	public void moveOnFriendlyPiece(){
+<span class="fc" id="L103">		fen = &quot;k-------/---p----/--prp---/--------/--------/---p----/--------/-------K b KQkq - 0 1&quot;;</span>
+<span class="fc" id="L104">		setUp();</span>
+		
+<span class="fc" id="L106">		ArrayList&lt;Move&gt; generatedMoves = chessboard.getMoves(3,5);</span>
+<span class="fc" id="L107">		ArrayList&lt;Move&gt; legalMoves = new ArrayList&lt;Move&gt;();</span>
+<span class="fc" id="L108">		legalMoves.add(new Move(new int[]{3,5}, new int[]{3,4}));</span>
+<span class="fc" id="L109">		legalMoves.add(new Move(new int[]{3,5}, new int[]{3,3}));</span>
+
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">		if (generatedMoves.size()!=legalMoves.size()){</span>
+<span class="nc" id="L112">			fail();</span>
+		}
+<span class="fc bfc" id="L114" title="All 2 branches covered.">		for (int i=0;i&lt;generatedMoves.size();i++){</span>
+<span class="fc" id="L115">			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);</span>
+<span class="fc" id="L116">			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);</span>
+<span class="fc" id="L117">			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);</span>
+<span class="fc" id="L118">			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);</span>
+		}
+		
+<span class="fc" id="L121">		tearDown();</span>
+<span class="fc" id="L122">	}</span>
+	
+	/**
+	 * Test that a piece cannot move past an enemy piece
+	 * Test #18 - 1.5.3
+	 */
+	@Test
+	public void movePastEnemyPiece(){
+<span class="fc" id="L130">		fen = &quot;k-------/---p----/--prp---/--------/--------/---P----/--------/-------K b KQkq - 0 1&quot;;</span>
+<span class="fc" id="L131">		setUp();</span>
+		
+<span class="fc" id="L133">		Move illegalMove = new Move(new int[]{3,5}, new int[]{3,1});</span>
+<span class="fc" id="L134">		ArrayList&lt;Move&gt; generatedMoves = chessboard.getMoves(3,5);</span>
+		
+<span class="fc bfc" id="L136" title="All 2 branches covered.">		for (int i=0;i&lt;generatedMoves.size();i++){</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">			if (illegalMove.from()[0]==generatedMoves.get(i).from()[0] &amp;&amp;</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">				illegalMove.from()[1]==generatedMoves.get(i).from()[1] &amp;&amp;</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">				illegalMove.to()[0]==generatedMoves.get(i).to()[0] &amp;&amp;</span>
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">				illegalMove.to()[1]==generatedMoves.get(i).to()[1]){</span>
+				
+<span class="nc" id="L142">				fail();</span>
+			}
+		}
+
+<span class="fc" id="L146">		tearDown();</span>
+<span class="fc" id="L147">	}</span>
+	
+	/**
+	 * Test that the king can move one space in any direction
+	 * Test #19 - 1.5.4.1
+	 */
+	@Test
+	public void kingMoves(){
+<span class="fc" id="L155">		fen = &quot;-----k--/--------/--------/---K----/--------/--------/--P-----/-------- b KQkq - 0 1&quot;;</span>
+<span class="fc" id="L156">		setUp();</span>
+		
+<span class="fc" id="L158">		ArrayList&lt;Move&gt; generatedMoves = chessboard.getMoves(3,4);</span>
+<span class="fc" id="L159">		ArrayList&lt;Move&gt; legalMoves = new ArrayList&lt;Move&gt;();</span>
+<span class="fc" id="L160">		legalMoves.add(new Move(new int[]{3,4}, new int[]{3,5}));</span>
+<span class="fc" id="L161">		legalMoves.add(new Move(new int[]{3,4}, new int[]{4,5}));</span>
+<span class="fc" id="L162">		legalMoves.add(new Move(new int[]{3,4}, new int[]{4,4}));</span>
+<span class="fc" id="L163">		legalMoves.add(new Move(new int[]{3,4}, new int[]{4,3}));</span>
+<span class="fc" id="L164">		legalMoves.add(new Move(new int[]{3,4}, new int[]{3,3}));</span>
+<span class="fc" id="L165">		legalMoves.add(new Move(new int[]{3,4}, new int[]{2,3}));</span>
+<span class="fc" id="L166">		legalMoves.add(new Move(new int[]{3,4}, new int[]{2,4}));</span>
+<span class="fc" id="L167">		legalMoves.add(new Move(new int[]{3,4}, new int[]{2,5}));</span>
+		
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">		if (generatedMoves.size()!=legalMoves.size()){</span>
+<span class="nc" id="L170">			fail();</span>
+		}
+<span class="fc bfc" id="L172" title="All 2 branches covered.">		for (int i=0;i&lt;generatedMoves.size();i++){</span>
+<span class="fc" id="L173">			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);</span>
+<span class="fc" id="L174">			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);</span>
+<span class="fc" id="L175">			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);</span>
+<span class="fc" id="L176">			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);</span>
+		}
+		
+<span class="fc" id="L179">		tearDown();</span>
+<span class="fc" id="L180">	}</span>
+	
+	/**
+	 * Test that castling is allowed
+	 * Test #20 - 1.5.4.2
+	 */
+	@Test
+	public void castling(){
+<span class="fc" id="L188">		setUp();</span>
+		
+		//Sample game
+<span class="fc" id="L191">		game.playMove(new Move(new int[]{4,1}, new int[]{4,3}));</span>
+<span class="fc" id="L192">		game.playMove(new Move(new int[]{4,6}, new int[]{4,4}));</span>
+<span class="fc" id="L193">		game.playMove(new Move(new int[]{6,0}, new int[]{5,2}));</span>
+<span class="fc" id="L194">		game.playMove(new Move(new int[]{1,7}, new int[]{2,5}));</span>
+<span class="fc" id="L195">		game.playMove(new Move(new int[]{5,0}, new int[]{2,3}));</span>
+<span class="fc" id="L196">		game.playMove(new Move(new int[]{5,7}, new int[]{2,4}));</span>
+		
+<span class="fc" id="L198">		Move whitecastle = new Move(new int[]{4,0}, new int[]{6,0});</span>
+<span class="fc" id="L199">		Move blackcastle = new Move(new int[]{4,7}, new int[]{6,7});</span>
+		
+<span class="fc" id="L201">		ArrayList&lt;Move&gt; whiteKingMoves = chessboard.getMoves(4,0);</span>
+<span class="fc" id="L202">		ArrayList&lt;Move&gt; blackKingMoves = chessboard.getMoves(4,7);</span>
+		
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">		for (int i=0;i&lt;whiteKingMoves.size();i++){</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">			if (whitecastle.from()[0]==whiteKingMoves.get(i).from()[0] &amp;&amp;</span>
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">				whitecastle.from()[1]==whiteKingMoves.get(i).from()[1] &amp;&amp;</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">				whitecastle.to()[0]==whiteKingMoves.get(i).to()[0] &amp;&amp;</span>
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">				whitecastle.to()[1]==whiteKingMoves.get(i).to()[1]){</span>
+				
+<span class="fc" id="L210">				return;</span>
+			}	
+		}
+		
+<span class="nc" id="L214">		fail();</span>
+		
+<span class="nc bnc" id="L216" title="All 2 branches missed.">		for (int i=0;i&lt;blackKingMoves.size();i++){</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">			if (blackcastle.from()[0]==blackKingMoves.get(i).from()[0] &amp;&amp;</span>
+<span class="nc bnc" id="L218" title="All 2 branches missed.">				blackcastle.from()[1]==blackKingMoves.get(i).from()[1] &amp;&amp;</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">				blackcastle.to()[0]==blackKingMoves.get(i).to()[0] &amp;&amp;</span>
+<span class="nc bnc" id="L220" title="All 2 branches missed.">				blackcastle.to()[1]==blackKingMoves.get(i).to()[1]){</span>
+				
+<span class="nc" id="L222">				return;</span>
+			}	
+		}
+<span class="nc" id="L225">		fail();</span>
+		
+<span class="nc" id="L227">		tearDown();</span>
+<span class="nc" id="L228">	}</span>
+	
+	/**
+	 * Test that castling is illegal when:
+	 *  - castling into check
+	 *  - castling through check
+	 *  - castling out of check
+	 * Test #20 - 1.5.4.2
+	 */
+	@Test
+	public void castlingBlocked(){
+<span class="fc" id="L239">		fen = &quot;-----k--/--------/--------/--------/--------/------r-/--------/----K--R w KQkq - 0 1&quot;;</span>
+<span class="fc" id="L240">		setUp();</span>
+		
+<span class="fc" id="L242">		Move whitecastle = new Move(new int[]{4,0}, new int[]{6,0});</span>
+<span class="fc" id="L243">		ArrayList&lt;Move&gt; whiteKingMoves = chessboard.getMoves(4,0);</span>
+		
+<span class="fc bfc" id="L245" title="All 2 branches covered.">		for (int i=0;i&lt;whiteKingMoves.size();i++){</span>
+<span class="pc bpc" id="L246" title="1 of 2 branches missed.">			if (whitecastle.from()[0]==whiteKingMoves.get(i).from()[0] &amp;&amp;</span>
+<span class="pc bpc" id="L247" title="1 of 2 branches missed.">				whitecastle.from()[1]==whiteKingMoves.get(i).from()[1] &amp;&amp;</span>
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">				whitecastle.to()[0]==whiteKingMoves.get(i).to()[0] &amp;&amp;</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">				whitecastle.to()[1]==whiteKingMoves.get(i).to()[1]){</span>
+				
+<span class="nc" id="L251">				fail();</span>
+			}
+		}
+		
+<span class="fc" id="L255">		tearDown();</span>
+		
+<span class="fc" id="L257">		fen = &quot;-----k--/--------/--------/--------/--------/-----r--/--------/----K--R w KQkq - 0 1&quot;;</span>
+<span class="fc" id="L258">		setUp();</span>
+		
+<span class="fc" id="L260">		whitecastle = new Move(new int[]{4,0}, new int[]{6,0});</span>
+<span class="fc" id="L261">		whiteKingMoves = chessboard.getMoves(4,0);</span>
+		
+<span class="fc bfc" id="L263" title="All 2 branches covered.">		for (int i=0;i&lt;whiteKingMoves.size();i++){</span>
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">			if (whitecastle.from()[0]==whiteKingMoves.get(i).from()[0] &amp;&amp;</span>
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">				whitecastle.from()[1]==whiteKingMoves.get(i).from()[1] &amp;&amp;</span>
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">				whitecastle.to()[0]==whiteKingMoves.get(i).to()[0] &amp;&amp;</span>
+<span class="nc bnc" id="L267" title="All 2 branches missed.">				whitecastle.to()[1]==whiteKingMoves.get(i).to()[1]){</span>
+				
+<span class="nc" id="L269">				fail();</span>
+			}
+		}
+		
+<span class="fc" id="L273">		tearDown();</span>
+		
+<span class="fc" id="L275">		fen = &quot;-----k--/--------/--------/--------/--------/----r---/--------/----K--R w KQkq - 0 1&quot;;</span>
+<span class="fc" id="L276">		setUp();</span>
+		
+<span class="fc" id="L278">		whitecastle = new Move(new int[]{4,0}, new int[]{6,0});</span>
+<span class="fc" id="L279">		whiteKingMoves = chessboard.getMoves(4,0);</span>
+		
+<span class="fc bfc" id="L281" title="All 2 branches covered.">		for (int i=0;i&lt;whiteKingMoves.size();i++){</span>
+<span class="pc bpc" id="L282" title="1 of 2 branches missed.">			if (whitecastle.from()[0]==whiteKingMoves.get(i).from()[0] &amp;&amp;</span>
+<span class="pc bpc" id="L283" title="1 of 2 branches missed.">				whitecastle.from()[1]==whiteKingMoves.get(i).from()[1] &amp;&amp;</span>
+<span class="pc bpc" id="L284" title="1 of 2 branches missed.">				whitecastle.to()[0]==whiteKingMoves.get(i).to()[0] &amp;&amp;</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">				whitecastle.to()[1]==whiteKingMoves.get(i).to()[1]){</span>
+				
+<span class="nc" id="L287">				fail();</span>
+			}
+		}
+		
+<span class="fc" id="L291">		tearDown();		</span>
+<span class="fc" id="L292">	}</span>
+	
+	/**
+	 * Test that castling is illegal if either the king or rook has moved
+	 * Test #20 - 1.5.4.2
+	 */
+	@Test
+	public void castlingIfMoved(){
+<span class="fc" id="L300">		fen = &quot;r----k--/--------/--------/--------/--------/--------/--------/R---K--R w KQkq - 0 1&quot;;</span>
+<span class="fc" id="L301">		setUp();</span>
+		
+<span class="fc" id="L303">		Move kingside = new Move(new int[]{4,0}, new int[]{6,0});</span>
+<span class="fc" id="L304">		Move queenside = new Move(new int[]{4,0}, new int[]{2,0});</span>
+<span class="fc" id="L305">		Move blackQueenside = new Move(new int[]{4,7}, new int[]{2,7});</span>
+		
+<span class="fc" id="L307">	    game.playMove(new Move(new int[]{7,0}, new int[]{7,1}));</span>
+<span class="fc" id="L308">	    game.playMove(new Move(new int[]{5,7}, new int[]{4,7}));</span>
+<span class="fc" id="L309">	    game.playMove(new Move(new int[]{7,1}, new int[]{7,0}));</span>
+		
+<span class="fc" id="L311">		ArrayList&lt;Move&gt; whiteKingMoves = chessboard.getMoves(4,0);</span>
+<span class="fc" id="L312">		ArrayList&lt;Move&gt; blackKingMoves = chessboard.getMoves(4,7);</span>
+		
+<span class="fc bfc" id="L314" title="All 2 branches covered.">		for (int i=0;i&lt;whiteKingMoves.size();i++){</span>
+<span class="pc bpc" id="L315" title="1 of 2 branches missed.">			if (kingside.from()[0]==whiteKingMoves.get(i).from()[0] &amp;&amp;</span>
+<span class="pc bpc" id="L316" title="1 of 2 branches missed.">				kingside.from()[1]==whiteKingMoves.get(i).from()[1] &amp;&amp;</span>
+<span class="pc bpc" id="L317" title="1 of 2 branches missed.">				kingside.to()[0]==whiteKingMoves.get(i).to()[0] &amp;&amp;</span>
+<span class="nc bnc" id="L318" title="All 2 branches missed.">				kingside.to()[1]==whiteKingMoves.get(i).to()[1]){</span>
+				
+<span class="nc" id="L320">				fail();</span>
+			}
+		}
+		
+<span class="fc bfc" id="L324" title="All 2 branches covered.">		for (int i=0;i&lt;blackKingMoves.size();i++){</span>
+<span class="pc bpc" id="L325" title="1 of 2 branches missed.">			if (blackQueenside.from()[0]==blackKingMoves.get(i).from()[0] &amp;&amp;</span>
+<span class="pc bpc" id="L326" title="1 of 2 branches missed.">				blackQueenside.from()[1]==blackKingMoves.get(i).from()[1] &amp;&amp;</span>
+<span class="pc bpc" id="L327" title="1 of 2 branches missed.">				blackQueenside.to()[0]==blackKingMoves.get(i).to()[0] &amp;&amp;</span>
+<span class="nc bnc" id="L328" title="All 2 branches missed.">				blackQueenside.to()[1]==blackKingMoves.get(i).to()[1]){</span>
+				
+<span class="nc" id="L330">				fail();</span>
+			}
+		}
+		
+<span class="pc bpc" id="L334" title="1 of 2 branches missed.">		for (int i=0;i&lt;whiteKingMoves.size();i++){</span>
+<span class="pc bpc" id="L335" title="1 of 2 branches missed.">			if (queenside.from()[0]==whiteKingMoves.get(i).from()[0] &amp;&amp;</span>
+<span class="pc bpc" id="L336" title="1 of 2 branches missed.">				queenside.from()[1]==whiteKingMoves.get(i).from()[1] &amp;&amp;</span>
+<span class="fc bfc" id="L337" title="All 2 branches covered.">				queenside.to()[0]==whiteKingMoves.get(i).to()[0] &amp;&amp;</span>
+<span class="pc bpc" id="L338" title="1 of 2 branches missed.">				queenside.to()[1]==whiteKingMoves.get(i).to()[1]){</span>
+				
+<span class="fc" id="L340">				return;</span>
+			}
+		}
+		
+<span class="nc" id="L344">		fail();</span>
+		
+<span class="nc" id="L346">		tearDown();</span>
+<span class="nc" id="L347">	}</span>
+	
+	/**
+	 * Test that the rook can move horizontally and vertically
+	 * Test #21 - 1.5.5
+	 */
+	@Test
+	public void rookMoves(){
+<span class="fc" id="L355">		fen = &quot;k-------/--------/--------/----R---/--------/--------/--------/-------K w KQkq - 0 1&quot;;</span>
+<span class="fc" id="L356">		setUp();</span>
+		
+<span class="fc" id="L358">		ArrayList&lt;Move&gt; generatedMoves = chessboard.getMoves(4,4);</span>
+<span class="fc" id="L359">		ArrayList&lt;Move&gt; legalMoves = new ArrayList&lt;Move&gt;();</span>
+<span class="fc" id="L360">		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,5}));</span>
+<span class="fc" id="L361">		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,6}));</span>
+<span class="fc" id="L362">		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,7}));</span>
+<span class="fc" id="L363">		legalMoves.add(new Move(new int[]{4,4}, new int[]{5,4}));</span>
+<span class="fc" id="L364">		legalMoves.add(new Move(new int[]{4,4}, new int[]{6,4}));</span>
+<span class="fc" id="L365">		legalMoves.add(new Move(new int[]{4,4}, new int[]{7,4}));</span>
+<span class="fc" id="L366">		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,3}));</span>
+<span class="fc" id="L367">		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,2}));</span>
+<span class="fc" id="L368">		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,1}));</span>
+<span class="fc" id="L369">		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,0}));</span>
+<span class="fc" id="L370">		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,4}));</span>
+<span class="fc" id="L371">		legalMoves.add(new Move(new int[]{4,4}, new int[]{2,4}));</span>
+<span class="fc" id="L372">		legalMoves.add(new Move(new int[]{4,4}, new int[]{1,4}));</span>
+<span class="fc" id="L373">		legalMoves.add(new Move(new int[]{4,4}, new int[]{0,4}));</span>
+
+<span class="pc bpc" id="L375" title="1 of 2 branches missed.">		if (generatedMoves.size()!=legalMoves.size()){</span>
+<span class="nc" id="L376">			fail();</span>
+		}
+<span class="fc bfc" id="L378" title="All 2 branches covered.">		for (int i=0;i&lt;generatedMoves.size();i++){</span>
+<span class="fc" id="L379">			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);</span>
+<span class="fc" id="L380">			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);</span>
+<span class="fc" id="L381">			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);</span>
+<span class="fc" id="L382">			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);</span>
+		}
+		
+<span class="fc" id="L385">		tearDown();</span>
+<span class="fc" id="L386">	}</span>
+	
+	/**
+	 * Test that the knight can move in an L-shape
+	 * Test #22 - 1.5.6
+	 */
+	@Test
+	public void knightMoves(){
+<span class="fc" id="L394">		fen = &quot;k-------/--------/--------/----N---/--------/--------/--------/-------K w KQkq - 0 1&quot;;</span>
+<span class="fc" id="L395">		setUp();</span>
+		
+<span class="fc" id="L397">		ArrayList&lt;Move&gt; generatedMoves = chessboard.getMoves(4,4);</span>
+<span class="fc" id="L398">		ArrayList&lt;Move&gt; legalMoves = new ArrayList&lt;Move&gt;();</span>
+<span class="fc" id="L399">		legalMoves.add(new Move(new int[]{4,4}, new int[]{5,6}));</span>
+<span class="fc" id="L400">		legalMoves.add(new Move(new int[]{4,4}, new int[]{6,5}));</span>
+<span class="fc" id="L401">		legalMoves.add(new Move(new int[]{4,4}, new int[]{6,3}));</span>
+<span class="fc" id="L402">		legalMoves.add(new Move(new int[]{4,4}, new int[]{5,2}));</span>
+<span class="fc" id="L403">		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,2}));</span>
+<span class="fc" id="L404">		legalMoves.add(new Move(new int[]{4,4}, new int[]{2,3}));</span>
+<span class="fc" id="L405">		legalMoves.add(new Move(new int[]{4,4}, new int[]{2,5}));</span>
+<span class="fc" id="L406">		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,6}));</span>
+
+<span class="pc bpc" id="L408" title="1 of 2 branches missed.">		if (generatedMoves.size()!=legalMoves.size()){</span>
+<span class="nc" id="L409">			fail();</span>
+		}
+<span class="fc bfc" id="L411" title="All 2 branches covered.">		for (int i=0;i&lt;generatedMoves.size();i++){</span>
+<span class="fc" id="L412">			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);</span>
+<span class="fc" id="L413">			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);</span>
+<span class="fc" id="L414">			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);</span>
+<span class="fc" id="L415">			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);</span>
+		}
+		
+<span class="fc" id="L418">		tearDown();</span>
+<span class="fc" id="L419">	}</span>
+	
+	/**
+	 * Test that the bishop can move diagonally
+	 * Test #23 - 1.5.7
+	 */
+	@Test
+	public void bishopMoves(){
+<span class="fc" id="L427">		fen = &quot;k-------/--------/--------/----B---/--------/--------/--------/-------K w KQkq - 0 1&quot;;</span>
+<span class="fc" id="L428">		setUp();</span>
+		
+<span class="fc" id="L430">		ArrayList&lt;Move&gt; generatedMoves = chessboard.getMoves(4,4);</span>
+<span class="fc" id="L431">		ArrayList&lt;Move&gt; legalMoves = new ArrayList&lt;Move&gt;();</span>
+<span class="fc" id="L432">		legalMoves.add(new Move(new int[]{4,4}, new int[]{5,5}));</span>
+<span class="fc" id="L433">		legalMoves.add(new Move(new int[]{4,4}, new int[]{6,6}));</span>
+<span class="fc" id="L434">		legalMoves.add(new Move(new int[]{4,4}, new int[]{7,7}));</span>
+<span class="fc" id="L435">		legalMoves.add(new Move(new int[]{4,4}, new int[]{5,3}));</span>
+<span class="fc" id="L436">		legalMoves.add(new Move(new int[]{4,4}, new int[]{6,2}));</span>
+<span class="fc" id="L437">		legalMoves.add(new Move(new int[]{4,4}, new int[]{7,1}));</span>
+<span class="fc" id="L438">		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,3}));</span>
+<span class="fc" id="L439">		legalMoves.add(new Move(new int[]{4,4}, new int[]{2,2}));</span>
+<span class="fc" id="L440">		legalMoves.add(new Move(new int[]{4,4}, new int[]{1,1}));</span>
+<span class="fc" id="L441">		legalMoves.add(new Move(new int[]{4,4}, new int[]{0,0}));</span>
+<span class="fc" id="L442">		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,5}));</span>
+<span class="fc" id="L443">		legalMoves.add(new Move(new int[]{4,4}, new int[]{2,6}));</span>
+<span class="fc" id="L444">		legalMoves.add(new Move(new int[]{4,4}, new int[]{1,7}));</span>
+
+<span class="pc bpc" id="L446" title="1 of 2 branches missed.">		if (generatedMoves.size()!=legalMoves.size()){</span>
+<span class="nc" id="L447">			fail();</span>
+		}
+<span class="fc bfc" id="L449" title="All 2 branches covered.">		for (int i=0;i&lt;generatedMoves.size();i++){</span>
+<span class="fc" id="L450">			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);</span>
+<span class="fc" id="L451">			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);</span>
+<span class="fc" id="L452">			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);</span>
+<span class="fc" id="L453">			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);</span>
+		}
+		
+<span class="fc" id="L456">		tearDown();</span>
+<span class="fc" id="L457">	}</span>
+	
+	/**
+	 * Test that the queen can move horizontally, vertically, and diagonally
+	 * Test #24 - 1.5.8
+	 */
+	@Test
+	public void queenMoves(){
+<span class="fc" id="L465">		fen = &quot;k-------/--------/--------/----Q---/--------/--------/--------/-------K w KQkq - 0 1&quot;;</span>
+<span class="fc" id="L466">		setUp();</span>
+		
+<span class="fc" id="L468">		ArrayList&lt;Move&gt; generatedMoves = chessboard.getMoves(4,4);</span>
+<span class="fc" id="L469">		ArrayList&lt;Move&gt; legalMoves = new ArrayList&lt;Move&gt;();</span>
+<span class="fc" id="L470">		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,5}));</span>
+<span class="fc" id="L471">		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,6}));</span>
+<span class="fc" id="L472">		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,7}));</span>
+<span class="fc" id="L473">		legalMoves.add(new Move(new int[]{4,4}, new int[]{5,5}));</span>
+<span class="fc" id="L474">		legalMoves.add(new Move(new int[]{4,4}, new int[]{6,6}));</span>
+<span class="fc" id="L475">		legalMoves.add(new Move(new int[]{4,4}, new int[]{7,7}));</span>
+<span class="fc" id="L476">		legalMoves.add(new Move(new int[]{4,4}, new int[]{5,4}));</span>
+<span class="fc" id="L477">		legalMoves.add(new Move(new int[]{4,4}, new int[]{6,4}));</span>
+<span class="fc" id="L478">		legalMoves.add(new Move(new int[]{4,4}, new int[]{7,4}));</span>
+<span class="fc" id="L479">		legalMoves.add(new Move(new int[]{4,4}, new int[]{5,3}));</span>
+<span class="fc" id="L480">		legalMoves.add(new Move(new int[]{4,4}, new int[]{6,2}));</span>
+<span class="fc" id="L481">		legalMoves.add(new Move(new int[]{4,4}, new int[]{7,1}));</span>
+<span class="fc" id="L482">		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,3}));</span>
+<span class="fc" id="L483">		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,2}));</span>
+<span class="fc" id="L484">		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,1}));</span>
+<span class="fc" id="L485">		legalMoves.add(new Move(new int[]{4,4}, new int[]{4,0}));</span>
+<span class="fc" id="L486">		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,3}));</span>
+<span class="fc" id="L487">		legalMoves.add(new Move(new int[]{4,4}, new int[]{2,2}));</span>
+<span class="fc" id="L488">		legalMoves.add(new Move(new int[]{4,4}, new int[]{1,1}));</span>
+<span class="fc" id="L489">		legalMoves.add(new Move(new int[]{4,4}, new int[]{0,0}));</span>
+<span class="fc" id="L490">		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,4}));</span>
+<span class="fc" id="L491">		legalMoves.add(new Move(new int[]{4,4}, new int[]{2,4}));</span>
+<span class="fc" id="L492">		legalMoves.add(new Move(new int[]{4,4}, new int[]{1,4}));</span>
+<span class="fc" id="L493">		legalMoves.add(new Move(new int[]{4,4}, new int[]{0,4}));</span>
+<span class="fc" id="L494">		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,5}));</span>
+<span class="fc" id="L495">		legalMoves.add(new Move(new int[]{4,4}, new int[]{2,6}));</span>
+<span class="fc" id="L496">		legalMoves.add(new Move(new int[]{4,4}, new int[]{1,7}));</span>
+
+<span class="pc bpc" id="L498" title="1 of 2 branches missed.">		if (generatedMoves.size()!=legalMoves.size()){</span>
+<span class="nc" id="L499">			fail();</span>
+		}
+<span class="fc bfc" id="L501" title="All 2 branches covered.">		for (int i=0;i&lt;generatedMoves.size();i++){</span>
+<span class="fc" id="L502">			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);</span>
+<span class="fc" id="L503">			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);</span>
+<span class="fc" id="L504">			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);</span>
+<span class="fc" id="L505">			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);</span>
+		}
+		
+<span class="fc" id="L508">		tearDown();</span>
+<span class="fc" id="L509">	}</span>
+	
+	/**
+	 * Test that the pawn can move one space forward, and two spaces forward
+	 * if it hasn't yet moved
+	 * Test #25 - 1.5.9.1
+	 */
+	@Test
+	public void pawnMoves(){
+<span class="fc" id="L518">		fen = &quot;k-------/--------/--------/--------/--------/--------/---PP---/-------K w KQkq - 0 1&quot;;</span>
+<span class="fc" id="L519">		setUp();</span>
+		
+<span class="fc" id="L521">		game.playMove(new Move(new int[]{3,1}, new int[]{3,2}));</span>
+		
+<span class="fc" id="L523">		ArrayList&lt;Move&gt; generatedMoves = chessboard.getMoves(4,1);</span>
+<span class="fc" id="L524">		ArrayList&lt;Move&gt; legalMoves = new ArrayList&lt;Move&gt;();</span>
+		
+<span class="fc" id="L526">		legalMoves.add(new Move(new int[]{4,1}, new int[]{4,2}));</span>
+<span class="fc" id="L527">		legalMoves.add(new Move(new int[]{4,1}, new int[]{4,3}));</span>
+		
+<span class="pc bpc" id="L529" title="1 of 2 branches missed.">		if (generatedMoves.size()!=legalMoves.size()){</span>
+<span class="nc" id="L530">			fail();</span>
+		}
+<span class="fc bfc" id="L532" title="All 2 branches covered.">		for (int i=0;i&lt;generatedMoves.size();i++){</span>
+<span class="fc" id="L533">			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);</span>
+<span class="fc" id="L534">			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);</span>
+<span class="fc" id="L535">			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);</span>
+<span class="fc" id="L536">			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);</span>
+		}
+		
+<span class="fc" id="L539">		generatedMoves = chessboard.getMoves(3,2);</span>
+<span class="fc" id="L540">		legalMoves.clear();</span>
+<span class="fc" id="L541">		legalMoves.add(new Move(new int[]{3,2}, new int[]{3,3}));</span>
+		
+<span class="pc bpc" id="L543" title="1 of 2 branches missed.">		if (generatedMoves.size()!=legalMoves.size()){</span>
+<span class="nc" id="L544">			fail();</span>
+		}
+<span class="fc bfc" id="L546" title="All 2 branches covered.">		for (int i=0;i&lt;generatedMoves.size();i++){</span>
+<span class="fc" id="L547">			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);</span>
+<span class="fc" id="L548">			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);</span>
+<span class="fc" id="L549">			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);</span>
+<span class="fc" id="L550">			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);</span>
+		}
+		
+<span class="fc" id="L553">		tearDown();</span>
+<span class="fc" id="L554">	}</span>
+	
+	/**
+	 * Test that the pawn can move one space forward diagonally when capturing
+	 * an enemy piece, and cannot capture a piece directly ahead
+	 * Test #26 - 1.5.9.2
+	 */
+	@Test
+	public void pawnCapture(){
+<span class="fc" id="L563">		fen = &quot;k-------/--------/--------/---nn---/--------/----P---/--------/-------K w KQkq - 0 1&quot;;</span>
+<span class="fc" id="L564">		setUp();</span>
+		
+<span class="fc" id="L566">		game.playMove(new Move(new int[]{4,2}, new int[]{4,3}));</span>
+		
+<span class="fc" id="L568">		ArrayList&lt;Move&gt; generatedMoves = chessboard.getMoves(4,3);</span>
+<span class="fc" id="L569">		ArrayList&lt;Move&gt; legalMoves = new ArrayList&lt;Move&gt;();</span>
+		
+<span class="fc" id="L571">		legalMoves.add(new Move(new int[]{4,3}, new int[]{3,4}));</span>
+
+<span class="pc bpc" id="L573" title="1 of 2 branches missed.">		if (generatedMoves.size()!=legalMoves.size()){</span>
+<span class="nc" id="L574">			fail();</span>
+		}
+<span class="fc bfc" id="L576" title="All 2 branches covered.">		for (int i=0;i&lt;generatedMoves.size();i++){</span>
+<span class="fc" id="L577">			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);</span>
+<span class="fc" id="L578">			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);</span>
+<span class="fc" id="L579">			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);</span>
+<span class="fc" id="L580">			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);</span>
+		}
+		
+<span class="fc" id="L583">		tearDown();</span>
+<span class="fc" id="L584">	}</span>
+	
+	/**
+	 * Test that the pawn can capture en passant if an enemy pawn moves forward
+	 * two spaces through the attacked square
+	 * Test #27 - 1.5.9.3
+	 */
+	@Test
+	public void enPassant(){
+<span class="fc" id="L593">		setUp();</span>
+		
+<span class="fc" id="L595">		game.playMove(new Move(new int[]{4,1}, new int[]{4,3}));</span>
+<span class="fc" id="L596">		game.playMove(new Move(new int[]{4,6}, new int[]{4,5}));</span>
+<span class="fc" id="L597">		game.playMove(new Move(new int[]{4,3}, new int[]{4,4}));</span>
+<span class="fc" id="L598">		game.playMove(new Move(new int[]{3,6}, new int[]{3,4}));</span>
+		
+<span class="fc" id="L600">		ArrayList&lt;Move&gt; generatedMoves = chessboard.getMoves(4,4);</span>
+<span class="fc" id="L601">		ArrayList&lt;Move&gt; legalMoves = new ArrayList&lt;Move&gt;();</span>
+		
+<span class="fc" id="L603">		legalMoves.add(new Move(new int[]{4,4}, new int[]{3,5}));</span>
+		
+<span class="pc bpc" id="L605" title="1 of 2 branches missed.">		if (generatedMoves.size()!=legalMoves.size()){</span>
+<span class="nc" id="L606">			fail();</span>
+		}
+<span class="fc bfc" id="L608" title="All 2 branches covered.">		for (int i=0;i&lt;generatedMoves.size();i++){</span>
+<span class="fc" id="L609">			Assert.assertEquals(legalMoves.get(i).from()[0], generatedMoves.get(i).from()[0]);</span>
+<span class="fc" id="L610">			Assert.assertEquals(legalMoves.get(i).from()[1], generatedMoves.get(i).from()[1]);</span>
+<span class="fc" id="L611">			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);</span>
+<span class="fc" id="L612">			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);</span>
+		}
+		
+<span class="fc" id="L615">		game.playMove(generatedMoves.get(0));</span>
+		
+<span class="fc" id="L617">		ArrayList&lt;Move&gt; empty = new ArrayList&lt;Move&gt;();</span>
+		
+		//Roundabout way to check if the pawn has been removed
+<span class="fc" id="L620">		Assert.assertEquals(empty.size(), chessboard.getMoves(3,4).size());</span>
+		
+<span class="fc" id="L622">		tearDown();</span>
+<span class="fc" id="L623">	}</span>
+	
+	/**
+	 * Test that the game ends in a draw in the case of a three-fold repetition
+	 * Test #13 - 1.4.3.5
+	 */
+	@Test
+	public void threeFoldRepetition(){
+<span class="nc" id="L631">		setUp();</span>
+		
+		//#1
+<span class="nc" id="L634">		game.playMove(new Move(new int[]{1,0}, new int[]{2,2}));</span>
+<span class="nc" id="L635">		game.playMove(new Move(new int[]{6,7}, new int[]{5,5}));</span>
+<span class="nc" id="L636">		game.playMove(new Move(new int[]{2,2}, new int[]{1,0}));</span>
+<span class="nc" id="L637">		game.playMove(new Move(new int[]{5,5}, new int[]{6,7}));</span>
+		//#2
+<span class="nc" id="L639">		game.playMove(new Move(new int[]{1,0}, new int[]{2,2}));</span>
+<span class="nc" id="L640">		game.playMove(new Move(new int[]{6,7}, new int[]{5,5}));</span>
+<span class="nc" id="L641">		game.playMove(new Move(new int[]{2,2}, new int[]{1,0}));</span>
+<span class="nc" id="L642">		game.playMove(new Move(new int[]{5,5}, new int[]{6,7}));</span>
+		//#3
+	
+		//Starting position with white to move has been reached three times = draw	
+<span class="nc" id="L646">		Assert.assertEquals(&quot;Draw&quot;, chessboard.getState());</span>
+		
+<span class="nc" id="L648">		tearDown();		</span>
+<span class="nc" id="L649">	}</span>
+	
+	/**
+	 * Test that the pawn can promote to a queen, rook, knight, or bishop when
+	 * advanced to the last rank
+	 * Test #28 - 1.5.9.4
+	 */
+	@Test
+	public void promotion(){
+<span class="nc" id="L658">		fen = &quot;-----k--/---PP---/--------/--------/--------/--------/--------/-------K w KQkq - 0 60&quot;;</span>
+<span class="nc" id="L659">		setUp();</span>
+		
+<span class="nc" id="L661">		game.playMove(new Move(new int[]{4,6}, new int[]{4,7}));</span>
+<span class="nc" id="L662">		game.playMove(new Move(new int[]{5,7}, new int[]{4,7}));</span>
+		//Workaround to check the piece type
+<span class="nc" id="L664">		BoardPiece[] captured = chessboard.getCaptured();</span>
+<span class="nc" id="L665">		ChessPiece piece = (ChessPiece)captured[0];</span>
+		
+		//default
+<span class="nc" id="L668">		Assert.assertEquals(&quot;Queen&quot;, piece.getType());</span>
+		
+		//Promote to knight (will also fail for bishop and rook)
+<span class="nc" id="L671">		game.playMove(new Move(new int[]{3,6}, new int[]{3,7}));</span>
+<span class="nc" id="L672">		game.playMove(new Move(new int[]{4,7}, new int[]{3,7}));</span>
+<span class="nc" id="L673">		piece = (ChessPiece)captured[1];</span>
+		
+<span class="nc" id="L675">		Assert.assertEquals(&quot;Knight&quot;, piece.getType());</span>
+		
+<span class="nc" id="L677">		tearDown();</span>
+<span class="nc" id="L678">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

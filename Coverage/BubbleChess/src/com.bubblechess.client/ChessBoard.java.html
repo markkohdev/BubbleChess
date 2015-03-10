@@ -1,0 +1,798 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>ChessBoard.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.client</a> &gt; <span class="el_source">ChessBoard.java</span></div><h1>ChessBoard.java</h1><pre class="source lang-java linenums"><span class="pc" id="L1">package com.bubblechess.client;</span>
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import com.bubblechess.client.pieces.*;
+import com.bubblechess.client.BoardPiece.Color;
+
+public class ChessBoard implements Board, Cloneable {
+	
+	/**
+	 * To access a piece, board is stored as [col][row] where [0][0] is the 
+	 * lower lefthand corner of the board
+	 */
+	protected BoardPiece[][] board;
+	
+<span class="fc" id="L17">	protected enum STATE { WHITE_MOVE, BLACK_MOVE, CHECKMATE, STALEMATE, DRAW };</span>
+	
+	protected ArrayList&lt;BoardPiece&gt; captured;
+<span class="fc" id="L20">	protected int boardWidth = 8;</span>
+<span class="fc" id="L21">	protected int boardHeight = 8;</span>
+	protected STATE state;
+	protected boolean enPassantEligible;
+<span class="fc" id="L24">	protected int[] enPassantSquare = new int[2];</span>
+<span class="fc" id="L25">	protected int[] enPassantPawn = new int[2];</span>
+<span class="fc" id="L26">	protected int[] castlingRookOrigin = new int[2];</span>
+<span class="fc" id="L27">	protected int[] castlingRookDest = new int[2];</span>
+	protected boolean enPassant;
+	protected boolean castling;
+	protected boolean promotion;
+	
+	/**
+	 * Constructor
+	 */
+<span class="fc" id="L35">	public ChessBoard(){</span>
+<span class="fc" id="L36">		init();</span>
+<span class="fc" id="L37">	}</span>
+	
+	/**
+	 * Constructor to make a copy of an existing ChessBoard
+	 * @param board
+	 * @param captured
+	 * @param state
+	 */
+<span class="fc" id="L45">	public ChessBoard(BoardPiece[][] board,BoardPiece[] captured, STATE state){</span>
+<span class="fc" id="L46">		this.board = board;</span>
+<span class="fc" id="L47">		this.captured = new ArrayList&lt;BoardPiece&gt;(Arrays.asList(captured));</span>
+<span class="fc" id="L48">		this.state = state;</span>
+<span class="fc" id="L49">	}</span>
+	
+	/**
+	 * Constructor to load a custom game
+	 * Allows the user to load a game with all the information needed to restart the
+	 * game from a given position, using Forsyth-Edwards notation
+	 * Undefined behavior for invalid FEN strings
+	 * @param fen
+	 */
+<span class="fc" id="L58">	public ChessBoard(String fen){</span>
+		String pieces, toMove, castling, enPassant, halfMoveClock, moveNumber;
+<span class="fc" id="L60">		String[] tokens = fen.split(&quot; &quot;);</span>
+		
+<span class="fc" id="L62">		pieces = tokens[0];</span>
+<span class="fc" id="L63">		toMove = tokens[1];</span>
+<span class="fc" id="L64">		castling = tokens[2];</span>
+<span class="fc" id="L65">		enPassant = tokens[3];</span>
+<span class="fc" id="L66">		halfMoveClock = tokens[4];</span>
+<span class="fc" id="L67">		moveNumber = tokens[5];</span>
+		
+<span class="fc" id="L69">		String[] ranks = pieces.split(&quot;/&quot;);</span>
+<span class="fc" id="L70">		board = new BoardPiece[boardWidth][boardHeight];</span>
+		
+		//at least some data validation
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">		if (ranks.length==8){</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">			for (int row=7;row&gt;=0;row--){</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">				for (int col=0;col&lt;boardHeight;col++){</span>
+<span class="fc" id="L76">					char piece = ranks[row].toCharArray()[col];</span>
+					
+<span class="fc bfc" id="L78" title="All 13 branches covered.">					switch(piece){</span>
+					case 'r':
+<span class="fc" id="L80">						board[col][Math.abs(row-7)] = new Rook(Color.BLACK); break;</span>
+					case 'R':
+<span class="fc" id="L82">						board[col][Math.abs(row-7)] = new Rook(Color.WHITE); break;</span>
+					case 'n':
+<span class="fc" id="L84">						board[col][Math.abs(row-7)] = new Knight(Color.BLACK); break;</span>
+					case 'N':
+<span class="fc" id="L86">						board[col][Math.abs(row-7)] = new Knight(Color.WHITE); break;</span>
+					case 'b':
+<span class="fc" id="L88">						board[col][Math.abs(row-7)] = new Bishop(Color.BLACK); break;</span>
+					case 'B':
+<span class="fc" id="L90">						board[col][Math.abs(row-7)] = new Bishop(Color.WHITE); break;</span>
+					case 'k':
+<span class="fc" id="L92">						board[col][Math.abs(row-7)] = new King(Color.BLACK); break;</span>
+					case 'K':
+<span class="fc" id="L94">						board[col][Math.abs(row-7)] = new King(Color.WHITE); break;</span>
+					case 'q':
+<span class="fc" id="L96">						board[col][Math.abs(row-7)] = new Queen(Color.BLACK); break;</span>
+					case 'Q':
+<span class="fc" id="L98">						board[col][Math.abs(row-7)] = new Queen(Color.WHITE); break;</span>
+					case 'p':
+<span class="fc" id="L100">						board[col][Math.abs(row-7)] = new Pawn(Color.BLACK); break;</span>
+					case 'P':
+<span class="fc" id="L102">						board[col][Math.abs(row-7)] = new Pawn(Color.WHITE); break;</span>
+					default:
+<span class="fc" id="L104">						board[col][Math.abs(row-7)] = null;</span>
+					}
+					
+				}
+			}
+		}
+		
+		//Need to set opposite color to let updateState do it's thing
+<span class="fc bfc" id="L112" title="All 2 branches covered.">		if (toMove.equals(&quot;w&quot;)){</span>
+<span class="fc" id="L113">			state = STATE.BLACK_MOVE;</span>
+<span class="fc" id="L114">		}</span>
+		else{
+<span class="fc" id="L116">			state = STATE.WHITE_MOVE;</span>
+		}
+		
+<span class="fc" id="L119">		updateState();</span>
+		
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">		if (enPassant.equals(&quot;-&quot;)){</span>
+<span class="fc" id="L122">			this.enPassant = false;</span>
+<span class="fc" id="L123">		}</span>
+		else{
+<span class="nc" id="L125">			this.enPassant = true;</span>
+<span class="nc" id="L126">			enPassantSquare = convertToCoord(enPassant);</span>
+		}
+		
+<span class="fc" id="L129">	}</span>
+	
+	/**
+	 * Converts a square to a coordinate, e.g. e3 becomes [4,2]
+	 * @param square
+	 * @return The square in [x, y] form
+	 */
+	protected int[] convertToCoord(String square){
+<span class="nc" id="L137">		int[] result = new int[2];</span>
+		
+<span class="nc" id="L139">		result[0] = square.toCharArray()[0] - 97;</span>
+<span class="nc" id="L140">		result[1] = square.toCharArray()[1];</span>
+		
+<span class="nc" id="L142">		return result;</span>
+	}
+
+	/**
+	 * Board initializer. Sets up the pieces and initial state.
+	 */
+	protected void init(){
+<span class="fc" id="L149">		board = new BoardPiece[boardWidth][boardHeight];</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">		for (int i=0;i&lt;8;i++) {</span>
+<span class="fc" id="L151">			board[i][1] = new Pawn(Color.WHITE);</span>
+<span class="fc" id="L152">			board[i][6] = new Pawn(Color.BLACK);</span>
+		}
+<span class="fc" id="L154">		board[0][0] = new Rook(Color.WHITE);</span>
+<span class="fc" id="L155">		board[0][7] = new Rook(Color.BLACK);</span>
+<span class="fc" id="L156">		board[1][0] = new Knight(Color.WHITE);</span>
+<span class="fc" id="L157">		board[1][7] = new Knight(Color.BLACK);</span>
+<span class="fc" id="L158">		board[2][0] = new Bishop(Color.WHITE);</span>
+<span class="fc" id="L159">		board[2][7] = new Bishop(Color.BLACK);</span>
+<span class="fc" id="L160">		board[3][0] = new Queen(Color.WHITE);</span>
+<span class="fc" id="L161">		board[3][7] = new Queen(Color.BLACK);</span>
+<span class="fc" id="L162">		board[4][0] = new King(Color.WHITE);</span>
+<span class="fc" id="L163">		board[4][7] = new King(Color.BLACK);</span>
+<span class="fc" id="L164">		board[5][0] = new Bishop(Color.WHITE);</span>
+<span class="fc" id="L165">		board[5][7] = new Bishop(Color.BLACK);</span>
+<span class="fc" id="L166">		board[6][0] = new Knight(Color.WHITE);</span>
+<span class="fc" id="L167">		board[6][7] = new Knight(Color.BLACK);</span>
+<span class="fc" id="L168">		board[7][0] = new Rook(Color.WHITE);</span>
+<span class="fc" id="L169">		board[7][7] = new Rook(Color.BLACK);	</span>
+		
+<span class="fc" id="L171">		state = STATE.WHITE_MOVE;</span>
+<span class="fc" id="L172">		captured = new ArrayList&lt;BoardPiece&gt;();</span>
+<span class="fc" id="L173">		enPassantEligible = false;</span>
+<span class="fc" id="L174">	}</span>
+
+	/**
+	 * Get game board
+	 * @return A 2D array of BoardPieces
+	 */
+	@Override
+	public BoardPiece[][] getBoard() {
+<span class="fc" id="L182">		BoardPiece[][] newBoard = new BoardPiece[boardWidth][boardHeight];</span>
+		
+		//Run through the board and populate a new board 		
+<span class="fc bfc" id="L185" title="All 2 branches covered.">		for (int col=0;col&lt;boardHeight;col++){</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">			for (int row=0;row&lt;boardWidth;row++){</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">				if (board[col][row]!=null){</span>
+<span class="fc" id="L188">					newBoard[col][row] = board[col][row].clone();</span>
+				}				
+			}
+		}
+		
+<span class="fc" id="L193">		return newBoard;</span>
+	}
+	
+	/**
+	 * Get captured pieces
+	 * @return An array of captured pieces
+	 */
+	public BoardPiece[] getCaptured() {
+		//We want to use BoardPiece[] here because it makes copies and not references
+<span class="fc bfc" id="L202" title="All 2 branches covered.">		if (this.captured==null){			</span>
+<span class="fc" id="L203">			return new BoardPiece[0];</span>
+		}
+<span class="fc" id="L205">		BoardPiece[] result = new BoardPiece[this.captured.size()];</span>
+<span class="fc" id="L206">		this.captured.toArray(result);</span>
+<span class="fc" id="L207">		return result;</span>
+	}
+	
+	/**
+	 * Get game board width
+	 * @return width
+	 */
+	@Override
+	public int getWidth() {
+<span class="nc" id="L216">		return boardWidth;</span>
+	}
+
+	/**
+	 * Get game board height
+	 * @return height
+	 */
+	@Override
+	public int getHeight() {
+<span class="nc" id="L225">		return boardHeight;</span>
+	}
+
+	/**
+	 * Apply the passed move to the game board
+	 * @param m
+	 * @return True if move was successful, False if move is invalid
+	 */
+	public boolean applyMove(Move m){
+<span class="fc" id="L234">		return applyMove(m, true);</span>
+	}
+	
+	/**
+	 * Apply the passed move to the game board and check that move is legal
+	 * if the validate flag is set to True
+	 * @param m
+	 * @param validate
+	 * @return True if move was successful, False if move is invalid
+	 */
+	@Override
+	public boolean applyMove(Move m, boolean validate) {
+<span class="pc bpc" id="L246" title="1 of 4 branches missed.">		if (!validate || validMove(m)) {</span>
+			
+			//Apply the move		
+<span class="fc bfc" id="L249" title="All 2 branches covered.">			if (handleSpecialCase(m)) {							</span>
+<span class="fc" id="L250">				return true;</span>
+			}
+			else {
+				//Check if anything got captured
+<span class="fc bfc" id="L254" title="All 2 branches covered.">				if(getPiece(m.to()) != null){</span>
+					//Add piece to captured list, remove it from the board
+<span class="fc" id="L256">					captured.add(getPiece(m.to()));</span>
+<span class="fc" id="L257">					board[m.colTo()][m.rowTo()] = null;</span>
+				}
+				
+				//Set enPassantEligible
+<span class="fc bfc" id="L261" title="All 2 branches covered.">				if ((ChessPiece)getPiece(m.from()) instanceof Pawn </span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">						&amp;&amp; Math.abs(m.rowFrom()-m.rowTo())==2){</span>
+<span class="fc" id="L263">					enPassantEligible = true;</span>
+<span class="fc" id="L264">					enPassantSquare[0] = m.colTo();</span>
+					//Destination square is between origin and destination
+<span class="fc" id="L266">					enPassantSquare[1] = Math.abs(m.rowFrom()+m.rowTo())/2;</span>
+<span class="fc" id="L267">					enPassantPawn[0] = m.colTo();</span>
+<span class="fc" id="L268">					enPassantPawn[1] = m.rowTo();</span>
+<span class="fc" id="L269">				}</span>
+				else {
+<span class="fc" id="L271">					enPassantEligible = false;</span>
+				}
+				
+				//Move the piece
+<span class="fc" id="L275">				board[m.colTo()][m.rowTo()] = board[m.colFrom()][m.rowFrom()];</span>
+<span class="fc" id="L276">				board[m.colFrom()][m.rowFrom()] = null;</span>
+				
+				//Update hasMoved
+<span class="fc" id="L279">				((ChessPiece)board[m.colTo()][m.rowTo()]).hasMoved = true;</span>
+				
+<span class="fc" id="L281">				return true;</span>
+			}
+		}
+
+<span class="nc" id="L285">		return false;</span>
+	}
+	
+	/**
+	 * Apply the passed move to a clone of the game board
+	 * @param m
+	 * @return The new game board
+	 */
+	public Board applyMoveCloning(Move m){
+<span class="nc" id="L294">		return applyMoveCloning(m, true);</span>
+	}
+
+	/**
+	 * Returns a new copy of the board with the given move applied
+	 * @return A copy of the updated board 
+	 */
+	@Override
+	public Board applyMoveCloning(Move m, boolean validate) {
+<span class="fc" id="L303">		Board newBoard = this.clone();</span>
+<span class="fc" id="L304">		newBoard.applyMove(m, validate);</span>
+
+<span class="fc" id="L306">		return newBoard;</span>
+	}
+
+	/**
+	 * Performs a deep copy of a ChessBoard
+	 * @return An identical ChessBoard
+	 */
+	@Override
+	public Board clone() {	
+<span class="fc" id="L315">		ChessBoard newBoard = new ChessBoard(this.getBoard(),this.getCaptured(),this.state);</span>
+		
+<span class="fc" id="L317">		return newBoard;</span>
+	}
+
+	/**
+	 * Returns a list of legal moves for a piece in the given location
+	 * @param col x-coordinate
+	 * @param row y-coordinate
+	 * @return An ArrayList of Moves
+	 */
+	@Override
+	public ArrayList&lt;Move&gt; getMoves(int col, int row) {
+		//Make sure the square isn't empty.  If it is, return an empty list
+<span class="fc bfc" id="L329" title="All 2 branches covered.">		if(board[col][row] == null){</span>
+<span class="fc" id="L330">			return new ArrayList&lt;Move&gt;();</span>
+		}
+		else {
+			//Return the moves available from the piece
+<span class="fc" id="L334">			ArrayList&lt;Move&gt; pieceMoves = board[col][row].getMoves(col, row);</span>
+<span class="fc" id="L335">			pieceMoves.addAll(board[col][row].getSpecialMoves(col, row));</span>
+			
+<span class="fc" id="L337">			ArrayList&lt;Move&gt; validMoves = new ArrayList&lt;Move&gt;();</span>
+			
+			//Iterate through the moves given to us and make sure none are illegal
+<span class="fc bfc" id="L340" title="All 2 branches covered.">			for(Move m: pieceMoves){</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">				if (validMove(m)){</span>
+<span class="fc" id="L342">					validMoves.add(m);</span>
+				}
+			}
+			
+<span class="fc" id="L346">			return validMoves;</span>
+		}
+	}
+
+	/**
+	 * Get all moves for a given piece in a board
+	 * @param col
+	 * @param row
+	 * @return A list of moves
+	 */
+	@Override
+	public ArrayList&lt;Move&gt; getMoves(char col, char row) {
+		//col will be letter from a-z, convert to 0-n
+<span class="nc" id="L359">		int x = col-97;</span>
+		//row will be number
+<span class="nc" id="L361">		int y = Character.getNumericValue(row);</span>
+<span class="nc" id="L362">		return getMoves(x, y);</span>
+	}
+
+	/**
+	 * Get the game state
+	 * @return The current state as a string
+	 */
+	@Override
+	public String getState() {
+<span class="pc bpc" id="L371" title="1 of 6 branches missed.">		switch(this.state) {</span>
+		case WHITE_MOVE:
+<span class="fc" id="L373">			return &quot;White to Move&quot;;</span>
+		case BLACK_MOVE:
+<span class="fc" id="L375">			return &quot;Black to Move&quot;;</span>
+		case CHECKMATE:
+<span class="fc" id="L377">			return &quot;Checkmate&quot;;</span>
+		case STALEMATE:
+<span class="fc" id="L379">			return &quot;Stalemate&quot;;</span>
+		case DRAW:
+<span class="fc" id="L381">			return &quot;Draw&quot;;</span>
+		default:
+<span class="nc" id="L383">			return null;</span>
+		}
+	}
+
+	/**
+	 * Checks if the board is an end-state (checkmate, stalemate, or draw)
+	 * @return True if there is checkmate, stalemate, or draw, False otherwise
+	 */
+	@Override
+	public boolean endState() {
+<span class="pc bpc" id="L393" title="3 of 6 branches missed.">		if (this.state==STATE.CHECKMATE || this.state==STATE.STALEMATE || this.state==STATE.DRAW) {</span>
+<span class="nc" id="L394">			return true;</span>
+		}
+<span class="fc" id="L396">		return false;</span>
+	}
+	
+	/**
+	 * Get the piece at the passed coordinate
+	 * Returns null if empty
+	 * @param coord
+	 * @return The piece at the passed coordinate
+	 */
+	protected BoardPiece getPiece(int[] coord){
+<span class="pc bpc" id="L406" title="1 of 2 branches missed.">		if (coord.length != 2)</span>
+<span class="nc" id="L407">			return null;</span>
+<span class="fc" id="L408">		return board[coord[0]][coord[1]];</span>
+	}
+
+	/**
+	 * Get the piece at the passed coordinate
+	 * Returns null if empty
+	 * @param col
+	 * @param row
+	 * @return The piece at the passed coordinate
+	 */
+	protected BoardPiece getPiece(int col, int row){
+<span class="fc" id="L419">		return board[col][row];</span>
+	}
+
+	/**
+	 * Determine if a move is a valid attack, e.g., the piece on the origin square
+	 * threatens the destination square
+	 * Note: For castling and moving a pawn forward two spaces this function
+	 * will return true, even though they don't attack the destination square
+	 * @param m
+	 * @return True if the piece can attack this square, False otherwise
+	 */
+	protected boolean validAttack(Move m){
+<span class="fc" id="L431">		ArrayList&lt;int[]&gt; squares = new ArrayList&lt;int[]&gt;();</span>
+<span class="fc" id="L432">		ChessPiece piece = (ChessPiece)getPiece(m.from());</span>
+<span class="fc" id="L433">		ChessPiece dest = (ChessPiece)getPiece(m.to());</span>
+		
+<span class="pc bpc" id="L435" title="1 of 2 branches missed.">		if (piece == null){</span>
+<span class="nc" id="L436">			return false;</span>
+		}
+		
+		//Pawn does not &quot;attack&quot; the square ahead, it can only move to occupy it
+<span class="fc bfc" id="L440" title="All 6 branches covered.">		if (piece instanceof Pawn &amp;&amp; m.colFrom()==m.colTo() &amp;&amp; dest!= null){</span>
+<span class="fc" id="L441">			return false;</span>
+		}
+		
+		//For the Knight, origin and destination squares are &quot;adjacent&quot;
+		//Also I'm including pawn and king here because for castling and moving
+		//forward two squares the path must be unblocked for a legal move
+<span class="fc bfc" id="L447" title="All 2 branches covered.">		if (!(piece instanceof Knight)) {</span>
+<span class="fc" id="L448">			squares = getSquaresOnPath(m);</span>
+			
+			//All squares must be empty
+<span class="fc bfc" id="L451" title="All 2 branches covered.">			for (int[] sq : squares){</span>
+<span class="fc bfc" id="L452" title="All 2 branches covered.">				if ((ChessPiece)getPiece(sq) != null){</span>
+<span class="fc" id="L453">					return false;</span>
+				}
+			}
+		}
+			
+<span class="fc" id="L458">		return true;</span>
+	}
+	
+	/**
+	 * Determine if the given move is legal
+	 * @param m
+	 * @return True if move is legal, False otherwise
+	 */
+	protected boolean validMove(Move m){
+		//Reset special move flags
+<span class="fc" id="L468">		enPassant = false;</span>
+<span class="fc" id="L469">		castling = false;</span>
+<span class="fc" id="L470">		promotion = false;</span>
+		
+		//validAttack=true is a prerequisite for validMove
+<span class="fc bfc" id="L473" title="All 2 branches covered.">		if (!validAttack(m)){</span>
+<span class="fc" id="L474">			return false;</span>
+		}
+		
+<span class="fc" id="L477">		ChessPiece piece = (ChessPiece)getPiece(m.from()); </span>
+<span class="fc" id="L478">		ChessPiece dest = (ChessPiece)getPiece(m.to());</span>
+		
+		//Check destination square for a friendly piece
+		//Validate moves this way by applying the logic as a &quot;filter&quot;
+<span class="fc bfc" id="L482" title="All 2 branches covered.">		if (dest != null){ //occupied</span>
+<span class="fc bfc" id="L483" title="All 2 branches covered.">			if (piece.getColor()==dest.getColor()){ //friendly</span>
+<span class="fc" id="L484">				return false;</span>
+			}
+			else { //enemy
+				//Cannot move a pawn forward if destination occupied by an enemy piece
+<span class="pc bpc" id="L488" title="1 of 4 branches missed.">				if (piece instanceof Pawn &amp;&amp; m.colFrom()-m.colTo()==0){</span>
+<span class="nc" id="L489">					return false;</span>
+				}
+				//Cannot castle when destination square is enemy piece
+<span class="pc bpc" id="L492" title="1 of 4 branches missed.">				if (piece instanceof King &amp;&amp; Math.abs(m.colFrom()-m.colTo())==2){</span>
+<span class="nc" id="L493">					return false;</span>
+				}
+			}
+		}
+		else { //empty
+			//Destination square is empty so remove pawn non-captures beside en passant
+<span class="fc bfc" id="L499" title="All 4 branches covered.">			if (piece instanceof Pawn &amp;&amp; m.colFrom()!=m.colTo()){</span>
+<span class="pc bpc" id="L500" title="1 of 6 branches missed.">				if (enPassantEligible &amp;&amp; enPassantSquare[0]==m.colTo() &amp;&amp; enPassantSquare[1]==m.rowTo()){</span>
+<span class="fc" id="L501">					enPassant = true;</span>
+<span class="fc" id="L502">				}</span>
+				else {
+<span class="fc" id="L504">					return false;</span>
+				}
+			}
+		}
+		
+		//Check for promotion
+<span class="pc bpc" id="L510" title="1 of 6 branches missed.">		if (piece instanceof Pawn &amp;&amp; (m.rowTo()==0 || m.rowTo()==7)){</span>
+<span class="fc" id="L511">			promotion = true;</span>
+		}
+		
+		//Check for castling (cannot move through check or out of check) (and rook)
+<span class="fc bfc" id="L515" title="All 4 branches covered.">		if (piece instanceof King &amp;&amp; Math.abs(m.colFrom()-m.colTo())==2){</span>
+<span class="fc" id="L516">			castling = true;</span>
+			
+			ChessPiece rook;
+<span class="fc" id="L519">			int dir = (m.colTo()-m.colFrom())/2; //-1 for queenside, +1 for kingside</span>
+<span class="fc bfc" id="L520" title="All 2 branches covered.">			if (dir==-1){</span>
+<span class="fc" id="L521">				rook = (ChessPiece)getPiece(0, m.rowTo());</span>
+<span class="fc" id="L522">				castlingRookOrigin[0] = 0;</span>
+<span class="fc" id="L523">			}</span>
+			else {
+<span class="fc" id="L525">				rook = (ChessPiece)getPiece(7, m.rowTo());</span>
+<span class="fc" id="L526">				castlingRookOrigin[0] = 7;</span>
+			}
+<span class="fc" id="L528">			castlingRookOrigin[1] = m.rowTo();</span>
+			
+			//Rook must exist, must be same color, and must be unmoved
+<span class="pc bpc" id="L531" title="2 of 8 branches missed.">			if (rook==null || !(rook instanceof Rook) || rook.getColor()!=piece.getColor() || rook.hasMoved==true){</span>
+<span class="fc" id="L532">				return false;</span>
+			}
+			
+			//Cannot castle out of check
+<span class="fc bfc" id="L536" title="All 2 branches covered.">			if (inCheck(piece.getColor())){</span>
+<span class="fc" id="L537">				return false;</span>
+			}
+			
+			//Cannot castle through check
+<span class="fc" id="L541">			int[] from = {m.colFrom(), m.rowFrom()};</span>
+<span class="fc" id="L542">			int[] to = {Math.abs(m.colFrom()+m.colTo())/2 , m.rowTo()};</span>
+			
+			//This square is also the rook's destination square
+<span class="fc" id="L545">			castlingRookDest[0] = to[0];</span>
+<span class="fc" id="L546">			castlingRookDest[1] = to[1];</span>
+			
+<span class="fc" id="L548">			Move temp = new Move(from, to);</span>
+<span class="fc" id="L549">			ChessBoard newBoard = (ChessBoard)applyMoveCloning(temp, false);</span>
+<span class="fc bfc" id="L550" title="All 2 branches covered.">			if (newBoard.inCheck(piece.getColor())){</span>
+<span class="fc" id="L551">				return false;</span>
+			}
+		}
+
+<span class="fc" id="L555">		ChessBoard newBoard = (ChessBoard)applyMoveCloning(m, false);</span>
+		
+		//If this move puts or leaves us in check, it is illegal
+<span class="fc bfc" id="L558" title="All 2 branches covered.">		if(newBoard.inCheck(piece.getColor())){</span>
+<span class="fc" id="L559">			return false;</span>
+		}
+		
+<span class="fc" id="L562">		return true;</span>
+	}
+	
+	/**
+	 * Return true if the passed player is in check
+	 * @param color
+	 * @return True if the player's king is attacked, False otherwise
+	 */
+	public boolean inCheck(Color color){
+<span class="fc" id="L571">		ArrayList&lt;Move&gt; moves = new ArrayList&lt;Move&gt;();</span>
+<span class="fc" id="L572">		ArrayList&lt;Move&gt; validAttacks = new ArrayList&lt;Move&gt;();</span>
+<span class="fc" id="L573">		int[] kingLoc = new int[2];</span>
+		
+		//Cycle through the board
+<span class="fc bfc" id="L576" title="All 2 branches covered.">		for (int col=0;col&lt;boardWidth;col++){</span>
+<span class="fc bfc" id="L577" title="All 2 branches covered.">			for (int row=0;row&lt;boardHeight;row++){</span>
+				
+<span class="fc" id="L579">				ChessPiece piece = (ChessPiece)this.getPiece(col, row);</span>
+<span class="fc bfc" id="L580" title="All 2 branches covered.">				if (piece != null){</span>
+					//Get attacking moves
+<span class="fc bfc" id="L582" title="All 2 branches covered.">					if (piece.color != color){</span>
+						//Don't consider special moves (castling, move pawn forward 2)
+						//because they don't attack destination squares
+<span class="fc" id="L585">						moves = this.getPiece(col, row).getMoves(col, row);</span>
+<span class="fc bfc" id="L586" title="All 2 branches covered.">						for (Move m : moves){</span>
+<span class="fc bfc" id="L587" title="All 2 branches covered.">							if (validAttack(m)){</span>
+<span class="fc" id="L588">								validAttacks.add(m);</span>
+							}
+						}
+					}
+					
+					//Find the king
+<span class="fc bfc" id="L594" title="All 4 branches covered.">					if (piece instanceof King &amp;&amp; piece.color == color){</span>
+<span class="fc" id="L595">						kingLoc[0] = col;</span>
+<span class="fc" id="L596">						kingLoc[1] = row;</span>
+					}
+				}
+			}
+		}
+		
+		//Determine if any of the valid attacking moves threaten the king
+<span class="fc bfc" id="L603" title="All 2 branches covered.">		for (Move m : validAttacks){</span>
+<span class="fc bfc" id="L604" title="All 4 branches covered.">			if (m.colTo()==kingLoc[0] &amp;&amp; m.rowTo()==kingLoc[1]){</span>
+<span class="fc" id="L605">				return true;</span>
+			}
+		}
+				
+<span class="fc" id="L609">		return false;</span>
+	}
+	
+	/**
+	 * Return an ordered list of squares between origin and destination squares
+	 * or an empty list if the squares are adjacent
+	 * @param m
+	 * @return A list of squares between the origin and destination
+	 */
+	protected ArrayList&lt;int[]&gt; getSquaresOnPath(Move m){
+<span class="fc" id="L619">		ArrayList&lt;int[]&gt; squares = new ArrayList&lt;int[]&gt;();</span>
+<span class="fc" id="L620">		int[] from = {m.colFrom(), m.rowFrom()};</span>
+<span class="fc" id="L621">		int[] to = {m.colTo(), m.rowTo()};</span>
+<span class="fc" id="L622">		int[] sel = new int[2];</span>
+
+		//Directional vectors
+<span class="fc" id="L625">		int i = m.colTo()-m.colFrom();</span>
+<span class="fc" id="L626">		int j = m.rowTo()-m.rowFrom();</span>
+		
+		//Normalize to -1, 0, 1
+<span class="fc bfc" id="L629" title="All 2 branches covered.">		if (i!=0){</span>
+<span class="fc" id="L630">			i = i/Math.abs(i);</span>
+		}
+<span class="fc bfc" id="L632" title="All 2 branches covered.">		if (j!=0){</span>
+<span class="fc" id="L633">			j = j/Math.abs(j);</span>
+		}
+		
+		//Next selection
+<span class="fc" id="L637">		sel[0] = from[0]+i;</span>
+<span class="fc" id="L638">		sel[1] = from[1]+j;</span>
+		
+<span class="fc bfc" id="L640" title="All 4 branches covered.">		while (!(sel[0]==to[0] &amp;&amp; sel[1]==to[1])){</span>
+			
+			//Check board bounds to make sure we're not wandering off into space
+<span class="pc bpc" id="L643" title="4 of 8 branches missed.">			if (sel[0]&lt;0 || sel[0]&gt;7 || sel[1]&lt;0 || sel[1]&gt;7){</span>
+				//Invalid move path supplied - return empty.
+<span class="nc" id="L645">				return new ArrayList&lt;int[]&gt;();</span>
+			}
+			
+<span class="fc" id="L648">			squares.add(new int[] {sel[0],sel[1]});</span>
+<span class="fc" id="L649">			sel[0] += i;</span>
+<span class="fc" id="L650">			sel[1] += j;</span>
+		}
+		
+<span class="fc" id="L653">		return squares;</span>
+	}
+	
+	/**
+	 * Recognize and handle castling, en passant, and promotion
+	 * @param m A
+	 * @return True if special case is recognized and handled, False otherwise
+	 */
+	protected boolean handleSpecialCase(Move m){
+<span class="pc bpc" id="L662" title="2 of 6 branches missed.">		if (!(castling || enPassant || promotion)){</span>
+<span class="fc" id="L663">			return false;</span>
+		}
+		
+<span class="pc bpc" id="L666" title="1 of 2 branches missed.">		if (castling){</span>
+			//Move the king
+<span class="nc" id="L668">			board[m.colTo()][m.rowTo()] = board[m.colFrom()][m.rowFrom()];</span>
+<span class="nc" id="L669">			board[m.colFrom()][m.rowFrom()] = null;</span>
+			//Move the rook
+<span class="nc" id="L671">			board[castlingRookDest[0]][castlingRookDest[1]] = board[castlingRookOrigin[0]][castlingRookOrigin[1]];</span>
+<span class="nc" id="L672">			board[castlingRookOrigin[0]][castlingRookOrigin[1]] = null;</span>
+		}
+		
+<span class="pc bpc" id="L675" title="1 of 2 branches missed.">		if (enPassant){</span>
+			//Move the pawn
+<span class="fc" id="L677">			board[m.colTo()][m.rowTo()] = board[m.colFrom()][m.rowFrom()];</span>
+<span class="fc" id="L678">			board[m.colFrom()][m.rowFrom()] = null;</span>
+			//Remove the enemy pawn and add it to captured pieces list
+<span class="fc" id="L680">			captured.add(getPiece(enPassantPawn));</span>
+<span class="fc" id="L681">			board[enPassantPawn[0]][enPassantPawn[1]] = null;</span>
+		}
+		
+<span class="pc bpc" id="L684" title="1 of 2 branches missed.">		if (promotion){</span>
+			//Check if anything got captured
+<span class="nc bnc" id="L686" title="All 2 branches missed.">			if(getPiece(m.to()) != null){</span>
+				//Add piece to captured list, remove it from the board
+<span class="nc" id="L688">				captured.add(getPiece(m.to()));</span>
+<span class="nc" id="L689">				board[m.colTo()][m.rowTo()] = null;</span>
+			}
+			
+			//TODO: Prompt user for promotion piece - default queen
+<span class="nc" id="L693">			ChessPiece promotedPiece = new Queen(getPiece(m.from()).getColor());</span>
+<span class="nc" id="L694">			board[m.colTo()][m.rowTo()] = promotedPiece;</span>
+<span class="nc" id="L695">			board[m.colFrom()][m.rowFrom()] = null;</span>
+		}
+		
+<span class="fc" id="L698">		return true;</span>
+	}
+	
+	/**
+	 * Updates the board's state to WHITE_MOVE, BLACK_MOVE, CHECKMATE, STALEMATE, or DRAW
+	 */
+	@Override
+	public void updateState(){
+<span class="fc bfc" id="L706" title="All 2 branches covered.">		if(checkInsufficientMaterial()){</span>
+<span class="fc" id="L707">			state = STATE.DRAW;</span>
+<span class="fc" id="L708">			return;</span>
+		}
+		
+<span class="fc bfc" id="L711" title="All 2 branches covered.">		if (state==STATE.WHITE_MOVE){</span>
+			
+<span class="fc bfc" id="L713" title="All 2 branches covered.">			if (hasValidMove(Color.BLACK)){</span>
+<span class="fc" id="L714">				state = STATE.BLACK_MOVE;</span>
+<span class="fc" id="L715">				return;</span>
+			}
+			
+<span class="fc bfc" id="L718" title="All 2 branches covered.">			if (inCheck(Color.BLACK)){	</span>
+<span class="fc" id="L719">				state = STATE.CHECKMATE;</span>
+<span class="fc" id="L720">			}</span>
+			else {
+<span class="fc" id="L722">				state = STATE.STALEMATE;</span>
+			}			
+		}
+		
+<span class="fc bfc" id="L726" title="All 2 branches covered.">		if (state==STATE.BLACK_MOVE){</span>
+						
+<span class="fc bfc" id="L728" title="All 2 branches covered.">			if (hasValidMove(Color.WHITE)){</span>
+<span class="fc" id="L729">				state = STATE.WHITE_MOVE;</span>
+<span class="fc" id="L730">				return;</span>
+			}
+			
+<span class="fc bfc" id="L733" title="All 2 branches covered.">			if (inCheck(Color.WHITE)){</span>
+<span class="fc" id="L734">				state = STATE.CHECKMATE;</span>
+<span class="fc" id="L735">			}</span>
+			else {
+<span class="fc" id="L737">				state = STATE.STALEMATE;</span>
+			}
+		}
+<span class="fc" id="L740">	}</span>
+	
+	/**
+	 * Returns true if there is an insufficient mating material case:
+	 * 	- KB vs K
+	 *  - KN vs K
+	 *  - K vs K
+	 * @return True if there is insufficient mating material, False otherwise
+	 */
+	protected boolean checkInsufficientMaterial(){
+<span class="fc" id="L750">		ArrayList&lt;BoardPiece&gt; pieces = new ArrayList&lt;BoardPiece&gt;();	</span>
+<span class="fc" id="L751">		boolean knightOrBishop = false;</span>
+		
+<span class="fc bfc" id="L753" title="All 2 branches covered.">		for (int col=0;col&lt;boardHeight;col++){</span>
+<span class="fc bfc" id="L754" title="All 2 branches covered.">			for (int row=0;row&lt;boardWidth;row++){</span>
+<span class="fc" id="L755">				ChessPiece piece = (ChessPiece)board[col][row];</span>
+<span class="fc bfc" id="L756" title="All 2 branches covered.">				if (piece != null){</span>
+<span class="fc" id="L757">					pieces.add(piece);</span>
+					//Record if there is a knight or bishop on the board
+<span class="fc bfc" id="L759" title="All 4 branches covered.">					if (piece instanceof Knight || piece instanceof Bishop){</span>
+<span class="fc" id="L760">						knightOrBishop = true;</span>
+					}
+				}
+			}
+		}
+		
+<span class="pc bpc" id="L766" title="5 of 6 branches missed.">		if (pieces.size()==2 &amp;&amp; pieces.get(0) instanceof King &amp;&amp; pieces.get(1) instanceof King){</span>
+<span class="nc" id="L767">			return true;</span>
+		}
+		
+<span class="fc bfc" id="L770" title="All 4 branches covered.">		if (pieces.size()==3 &amp;&amp; knightOrBishop){</span>
+<span class="fc" id="L771">			return true;</span>
+		}
+		
+<span class="fc" id="L774">		return false;</span>
+	}
+	
+	/**
+	 * Determine if the given side has at least one legal move
+	 * @param color
+	 * @return True if given side has at least one legal move, False otherwise
+	 */
+	protected boolean hasValidMove(Color color) {
+<span class="fc bfc" id="L783" title="All 2 branches covered.">		for (int col=0;col&lt;boardWidth;col++){</span>
+<span class="fc bfc" id="L784" title="All 2 branches covered.">			for (int row=0;row&lt;boardHeight;row++){</span>
+<span class="fc" id="L785">				ChessPiece piece = (ChessPiece)getPiece(col, row);</span>
+<span class="fc bfc" id="L786" title="All 4 branches covered.">				if (piece != null &amp;&amp; piece.getColor()==color){</span>
+<span class="fc bfc" id="L787" title="All 2 branches covered.">					if (!getMoves(col, row).isEmpty()){</span>
+<span class="fc" id="L788">						return true;</span>
+					}
+				}
+			}
+		}
+		
+<span class="fc" id="L794">		return false;</span>
+	}
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

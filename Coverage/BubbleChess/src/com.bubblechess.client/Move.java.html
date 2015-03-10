@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Move.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.client</a> &gt; <span class="el_source">Move.java</span></div><h1>Move.java</h1><pre class="source lang-java linenums">package com.bubblechess.client;
+import org.json.simple.*;
+
+public class Move {
+	
+	//Coordinates are passed as [col,row] =&gt; [x,y]
+	
+	private int[] coordinateFrom;
+	private int[] coordinateTo;
+	
+	/**
+	 * Constructor for the move object
+	 * @param from
+	 * @param to
+	 */
+<span class="fc" id="L16">	public Move(int[] from, int[] to) {</span>
+<span class="fc" id="L17">		coordinateFrom = new int[] {from[0],from[1]};</span>
+<span class="fc" id="L18">		coordinateTo = new int[] {to[0],to[1]};</span>
+<span class="fc" id="L19">	}</span>
+	
+	/**
+	 * Gets the from coordinates
+	 * @return
+	 */
+	public int[] from(){
+<span class="fc" id="L26">		return coordinateFrom;</span>
+	}
+	
+	/**
+	 * Gets the to coordinates
+	 * @return
+	 */
+	public int[] to(){
+<span class="fc" id="L34">		return coordinateTo;</span>
+	}
+	
+	/**
+	 * Gets the column the move will be from
+	 * @return
+	 */
+	public int colFrom(){
+<span class="fc" id="L42">		return coordinateFrom[0];</span>
+	}
+	
+	/**
+	 * Gets the row the move will be from
+	 * @return
+	 */
+	public int rowFrom(){
+<span class="fc" id="L50">		return coordinateFrom[1];</span>
+	}
+	
+	/**
+	 * Gets the column the move will be to
+	 * @return
+	 */
+	public int colTo(){
+<span class="fc" id="L58">		return coordinateTo[0];</span>
+	}
+	
+	/**
+	 * Gets the row the move will be to
+	 * @return
+	 */
+	public int rowTo(){
+<span class="fc" id="L66">		return coordinateTo[1];</span>
+	}
+	
+	/**
+	 * Converts the move object to a string
+	 * @return
+	 */
+	public String toString(){
+<span class="nc" id="L74">		String str = String.format(&quot;(%d,%d),(%d,%d)&quot;, colFrom(),rowFrom(),colTo(),rowTo());</span>
+<span class="nc" id="L75">		return str;</span>
+	}
+	
+	/**
+	 * Converts the move object to JSONObject
+	 * @return
+	 */
+	public JSONObject toJSON(){
+<span class="nc" id="L83">		JSONObject json = new JSONObject();</span>
+<span class="nc" id="L84">		json.put(&quot;colFrom&quot;, colFrom());</span>
+<span class="nc" id="L85">		json.put(&quot;rowFrom&quot;, rowFrom());</span>
+<span class="nc" id="L86">		json.put(&quot;colTo&quot;, colTo());</span>
+<span class="nc" id="L87">		json.put(&quot;rowTo&quot;, rowTo());</span>
+<span class="nc" id="L88">		return json;</span>
+		
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

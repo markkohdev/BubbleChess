@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>GameBoard.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.gui</a> &gt; <span class="el_source">GameBoard.java</span></div><h1>GameBoard.java</h1><pre class="source lang-java linenums"><span class="nc" id="L1">package com.bubblechess.gui;</span>
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+
+
+
+
+
+
+
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import com.bubblechess.GUIBridge;
+import com.bubblechess.client.BoardPiece;
+
+import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+public class GameBoard extends JPanel {
+	
+	private BoardCell boardCells[][];
+	private int selectedCol, selectedRow;	
+	
+	
+	
+	/**
+	 * Create MouseAdapter to trigger event for when pieces are clicked
+	 */
+<span class="nc" id="L35">	private MouseAdapter genericSelectListener = new MouseAdapter() { </span>
+		@Override
+		public void mouseClicked(MouseEvent arg0) {
+<span class="nc" id="L38">			BoardCell cell = (BoardCell) arg0.getComponent();</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">			if (cell.isSelected() == 1) {</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">				for(int i = 0; i &lt; 8; i++) {</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">					for(int j = 0; j &lt; 8; j++) {</span>
+<span class="nc" id="L42">						boardCells[i][j].selectCell(false);</span>
+					}
+				}
+<span class="nc" id="L45">			}</span>
+			else {
+<span class="nc bnc" id="L47" title="All 2 branches missed.">				for(int i = 0; i &lt; 8; i++) {</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">					for(int j = 0; j &lt; 8; j++) {</span>
+<span class="nc" id="L49">						boardCells[i][j].selectCell(false);</span>
+					}
+				}
+<span class="nc" id="L52">				cell.selectCell(true);</span>
+				// getMoves(cell.getColumn(), cell.getRow());
+				
+			}			
+<span class="nc" id="L56">		}</span>
+	};
+	
+	// Dark Square RGB: 92, 129, 152
+	// Light Square RGB: 140, 150, 155
+	
+	/**
+	 * Constructor of GameBoard, adding pieces to board with players color on proper side
+	 * @param color
+	 */
+<span class="nc" id="L66">	public GameBoard(BoardPiece[][] clientBoard, int color){</span>
+<span class="nc" id="L67">		boardCells = new BoardCell[8][8];</span>
+<span class="nc" id="L68">		setBackground(Color.WHITE);</span>
+<span class="nc" id="L69">		setPreferredSize(new Dimension(500, 500));</span>
+<span class="nc" id="L70">		setLayout(new GridLayout(8, 8));</span>
+<span class="nc" id="L71">		setBounds(0,0,500,500);		</span>
+<span class="nc" id="L72">		this.setCellColors();</span>
+<span class="nc" id="L73">		this.addPiecesToCells(clientBoard, color);</span>
+<span class="nc" id="L74">		this.addCellsToBoard(color);</span>
+<span class="nc" id="L75">	}</span>
+	
+	public void addCellsToBoard(int color) {
+<span class="nc bnc" id="L78" title="All 2 branches missed.">		if(color == 1) {</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">			for(int i = 0; i &lt; 8; i++)</span>
+			{
+<span class="nc bnc" id="L81" title="All 2 branches missed.">				for(int j = 0; j &lt; 8; j++)</span>
+				{
+					
+<span class="nc" id="L84">					this.add(boardCells[i][j]);</span>
+					
+				}
+				
+			}
+			
+<span class="nc" id="L90">		}</span>
+		else {
+<span class="nc bnc" id="L92" title="All 2 branches missed.">			for(int i = 7; i &gt;= 0; i--)</span>
+			{
+<span class="nc bnc" id="L94" title="All 2 branches missed.">				for(int j = 7; j &gt;= 0; j--)</span>
+				{
+					
+<span class="nc" id="L97">					this.add(boardCells[i][j]);</span>
+					
+				}
+				
+			}
+			
+		}		
+<span class="nc" id="L104">	}</span>
+	
+	public void setCellColors() {
+<span class="nc bnc" id="L107" title="All 2 branches missed.">		for(int i = 0; i &lt; 8; i++)</span>
+		{
+<span class="nc bnc" id="L109" title="All 2 branches missed.">			for(int j = 0; j &lt; 8; j++)</span>
+			{
+				
+<span class="nc" id="L112">				BoardCell cell = new BoardCell();</span>
+<span class="nc" id="L113">				cell.setColumn(j);</span>
+<span class="nc" id="L114">				cell.setRow(i);</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">				if((i+j)%2 == 0) {</span>
+<span class="nc" id="L116">					cell.setBackColor(Color.white);	</span>
+<span class="nc" id="L117">				}</span>
+				else {
+<span class="nc" id="L119">					cell.setBackColor(Color.black);</span>
+				}					
+<span class="nc" id="L121">				this.boardCells[i][j] = cell;	</span>
+			}
+			
+		}
+<span class="nc" id="L125">	}</span>
+	/**
+	 * Add Pieces to board using param to determine placement of pieces
+	 * @param color
+	 */
+	public void addPiecesToCells(BoardPiece[][] clientBoard, int color) {		
+		//currentPawnPanel.changeListenerState(pieceListener);
+		Color c;
+<span class="nc" id="L133">		BoardPiece.Color whiteColor = BoardPiece.Color.WHITE;</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">		for(int i = 0; i &lt; 8; i++)</span>
+		{
+<span class="nc bnc" id="L136" title="All 2 branches missed.">			for(int j = 0; j &lt; 8; i++) {</span>
+<span class="nc" id="L137">				BoardPiece.Color pieceColor = clientBoard[i][j].getColor();</span>
+<span class="nc" id="L138">				int pieceNumber = clientBoard[i][j].getPieceID();</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">				if (pieceColor.compareTo(whiteColor) == 0) {</span>
+<span class="nc" id="L140">					c = new Color(192,192,192);</span>
+<span class="nc" id="L141">				}</span>
+				else{
+<span class="nc" id="L143">					c = new Color(139,69,19);</span>
+				}
+<span class="nc" id="L145">				String pieceUni = this.getPieceUnicode(pieceNumber);</span>
+<span class="nc" id="L146">				boardCells[i][j].addChessPiece(pieceUni, c);</span>
+				
+			}
+		}
+<span class="nc" id="L150">	}</span>
+	
+	public String getPieceUnicode(int pieceNum) {
+		
+<span class="nc" id="L154">		String[] unicode = {&quot;\u265A&quot;, &quot;\u265B&quot;, &quot;\u265C&quot;, &quot;\u265D&quot;, &quot;\u265E&quot;, &quot;\u265F&quot; };</span>
+		String pieceUni;
+<span class="nc bnc" id="L156" title="All 6 branches missed.">		switch(pieceNum) {</span>
+<span class="nc" id="L157">			case 0: pieceUni = unicode[0];</span>
+<span class="nc" id="L158">					break;</span>
+<span class="nc" id="L159">			case 1: pieceUni = unicode[1];</span>
+<span class="nc" id="L160">					break;</span>
+<span class="nc" id="L161">			case 2: pieceUni = unicode[2];</span>
+<span class="nc" id="L162">					break;</span>
+<span class="nc" id="L163">			case 3: pieceUni = unicode[3];</span>
+<span class="nc" id="L164">					break;</span>
+<span class="nc" id="L165">			case 4: pieceUni = unicode[4];</span>
+<span class="nc" id="L166">					break;</span>
+<span class="nc" id="L167">			default: pieceUni = &quot;&quot;;</span>
+					break;
+		}
+		
+<span class="nc" id="L171">		return pieceUni;</span>
+		
+	}
+	
+	/**
+	 * Function to start listeners for clients pieces are start of game
+	 */
+	public void startListeners() {
+		
+<span class="nc" id="L180">	}</span>
+	
+	/**
+	 * Set selected piece col to param
+	 * @param c
+	 */
+	public void setSelCol(int c) {
+<span class="nc" id="L187">		this.selectedCol = c;</span>
+<span class="nc" id="L188">	}</span>
+	
+	
+	/**
+	 * Set selected piece row to param
+	 * @param r
+	 */
+	public void setSelRow(int r) {
+<span class="nc" id="L196">		this.selectedRow = r;</span>
+<span class="nc" id="L197">	}</span>
+	
+	/**
+	 * Get selected piece row
+	 * @return selectedRow
+	 */
+	public int getSelRow() { 
+<span class="nc" id="L204">		return this.selectedRow;</span>
+	}
+	
+	/**
+	 * Get selected piece column
+	 * @return selectedCol
+	 */
+	public int getSelCol() { 
+<span class="nc" id="L212">		return this.selectedCol;</span>
+	}
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

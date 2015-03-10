@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Board.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.client</a> &gt; <span class="el_source">Board.java</span></div><h1>Board.java</h1><pre class="source lang-java linenums"><span class="nc" id="L1">package com.bubblechess.client;</span>
+
+import java.util.ArrayList;
+
+import com.bubblechess.client.BoardPiece.Color;
+
+public interface Board {
+
+<span class="nc" id="L9">	public enum Player {PLAYER1, PLAYER2};</span>
+	
+	/**
+	 * Get game board
+	 * @return A 2D array of BoardPieces
+	 */
+	public BoardPiece[][] getBoard();
+	
+	/**
+	 * Get game board width
+	 * @return Width
+	 */
+	public int getWidth();
+	
+	/**
+	 * Get game board height
+	 * @return Height
+	 */
+	public int getHeight();
+	
+	/**
+	 * Apply the passed move to the game board
+	 * @param m
+	 * @return True if move was successful, False if move is invalid
+	 */
+	public boolean applyMove(Move m);
+	
+	/**
+	 * Apply the passed move to the game board and check that move is legal
+	 * if the validate flag is set to True
+	 * @param m
+	 * @param validate
+	 * @return True if move was successful, False if move is invalid
+	 */
+	public boolean applyMove(Move m, boolean validate);
+	
+	/**
+	 * Apply the passed move to a clone of the game board
+	 * @param m
+	 * @return A new game board
+	 */
+	public Board applyMoveCloning(Move m);
+	
+	/**
+	 * Apply the passed move to a clone of the game board
+	 * @param m
+	 * @param validate
+	 * @return A new game board with the applied move
+	 */
+	public Board applyMoveCloning(Move m, boolean validate);
+	
+	/**
+	 * Get a deep copy of the current board
+	 * @return A deep copy of the current board
+	 */
+	public Board clone();
+	
+	/**
+	 * Get all moves for a given piece in a board
+	 * @param col
+	 * @param row
+	 * @return A list of moves
+	 */
+	public ArrayList&lt;Move&gt; getMoves(int col, int row);
+	
+	/**
+	 * Get all moves for a given piece in a board
+	 * @param col
+	 * @param row
+	 * @return A list of moves
+	 */
+	public ArrayList&lt;Move&gt; getMoves(char col, char row);
+	
+
+	/**
+	 * Get the game board state string
+	 * @return The game board state
+	 */
+	public String getState();
+	
+	/**
+	 * Check if the game is over
+	 * @return True if the game is over, False otherwise
+	 */
+	public boolean endState();
+	
+	/**
+	 * Get a list of captured pieces
+	 * @return An array of captured pieces
+	 */
+	public BoardPiece[] getCaptured();
+
+	/**
+	 * Update the board's state
+	 */
+	public void updateState();
+	
+	/**
+	 * Check to see if the passed player color is in check
+	 * @param color
+	 * @return True if the player color is in check, False otherwise
+	 */
+	public boolean inCheck(Color color);
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

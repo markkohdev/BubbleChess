@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>GUIBridge.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess</a> &gt; <span class="el_source">GUIBridge.java</span></div><h1>GUIBridge.java</h1><pre class="source lang-java linenums">package com.bubblechess;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.junit.Test;
+
+import com.bubblechess.client.*;
+
+<span class="nc bnc" id="L9" title="All 2 branches missed.">public class GUIBridge {</span>
+	protected Game game;
+	protected User player;
+	protected User opponent;
+	protected ServerHandler server;
+	
+	/**
+	 * Constructor
+	 * @param serverHandler
+	 */
+<span class="nc" id="L19">	public GUIBridge(ServerHandler serverHandler) {</span>
+<span class="nc" id="L20">		this.server = serverHandler;</span>
+<span class="nc" id="L21">		game = null;</span>
+<span class="nc" id="L22">		player = null;</span>
+<span class="nc" id="L23">		opponent = null;</span>
+		
+<span class="nc" id="L25">	}</span>
+	
+<span class="nc" id="L27">	public GUIBridge() {</span>
+<span class="nc" id="L28">		game = null;</span>
+<span class="nc" id="L29">		player = null;</span>
+<span class="nc" id="L30">		opponent = null;</span>
+		
+<span class="nc" id="L32">	}</span>
+	
+	
+	/*************************************************************************
+	 * Pre-Game setup methods
+	 ************************************************************************/
+	
+	/**
+	 * Hit the server with the login info and return a username or failure code.
+	 * @param username
+	 * @param password
+	 * @return 0 if success, -1 if incorrect password, -2 if user not found
+	 */
+	public int Login(String username, String password) {
+		//Make sure username and password both have values
+<span class="nc bnc" id="L47" title="All 4 branches missed.">		assert (!username.equals(&quot;&quot;));</span>
+<span class="nc bnc" id="L48" title="All 4 branches missed.">		assert (!password.equals(&quot;&quot;));</span>
+		
+<span class="nc" id="L50">		int result = server.Login(username, password);</span>
+		
+<span class="nc bnc" id="L52" title="All 2 branches missed.">		if (result &gt;= 0) {</span>
+			//Create user
+<span class="nc" id="L54">			player = new User(result,username);</span>
+			
+<span class="nc" id="L56">			return 0; //success</span>
+		}
+		else {
+<span class="nc" id="L59">			return result;</span>
+		}
+	}
+	
+	/**
+	 * Call the server to create a temporary user and give back the userID
+	 * @return 0 if success, -1 if something went wrong (it shouldn't).
+	 */
+	public int ContinueAsGuest() {
+<span class="nc" id="L68">		int result = server.ContinueAsGuest();</span>
+		
+<span class="nc bnc" id="L70" title="All 2 branches missed.">		if (result &gt;= 0) {</span>
+			//Create user
+<span class="nc" id="L72">			player = new User(result,&quot;Guest&quot;);</span>
+			
+<span class="nc" id="L74">			return 0; //success</span>
+		}
+		else {
+<span class="nc" id="L77">			return -1;</span>
+		}
+		
+	}
+	
+	/**
+	 * To register a user.  Pass in the desired username/password. 
+	 * @param username
+	 * @param password
+	 * @return 0 if success, -1 if username exists, -2 otherwise
+	 */
+	public int Register(String username, String password){
+		//Make sure username and password both have values
+<span class="nc bnc" id="L90" title="All 4 branches missed.">		assert (!username.equals(&quot;&quot;));</span>
+<span class="nc bnc" id="L91" title="All 4 branches missed.">		assert (!password.equals(&quot;&quot;));</span>
+		
+<span class="nc" id="L93">		int result = server.Register(username, password);</span>
+		
+<span class="nc bnc" id="L95" title="All 2 branches missed.">		if (result &gt;= 0) {</span>
+			//Create user
+<span class="nc" id="L97">			player = new User(result,username);</span>
+			
+<span class="nc" id="L99">			return 0; //success</span>
+		}
+		else {
+<span class="nc" id="L102">			return result;</span>
+		}
+		
+	}
+	
+	/**
+	 * Create a game and return the gameID
+	 * @param playerNumber 1 if white selected, 2 if black selected
+	 * @return The gameID if successful, -1 if error
+	 */
+	public int CreateGame(int playerNumber) {
+		//We haven't logged in yet
+<span class="nc bnc" id="L114" title="All 4 branches missed.">		assert(player != null);</span>
+		
+<span class="nc bnc" id="L116" title="All 6 branches missed.">		assert(playerNumber == 1 || playerNumber == 2);</span>
+		
+<span class="nc" id="L118">		int result = server.CreateGame(player.getID(), playerNumber);</span>
+		
+<span class="nc bnc" id="L120" title="All 2 branches missed.">		if (result &gt;= 0) {</span>
+			
+			//Create user
+<span class="nc" id="L123">			int gameID = result;</span>
+			
+			//Set up the game.  User1 will be assumed white
+<span class="nc bnc" id="L126" title="All 2 branches missed.">			if (playerNumber == 1)</span>
+				//We are white
+<span class="nc" id="L128">				game = new Game(gameID,player,null,new ChessBoard());</span>
+			else
+				//Opponent is white
+<span class="nc" id="L131">				game = new Game(gameID,null,player,new ChessBoard());</span>
+			
+<span class="nc" id="L133">			return gameID; //success</span>
+		}
+		else {
+<span class="nc" id="L136">			return result;</span>
+		}
+		
+	}
+	
+	/**
+	 * Spin while waiting for opponent to the current game
+	 * @return True if an opponent joined, False if there was an issue
+	 */
+	public boolean WaitForOpponent(){
+		//Get the second playerID.  The server will spin here?
+<span class="nc" id="L147">		String[] user2 = server.GetOpponent(game.getID(), player.getID(), GetPlayerNumber());</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">		if (user2 != null) {</span>
+<span class="nc" id="L149">			opponent = new User(Integer.parseInt(user2[0]),user2[1]);</span>
+			
+			//If we're player 1, our opponent is player2
+<span class="nc bnc" id="L152" title="All 2 branches missed.">			if(GetPlayerNumber()==1){</span>
+<span class="nc" id="L153">				game.setUser2(opponent);</span>
+<span class="nc" id="L154">			}</span>
+			else
+<span class="nc" id="L156">				game.setUser1(opponent);</span>
+<span class="nc" id="L157">			return true;</span>
+		}
+		else {
+<span class="nc" id="L160">			return false;</span>
+		}
+	}
+	
+	/**
+	 * Have the player join the specified game
+	 * @param gameID
+	 * @return True if successful, False if not (Game full or invalid)
+	 */
+	public boolean JoinGame(int gameID) {
+		//Make sure we're logged in
+<span class="nc bnc" id="L171" title="All 4 branches missed.">		assert (player != null);</span>
+		
+<span class="nc" id="L173">		String[] result = server.JoinGame(gameID, player.getID());</span>
+		
+		//We weren't able to join
+<span class="nc bnc" id="L176" title="All 2 branches missed.">		if(result == null)</span>
+<span class="nc" id="L177">			return false;</span>
+		
+		//Set up the opponent
+<span class="nc" id="L180">		opponent = new User(Integer.parseInt(result[0]),result[1]);</span>
+		
+		//Set up the game.  PlayerNumber 1 will be assumed white
+<span class="nc bnc" id="L183" title="All 2 branches missed.">		if (Integer.parseInt(result[2]) == 1)</span>
+			//Opponent is white
+<span class="nc" id="L185">			game = new Game(gameID,opponent,player,new ChessBoard());</span>
+		else
+			//We are white
+<span class="nc" id="L188">			game = new Game(gameID,player,opponent,new ChessBoard());</span>
+			
+		
+<span class="nc" id="L191">		return true; //success</span>
+		
+		
+	}
+	
+	/**
+	 * Get a list of joinable games
+	 * @return A list of joinable gameID's
+	 */
+	public ArrayList&lt;Integer&gt; GetJoinableGames() {
+<span class="nc" id="L201">		return server.GetJoinableGames();</span>
+	}
+	
+	/**
+	 * Get the player number.
+	 * @return 1 if player 1, 2 if player 2, 0 if neither
+	 */
+	public int GetPlayerNumber() {
+<span class="nc bnc" id="L209" title="All 4 branches missed.">		if (game.getUser1() != null &amp;&amp; game.getUser1() == player)</span>
+<span class="nc" id="L210">			return 1;</span>
+<span class="nc bnc" id="L211" title="All 4 branches missed.">		else if (game.getUser2() != null &amp;&amp; game.getUser2() == player)</span>
+<span class="nc" id="L212">			return 2;</span>
+		else
+<span class="nc" id="L214">			return 0;</span>
+	}
+	
+	
+	/*************************************************************************
+	 * In-Game methods
+	 ************************************************************************/
+	
+	/**
+	 * Simple check to assert that it's the players turn.  Should be checked
+	 * before attempting to play a move or getPossibleMoves.
+	 * @return True if it's the current players turn, false if not.
+	 */
+	public boolean IsPlayersTurn() {
+		// Make sure we're in-game
+<span class="nc bnc" id="L229" title="All 4 branches missed.">		assert(game != null);</span>
+<span class="nc bnc" id="L230" title="All 4 branches missed.">		assert(player != null);</span>
+<span class="nc bnc" id="L231" title="All 4 branches missed.">		assert(opponent != null);</span>
+		
+<span class="nc bnc" id="L233" title="All 2 branches missed.">		if (game.getTurn().getID() == player.getID()) {</span>
+<span class="nc" id="L234">			return true;</span>
+		}
+		else
+<span class="nc" id="L237">			return false;</span>
+	}
+	
+	/**
+	 * Return an array of possible moves in the current game for a given piece
+	 * @param col
+	 * @param row
+	 * @return ArrayList of Moves to be displayed to the user
+	 */
+	public ArrayList&lt;Move&gt; getMoves(int col, int row){
+<span class="nc" id="L247">		return game.getMoves(col, row);</span>
+	}
+	
+	/**
+	 * Check if a move is valid, and if it is then send it to the server.
+	 * @param m
+	 * @return True if move is valid and submitted, false otherwise
+	 */
+	public boolean PlayMove(Move m) {
+<span class="nc" id="L256">		boolean valid = game.playMove(m);</span>
+		
+		//If our move wasn't valid
+<span class="nc bnc" id="L259" title="All 2 branches missed.">		if(!valid)</span>
+<span class="nc" id="L260">			return false;</span>
+		
+		//If we've reached the end of the game by playing a move, we won or drew
+<span class="nc bnc" id="L263" title="All 2 branches missed.">		if(game.endState())</span>
+<span class="nc" id="L264">			System.out.println(&quot;Game over.&quot;);</span>
+		
+<span class="nc" id="L266">		return server.SendMove(m, player.getID(), game.getID());</span>
+		
+		
+	}
+	
+	public Move WaitForNextMove() {
+<span class="nc bnc" id="L272" title="All 2 branches missed.">		if (IsPlayersTurn())</span>
+<span class="nc" id="L273">			return null;</span>
+		
+		//We may wait here
+<span class="nc" id="L276">		Move next = server.CheckForMove(game.getID(),GetPlayerNumber());</span>
+		
+<span class="nc" id="L278">		game.playMove(next);</span>
+		
+		//If we've reached the end of the game by playing a move, we won or drew
+<span class="nc bnc" id="L281" title="All 2 branches missed.">		if(game.endState())</span>
+<span class="nc" id="L282">			System.out.println(&quot;Game over.&quot;);</span>
+		
+<span class="nc" id="L284">		return next;</span>
+	}
+	
+	/**
+	 * Whether or not the game is in an End game state.
+	 * @return True if EndState, False otherwise.
+	 */
+	public boolean EndState() {
+<span class="nc" id="L292">		return game.endState();</span>
+	}
+	
+	/**
+	 * Get a matrix of board pieces representing the board state
+	 * @return All pieces currently on the board
+	 */
+	public BoardPiece[][] GetBoard() {
+<span class="nc" id="L300">		return game.getBoard();</span>
+	}
+	
+	/**
+	 * Get an array of captured BoardPieces
+	 * @return Captured pieces
+	 */
+	public BoardPiece[] GetCaptured() {
+<span class="nc" id="L308">		return game.getCaptured();</span>
+	}
+	
+	
+	/**
+	 * Check if either player is in check
+	 * @return 0 if neither player in check, 1 if white in check, 2 if black in
+	 * check
+	 */
+	public int InCheck() {
+<span class="nc" id="L318">		return game.InCheck();</span>
+	}
+	
+	/**
+	 * For testing a small game between two players
+	 */
+	public void TestServer(String username,String password,boolean creator){
+		
+<span class="nc" id="L326">		System.out.println(&quot;Register code: &quot; + this.Register(username, password));</span>
+		
+<span class="nc" id="L328">		System.out.println(&quot;Login code: &quot; + this.Login(username, password));</span>
+		
+<span class="nc bnc" id="L330" title="All 2 branches missed.">		if (creator) {</span>
+<span class="nc" id="L331">			System.out.println(&quot;Creating game...&quot;);</span>
+<span class="nc" id="L332">			System.out.println(&quot;GameID: &quot; + this.CreateGame(1));</span>
+<span class="nc" id="L333">			WaitForOpponent();</span>
+<span class="nc" id="L334">			System.out.println(&quot;Opponent: &quot; + this.opponent.getUsername());</span>
+<span class="nc" id="L335">			this.PlayMove(new Move(new int[]{4,1}, new int[]{4,3}));</span>
+<span class="nc" id="L336">			System.out.println(&quot;Move sent.&quot;);</span>
+<span class="nc" id="L337">			System.out.println(&quot;Waiting for move...&quot;);</span>
+<span class="nc" id="L338">			System.out.println(&quot;Received move: &quot; + this.WaitForNextMove().toString());</span>
+<span class="nc" id="L339">			this.PlayMove(new Move(new int[]{3,0}, new int[]{7,4}));</span>
+<span class="nc" id="L340">			System.out.println(&quot;Move sent.&quot;);</span>
+<span class="nc" id="L341">			System.out.println(&quot;Waiting for move...&quot;);</span>
+<span class="nc" id="L342">			System.out.println(&quot;Received move: &quot; + this.WaitForNextMove().toString());</span>
+<span class="nc" id="L343">			this.PlayMove(new Move(new int[]{5,0}, new int[]{2,3}));</span>
+<span class="nc" id="L344">			System.out.println(&quot;Move sent.&quot;);</span>
+<span class="nc" id="L345">			System.out.println(&quot;Waiting for move...&quot;);</span>
+<span class="nc" id="L346">			System.out.println(&quot;Received move: &quot; + this.WaitForNextMove().toString());</span>
+<span class="nc" id="L347">			this.PlayMove(new Move(new int[]{7,4}, new int[]{5,6}));</span>
+<span class="nc" id="L348">			System.out.println(&quot;Move sent.&quot;);</span>
+			
+<span class="nc" id="L350">		}</span>
+		else {
+		
+<span class="nc" id="L353">			ArrayList&lt;Integer&gt; games = this.GetJoinableGames();</span>
+<span class="nc bnc" id="L354" title="All 2 branches missed.">			for(int gameid : games){</span>
+<span class="nc" id="L355">				System.out.println(&quot;Joinable: &quot; + gameid);</span>
+			}
+			
+<span class="nc" id="L358">			System.out.println(&quot;Joining Game: &quot; + games.get(0));</span>
+<span class="nc" id="L359">			System.out.println(&quot;Game Join: &quot; + this.JoinGame(games.get(0)));</span>
+<span class="nc" id="L360">			System.out.println(&quot;Opponent: &quot; + this.opponent.getUsername());</span>
+			
+<span class="nc" id="L362">			System.out.println(&quot;Waiting for move...&quot;);</span>
+<span class="nc" id="L363">			System.out.println(&quot;Received move: &quot; + this.WaitForNextMove().toString());</span>
+<span class="nc" id="L364">			this.PlayMove(new Move(new int[]{4,6}, new int[]{4,4}));</span>
+<span class="nc" id="L365">			System.out.println(&quot;Move sent.&quot;);</span>
+<span class="nc" id="L366">			System.out.println(&quot;Waiting for move...&quot;);</span>
+<span class="nc" id="L367">			System.out.println(&quot;Received move: &quot; + this.WaitForNextMove().toString());</span>
+<span class="nc" id="L368">			this.PlayMove(new Move(new int[]{1,7}, new int[]{2,5}));</span>
+<span class="nc" id="L369">			System.out.println(&quot;Move sent.&quot;);</span>
+<span class="nc" id="L370">			System.out.println(&quot;Waiting for move...&quot;);</span>
+<span class="nc" id="L371">			System.out.println(&quot;Received move: &quot; + this.WaitForNextMove().toString());</span>
+<span class="nc" id="L372">			this.PlayMove(new Move(new int[]{5,7}, new int[]{2,4}));</span>
+<span class="nc" id="L373">			System.out.println(&quot;Move sent.&quot;);</span>
+<span class="nc" id="L374">			System.out.println(&quot;Waiting for move...&quot;);</span>
+<span class="nc" id="L375">			System.out.println(&quot;Received move: &quot; + this.WaitForNextMove().toString());</span>
+			
+		}
+		
+<span class="nc" id="L379">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

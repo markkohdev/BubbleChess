@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Game.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.client</a> &gt; <span class="el_source">Game.java</span></div><h1>Game.java</h1><pre class="source lang-java linenums">package com.bubblechess.client;
+
+import java.util.ArrayList;
+
+public class Game {
+	
+	/**
+	 * Attributes
+	 */
+	protected int gameID;
+	protected User user1; //White
+	protected User user2; //Black
+	protected Board board;
+	protected ArrayList&lt;Move&gt; moves;
+	protected User turn;
+	
+
+	/**
+	 * Constructor
+	 * @param gameID Game ID
+	 * @param u1 First user
+	 * @param u2 Second user
+	 * @param b The initialize gameboard
+	 */
+<span class="fc" id="L25">	public Game(int gameID, User u1, User u2,Board b){</span>
+<span class="fc" id="L26">		this.gameID = gameID;</span>
+<span class="fc" id="L27">		user1 = u1;</span>
+<span class="fc" id="L28">		user2 = u2;</span>
+<span class="fc" id="L29">		board = b;</span>
+<span class="fc" id="L30">		moves = new ArrayList&lt;Move&gt;();</span>
+<span class="fc" id="L31">		turn = user1;</span>
+<span class="fc" id="L32">	}</span>
+	
+	/**
+	 * Gets the ID of the game
+	 * @return Game ID
+	 */
+	public int getID(){
+<span class="nc" id="L39">		return gameID;</span>
+	}
+	
+	/**
+	 * Gets the first user object
+	 * @return User 1
+	 */
+	public User getUser1(){
+<span class="nc" id="L47">		return user1;</span>
+	}
+	
+	/**
+	 * Gets the second user object
+	 * @return User 2
+	 */
+	public User getUser2(){
+<span class="nc" id="L55">		return user2;</span>
+	}
+	
+	/**
+	 * Sets the first user object
+	 * @param u1
+	 */
+	public void setUser1(User u1){
+<span class="nc" id="L63">		user1 = u1;</span>
+<span class="nc" id="L64">	}</span>
+	
+	/**
+	 * Sets the second user object
+	 * @param u2
+	 */
+	public void setUser2(User u2){
+<span class="nc" id="L71">		user2 = u2;</span>
+<span class="nc" id="L72">	}</span>
+
+	/**
+	 * The move at the specified index
+	 * @param index+
+	 * @return The requested move, or null if index out of range
+	 */
+	public Move getMove(int index){
+<span class="nc bnc" id="L80" title="All 4 branches missed.">		if(index &lt; 0 || index &gt; getNumMoves()) {</span>
+<span class="nc" id="L81">			return null;</span>
+		}
+<span class="nc" id="L83">		return moves.get(index);</span>
+	}
+
+	/**
+	 * Gets the number of moves that have been played so far
+	 * @return The number of moves
+	 */
+	public int getNumMoves(){
+<span class="nc" id="L91">		return moves.size();</span>
+	}
+	
+	/**
+	 * Gets the board as a 2 dimensional array
+	 * @return The board
+	 */
+	public BoardPiece[][] getBoard(){
+<span class="nc" id="L99">		return board.getBoard();</span>
+	}
+	
+	/**
+	 * Gets a list of captured pieces
+	 * @return An array of captured BoardPieces
+	 */
+	public BoardPiece[] getCaptured() {
+<span class="nc" id="L107">		return board.getCaptured();</span>
+	}
+	
+	/**
+	 * Add the passed move to the moves list, updates the turn
+	 * @param m The move
+	 * @return True if the move was successfully added, False if the game is in
+	 * endState
+	 */
+	public boolean playMove(Move m) {
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">		if(board.endState()) {</span>
+<span class="nc" id="L118">			return false;</span>
+		}
+		
+<span class="fc" id="L121">		boolean valid = board.applyMove(m);</span>
+		
+		//Make sure the move was valid
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">		if (!valid)</span>
+<span class="nc" id="L125">			return false;</span>
+		
+		//Add it to the local history
+<span class="fc" id="L128">		moves.add(m);</span>
+		
+		//Update the board's state
+<span class="fc" id="L131">		board.updateState();</span>
+		
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">		if(turn == user1)</span>
+<span class="fc" id="L134">			turn = user2;</span>
+		else
+<span class="nc" id="L136">			turn = user1;</span>
+		
+<span class="fc" id="L138">		return true;</span>
+	}
+	
+	/**
+	 * Gets the user object who's turn it currently is
+	 * @return User
+	 */
+	public User getTurn(){
+<span class="nc" id="L146">		return turn;</span>
+	}
+	
+	/**
+	 * Checks if the board is currently an end State
+	 * @return True if the board is in an end state, False otherwise
+	 */
+	public boolean endState(){
+<span class="nc" id="L154">		return board.endState();</span>
+	}
+	
+	/**
+	 * Gets the current board state as a String
+	 * @return The board's state
+	 */
+	public String getBoardState() {
+<span class="fc" id="L162">		return board.getState();</span>
+	}
+	
+	/**
+	 * Gets all possible moves from a given coordinate
+	 * @param col
+	 * @param row
+	 * @return A list of possible moves
+	 */
+	public ArrayList&lt;Move&gt; getMoves(int col, int row){
+<span class="nc" id="L172">		return board.getMoves(col, row);</span>
+	}
+	
+	/**
+	 * Checks if the board is currently in state for a player
+	 * @return 1 if white is in check, 2 if black is in check, 0 otherwise
+	 */
+	public int InCheck(){
+<span class="nc bnc" id="L180" title="All 2 branches missed.">		if (board.inCheck(BoardPiece.Color.WHITE))</span>
+<span class="nc" id="L181">			return 1;</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">		else if (board.inCheck(BoardPiece.Color.BLACK))</span>
+<span class="nc" id="L183">			return 2;</span>
+		else
+<span class="nc" id="L185">			return 0;</span>
+	}
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

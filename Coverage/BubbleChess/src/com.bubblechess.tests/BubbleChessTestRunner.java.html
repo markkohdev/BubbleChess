@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>BubbleChessTestRunner.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.tests</a> &gt; <span class="el_source">BubbleChessTestRunner.java</span></div><h1>BubbleChessTestRunner.java</h1><pre class="source lang-java linenums">package com.bubblechess.tests;
+
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
+
+<span class="nc" id="L7">public class BubbleChessTestRunner {</span>
+
+	public static void main(String[] args) {
+<span class="nc" id="L10">		 Result result = JUnitCore.runClasses(BubbleChessTestSuite.class);</span>
+<span class="nc bnc" id="L11" title="All 2 branches missed.">	      for (Failure failure : result.getFailures()) {</span>
+<span class="nc" id="L12">	         System.out.println(failure.toString());</span>
+	      }
+<span class="nc" id="L14">	      System.out.println(result.wasSuccessful());</span>
+<span class="nc" id="L15">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

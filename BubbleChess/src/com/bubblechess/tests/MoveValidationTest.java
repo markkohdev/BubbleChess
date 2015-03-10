@@ -76,6 +76,7 @@ public class MoveValidationTest {
 	/**
 	 * Tests the ChessBoard.inCheck(Color color) method
 	 */
+	@Test
 	public void inCheck(){
 		fen = "k-------/--------/--------/---q----/--------/---K----/--------/-------- w KQkq - 0 1";
 		setUp();
@@ -190,38 +191,15 @@ public class MoveValidationTest {
 		game.playMove(new Move(new int[]{4,1}, new int[]{4,3}));
 		game.playMove(new Move(new int[]{4,6}, new int[]{4,4}));
 		game.playMove(new Move(new int[]{6,0}, new int[]{5,2}));
-		game.playMove(new Move(new int[]{1,7}, new int[]{2,5}));
+		game.playMove(new Move(new int[]{6,7}, new int[]{5,5}));
 		game.playMove(new Move(new int[]{5,0}, new int[]{2,3}));
 		game.playMove(new Move(new int[]{5,7}, new int[]{2,4}));
 		
 		Move whitecastle = new Move(new int[]{4,0}, new int[]{6,0});
 		Move blackcastle = new Move(new int[]{4,7}, new int[]{6,7});
 		
-		ArrayList<Move> whiteKingMoves = chessboard.getMoves(4,0);
-		ArrayList<Move> blackKingMoves = chessboard.getMoves(4,7);
-		
-		for (int i=0;i<whiteKingMoves.size();i++){
-			if (whitecastle.from()[0]==whiteKingMoves.get(i).from()[0] &&
-				whitecastle.from()[1]==whiteKingMoves.get(i).from()[1] &&
-				whitecastle.to()[0]==whiteKingMoves.get(i).to()[0] &&
-				whitecastle.to()[1]==whiteKingMoves.get(i).to()[1]){
-				
-				return;
-			}	
-		}
-		
-		fail();
-		
-		for (int i=0;i<blackKingMoves.size();i++){
-			if (blackcastle.from()[0]==blackKingMoves.get(i).from()[0] &&
-				blackcastle.from()[1]==blackKingMoves.get(i).from()[1] &&
-				blackcastle.to()[0]==blackKingMoves.get(i).to()[0] &&
-				blackcastle.to()[1]==blackKingMoves.get(i).to()[1]){
-				
-				return;
-			}	
-		}
-		fail();
+		Assert.assertTrue(game.playMove(whitecastle));
+		Assert.assertTrue(game.playMove(blackcastle));
 		
 		tearDown();
 	}

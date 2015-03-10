@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>BoardCell.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.gui</a> &gt; <span class="el_source">BoardCell.java</span></div><h1>BoardCell.java</h1><pre class="source lang-java linenums">package com.bubblechess.gui;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class BoardCell extends JPanel {
+
+	private int column;
+	private int row;
+	private boolean haveListener;
+	private int selected;
+
+	/*
+	 * Below Comment Block not used. Will be Taken Out later on.
+	 * 
+	 * private MouseAdapter pieceListener = new MouseAdapter() {
+	 * 
+	 * @Override public void mouseClicked(MouseEvent arg0) { BoardCell cell =
+	 * (BoardCell) arg0.getComponent(); if (cell.isSelected() == 1) {
+	 * cell.selectCell(false); } else { cell.selectCell(true); } } };
+	 *
+
+	private MouseAdapter moveListener = new MouseAdapter() {
+		@Override
+		public void mouseClicked(MouseEvent arg0) {
+			
+			 BoardCell cell = (BoardCell) arg0.getComponent(); if
+			 (cell.getBorder() == null) { cell.selectCell(true); } else {
+			 cell.selectCell(false); } cell.changeListenerState(true);
+			 
+		}
+	}; */
+
+	/**
+	 * Constructor
+	 * Create the panel.
+	 */
+<span class="nc" id="L45">	public BoardCell() {</span>
+
+<span class="nc" id="L47">		setLayout(new BorderLayout());</span>
+<span class="nc" id="L48">		setBorder(BorderFactory.createEmptyBorder());</span>
+<span class="nc" id="L49">		this.selected = 0;</span>
+<span class="nc" id="L50">		this.haveListener = false;</span>
+
+<span class="nc" id="L52">	}</span>
+
+	/**
+	 * Sets Background color or Cell to param
+	 * @param c
+	 */
+	public void setBackColor(Color c) {
+<span class="nc" id="L59">		setBackground(c);</span>
+<span class="nc" id="L60">	}</span>
+
+	/**
+	 * Sets column number of cell to i
+	 * @param i
+	 */
+	public void setColumn(int i) {
+<span class="nc" id="L67">		this.column = i;</span>
+<span class="nc" id="L68">	}</span>
+
+	/**
+	 * sets row numer of cell to i
+	 * @param i
+	 */
+	public void setRow(int i) {
+<span class="nc" id="L75">		this.row = i;</span>
+<span class="nc" id="L76">	}</span>
+
+	/**
+	 * Get cell Row
+	 * @return row
+	 */
+	public int getRow() {
+<span class="nc" id="L83">		return this.row;</span>
+	}
+
+	/**
+	 * Get cell column
+	 * @return column
+	 */
+	public int getColumn() {
+<span class="nc" id="L91">		return this.column;</span>
+	}
+	
+
+	/**
+	 * Changes haveListen to true/false and adds/removes MouseAdapter param as mouse listener for cell
+	 * @param b
+	 * @param listener
+	 */
+	public void changeListenerState(MouseAdapter listener) {
+<span class="nc" id="L101">			this.addMouseListener(listener);</span>
+<span class="nc" id="L102">	}</span>
+
+	/* Function not used. changeListenState should be used instead.
+	 * Keeping function in case needed later on.
+	 * 
+	public void tempDisableListener(boolean b, MouseAdapter listener) {
+		if (b) {
+			this.removeMouseListener(listener);
+		} else {
+			this.addMouseListener(listener);
+		}
+	} */
+
+	/**
+	 * Checks if cell has listener
+	 * @return true Cell has listener added, false Call does not have listener added
+	 */
+	public boolean hasListener() {
+<span class="nc" id="L120">		return this.haveListener;</span>
+	}
+
+	/**
+	 * Checks if cell is selected
+	 * @return 0 Not Select, 1 Selected
+	 */
+	public int isSelected() {
+<span class="nc" id="L128">		return this.selected;</span>
+	}
+
+	/**
+	 * Adds selection border to screen
+	 * @param b
+	 */
+	public void selectCell(boolean b) {
+<span class="nc bnc" id="L136" title="All 2 branches missed.">		if (b) {</span>
+<span class="nc" id="L137">			this.setBorder(BorderFactory.createBevelBorder(1, Color.GREEN,</span>
+<span class="nc" id="L138">					Color.GREEN));</span>
+<span class="nc" id="L139">			this.selected = 1;</span>
+<span class="nc" id="L140">		} else {</span>
+<span class="nc" id="L141">			this.setBorder(BorderFactory.createEmptyBorder());</span>
+<span class="nc" id="L142">			this.selected = 0;</span>
+		}
+
+<span class="nc" id="L145">	}</span>
+
+	/**
+	 * Adds chess piece unicode as JLabel to cell
+	 * @param uni
+	 * @param c
+	 */
+	public void addChessPiece(String uni, Color c) {
+<span class="nc" id="L153">		Font pieceFont = new Font(Font.SANS_SERIF, Font.PLAIN, 50);</span>
+<span class="nc" id="L154">		JLabel piece = new JLabel(uni);</span>
+<span class="nc" id="L155">		piece.setFont(pieceFont);</span>
+<span class="nc" id="L156">		piece.setForeground(c);</span>
+<span class="nc" id="L157">		piece.setOpaque(false);</span>
+<span class="nc" id="L158">		piece.setHorizontalAlignment(JLabel.CENTER);</span>
+<span class="nc" id="L159">		piece.setVisible(true);</span>
+		// piece.setVisible(true);
+<span class="nc" id="L161">		add(piece);</span>
+		//this.revalidate();
+		//this.repaint();
+		//this.validate();
+<span class="nc" id="L165">	}</span>
+
+	/**
+	 * Removes chess piece(JLabel) from cell.
+	 * @param piece
+	 */
+	public void removeChessPiece(JLabel piece) {
+<span class="nc" id="L172">		this.remove(piece);</span>
+<span class="nc" id="L173">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

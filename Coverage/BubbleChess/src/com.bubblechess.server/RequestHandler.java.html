@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>RequestHandler.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.server</a> &gt; <span class="el_source">RequestHandler.java</span></div><h1>RequestHandler.java</h1><pre class="source lang-java linenums">package com.bubblechess.server;
+
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.util.*;
+import java.net.*;
+import java.io.*;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+public class RequestHandler extends Thread {
+<span class="pc" id="L16">	private Socket _clientSocket = null;</span>
+<span class="pc" id="L17">	private ServerInstance _server = null;</span>
+	protected PrintStream _toClient;
+	protected BufferedReader _in;
+	protected String _request;
+<span class="pc" id="L21">	protected boolean _isTest = false;</span>
+	protected String _response;
+	private String _results;
+	
+	protected ChessDB _cdb;
+	
+	/** 
+	 * Constructor for main execution
+	 * @param clientSocket
+	 * @param server
+	 */
+<span class="nc" id="L32">	public RequestHandler(Socket clientSocket, ServerInstance server) {</span>
+<span class="nc" id="L33">		_clientSocket = clientSocket;</span>
+<span class="nc" id="L34">		_server = server;</span>
+<span class="nc" id="L35">		_cdb = new ChessDB(false);</span>
+		
+		try {	
+<span class="nc" id="L38">				_toClient = new PrintStream(_clientSocket.getOutputStream());</span>
+<span class="nc" id="L39">				_in = new BufferedReader(new InputStreamReader(_clientSocket.getInputStream()));</span>
+<span class="nc" id="L40">				_request = _in.readLine();</span>
+<span class="nc" id="L41">		} catch (IOException e) {</span>
+<span class="nc" id="L42">			e.printStackTrace();</span>
+		}
+<span class="nc" id="L44">	}</span>
+	
+	/**
+	 * Constructor used for testing purposes
+	 * @param clientSocket
+	 * @param server
+	 * @param request
+	 * @param stream
+	 */
+<span class="fc" id="L53">	public RequestHandler(Socket clientSocket, ServerInstance server, String request, PrintStream stream) {</span>
+<span class="fc" id="L54">		_clientSocket = clientSocket;</span>
+<span class="fc" id="L55">		_server = server;</span>
+<span class="fc" id="L56">		_cdb = new ChessDB(true);</span>
+		
+<span class="fc" id="L58">		_toClient = stream;</span>
+<span class="fc" id="L59">		_request = request;</span>
+<span class="fc" id="L60">		_isTest = true;</span>
+<span class="fc" id="L61">	}</span>
+	
+	/**
+	 * Main Thread method 
+	 */
+	public void run (){
+		try {
+
+            //JSON parsing
+<span class="fc" id="L70">			System.out.println(_request);</span>
+
+<span class="fc" id="L72">    		JSONObject obj = (JSONObject) JSONValue.parse(_request);</span>
+<span class="fc" id="L73">            String requestString = (String) obj.get(&quot;request&quot;);</span>
+            
+<span class="pc bpc" id="L75" title="9 of 25 branches missed.">            switch(requestString) {</span>
+		        case &quot;createUser&quot;:
+<span class="fc" id="L77">		    		String username = (String) obj.get(&quot;username&quot;);</span>
+<span class="fc" id="L78">		    		String password = (String) obj.get(&quot;password&quot;);</span>
+		    		
+		    		//Method to create a user
+		    		JSONObject json;
+		    		
+		    		//Check if user exists
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		    		if(_cdb.getUser(username) != -1) {</span>
+<span class="fc" id="L85">		    			json = new JSONObject();</span>
+<span class="fc" id="L86">			    		json.put(&quot;result&quot;, &quot;username already exists&quot;);</span>
+<span class="fc" id="L87">		    		}</span>
+		    		else {
+<span class="fc" id="L89">			    		_cdb.insertUser(username, password);</span>
+<span class="fc" id="L90">			    		int userid = _cdb.getUser(username);</span>
+			    		
+<span class="fc" id="L92">			    		json = new JSONObject();</span>
+<span class="fc" id="L93">			    		json.put(&quot;result&quot;, &quot;success&quot;);</span>
+<span class="fc" id="L94">			    		json.put(&quot;userID&quot;, userid);</span>
+		    		}
+		    		
+<span class="fc" id="L97">		    		sendToClient(json.toJSONString());</span>
+<span class="fc" id="L98">		    	break;</span>
+		        case &quot;checkLogin&quot;:
+<span class="fc" id="L100">            		String userName = (String) obj.get(&quot;username&quot;);</span>
+<span class="fc" id="L101">            		password = (String) obj.get(&quot;password&quot;);</span>
+
+            		//get userid for login
+<span class="fc" id="L104">            		int loginUserId = _cdb.getUser(userName);</span>
+            		
+<span class="fc bfc" id="L106" title="All 2 branches covered.">            		if(loginUserId == -1) {</span>
+<span class="fc" id="L107">            			json = new JSONObject();</span>
+<span class="fc" id="L108">                		json.put(&quot;result&quot;,&quot;user not found&quot;);</span>
+<span class="fc" id="L109">            		}</span>
+            		else {
+            			//Method to check if user password is right
+<span class="fc" id="L112">                		boolean loginStatus = _cdb.checkLogin(loginUserId, password); 		</span>
+                		
+<span class="fc bfc" id="L114" title="All 2 branches covered.">                		if(loginStatus == true) {</span>
+<span class="fc" id="L115">                			json = new JSONObject();</span>
+<span class="fc" id="L116">                    		json.put(&quot;result&quot;,&quot;success&quot;);</span>
+<span class="fc" id="L117">                    		json.put(&quot;userID&quot;, loginUserId);</span>
+<span class="fc" id="L118">                		}</span>
+                		else {
+<span class="fc" id="L120">                			json = new JSONObject();</span>
+<span class="fc" id="L121">                    		json.put(&quot;result&quot;,&quot;incorrect password&quot;);</span>
+                		}
+            		}
+<span class="fc" id="L124">            		sendToClient(json.toJSONString());</span>
+<span class="fc" id="L125">            	break;</span>
+            	case &quot;createGame&quot;:
+
+<span class="fc" id="L128">            		long userId = (long) obj.get(&quot;userID&quot;);</span>
+<span class="fc" id="L129">            		int playerNumber = (int)((long) obj.get(&quot;playerNumber&quot;));</span>
+            		
+<span class="fc" id="L131">            		int newId = _cdb.insertGame((int) userId, playerNumber);</span>
+            		
+<span class="fc" id="L133">        			Game game = new Game(newId, playerNumber, (int) userId, _cdb);</span>
+
+<span class="fc" id="L135">            		_server.addGameThread(newId, game);</span>
+<span class="fc" id="L136">            		_server.addJoinableGame(newId);</span>
+            		
+            		//Return gameid
+<span class="fc" id="L139">            		json = new JSONObject();</span>
+<span class="fc" id="L140">            		json.put(&quot;result&quot;, &quot;success&quot;);</span>
+<span class="fc" id="L141">            		json.put(&quot;gameID&quot;, newId);</span>
+<span class="fc" id="L142">            		sendToClient(json.toJSONString()); </span>
+            		
+            		//TODO: Add failure method
+<span class="fc" id="L145">            	break;</span>
+            	case &quot;getOpponent&quot;:
+<span class="fc" id="L147">            		int gameId = (int)((long) obj.get(&quot;gameID&quot;));</span>
+<span class="fc" id="L148">            		userId = (long) obj.get(&quot;userID&quot;);</span>
+<span class="fc" id="L149">            		playerNumber = (int)((long) obj.get(&quot;playerNumber&quot;));</span>
+            		
+<span class="fc" id="L151">            		game = _server.getGame(gameId);</span>
+<span class="fc" id="L152">            		int oppId = game.getOpponentId(playerNumber);</span>
+            		
+<span class="fc bfc" id="L154" title="All 2 branches covered.">            		if(oppId != -1) {</span>
+<span class="fc" id="L155">            			String oppUsername = _cdb.getUsername(oppId);</span>
+<span class="fc" id="L156">                		int oppPlayerNumber = game.getPlayerNumber(oppId);</span>
+                		
+                		//This will come through as a JSON String
+<span class="fc" id="L159">                		json = new JSONObject();</span>
+<span class="fc" id="L160">                		json.put(&quot;result&quot;,&quot;success&quot;);</span>
+<span class="fc" id="L161">                		json.put(&quot;userID&quot;, oppId);</span>
+<span class="fc" id="L162">                		json.put(&quot;username&quot;, oppUsername);</span>
+<span class="fc" id="L163">                		json.put(&quot;playerNumber&quot;, oppPlayerNumber);</span>
+<span class="fc" id="L164">                		sendToClient(json.toJSONString());</span>
+<span class="fc" id="L165">            		}</span>
+            		else {
+<span class="fc" id="L167">            			json = new JSONObject();</span>
+<span class="fc" id="L168">                		json.put(&quot;result&quot;,&quot;waiting&quot;);</span>
+<span class="fc" id="L169">                		sendToClient(json.toJSONString());</span>
+            		}
+<span class="fc" id="L171">            	break;</span>
+            	case &quot;getJoinableGames&quot;:
+<span class="fc" id="L173">            		ArrayList&lt;Integer&gt; joinableGames = _server.getJoinableGames();</span>
+            		
+<span class="fc" id="L175">            		json = new JSONObject();</span>
+<span class="fc" id="L176">            		json.put(&quot;result&quot;,&quot;success&quot;);</span>
+            		
+<span class="fc" id="L178">            		JSONArray games = new JSONArray();</span>
+            		
+<span class="fc bfc" id="L180" title="All 2 branches covered.">            		for(int i = 0; i &lt; joinableGames.size(); i ++) {</span>
+<span class="fc" id="L181">            			games.add(joinableGames.get(i));</span>
+            		}
+<span class="fc" id="L183">            		json.put(&quot;games&quot;, games);</span>
+            		
+<span class="fc" id="L185">            		sendToClient(json.toJSONString());</span>
+            		//TODO: Add failure method
+<span class="fc" id="L187">            	break;</span>
+            	case &quot;joinGame&quot;:
+<span class="fc" id="L189">            		userId = (long) obj.get(&quot;userID&quot;);</span>
+<span class="fc" id="L190">            		gameId = (int)((long) obj.get(&quot;gameID&quot;));</span>
+            		
+<span class="fc" id="L192">            		game = _server.getGame((int) gameId);</span>
+            		
+<span class="fc" id="L194">            		int otherPlayer = game.getOtherUser();</span>
+<span class="fc" id="L195">            		String otherUsername = _cdb.getUsername(otherPlayer);</span>
+            		
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">            		if(game.joinGame((int) userId)) {</span>
+<span class="fc" id="L198">            			int otherPlayerNumber = game.getPlayerNumber(otherPlayer);</span>
+<span class="fc" id="L199">            			playerNumber = game.getPlayerNumber((int) userId);</span>
+            			
+<span class="fc" id="L201">            			_cdb.addOpponent((int) userId, playerNumber, gameId);</span>
+            			
+<span class="fc" id="L203">            			_server.removeJoinableGame(gameId);</span>
+            			
+<span class="fc" id="L205">            			json = new JSONObject();</span>
+<span class="fc" id="L206">            			json.put(&quot;result&quot;, &quot;success&quot;);</span>
+<span class="fc" id="L207">            			json.put(&quot;userID&quot;, otherPlayer);</span>
+<span class="fc" id="L208">            			json.put(&quot;username&quot;, otherUsername);</span>
+<span class="fc" id="L209">            			json.put(&quot;playerNumber&quot;, otherPlayerNumber);</span>
+<span class="fc" id="L210">            			sendToClient(json.toJSONString());  </span>
+<span class="fc" id="L211">            		}</span>
+            		else {
+<span class="nc" id="L213">            			json = new JSONObject();</span>
+<span class="nc" id="L214">            			json.put(&quot;result&quot;,&quot;game does not exist&quot;);</span>
+<span class="nc" id="L215">            			sendToClient(json.toJSONString());  </span>
+            		}
+<span class="nc" id="L217">            	break;</span>
+            	case &quot;insertMove&quot;:
+            		//Need to cast from long to int
+<span class="fc" id="L220">            		userId = (long) obj.get(&quot;userID&quot;);</span>
+<span class="fc" id="L221">            		gameId = (int)((long) obj.get(&quot;gameID&quot;));</span>
+<span class="fc" id="L222">            		long colFrom = (long) obj.get(&quot;colFrom&quot;);</span>
+<span class="fc" id="L223">            		long rowFrom = (long) obj.get(&quot;rowFrom&quot;);</span>
+<span class="fc" id="L224">            		long colTo = (long) obj.get(&quot;colTo&quot;);</span>
+<span class="fc" id="L225">            		long rowTo = (long) obj.get(&quot;rowTo&quot;);</span>
+            		
+<span class="fc" id="L227">            		game = _server.getGame(gameId);</span>
+<span class="fc" id="L228">            		boolean moveStatus = game.insertMove((int) userId, (int) colFrom, (int) rowFrom, (int) colTo, (int) rowTo);</span>
+            		
+<span class="pc bpc" id="L230" title="1 of 2 branches missed.">            		if(moveStatus){</span>
+<span class="fc" id="L231">            			json = new JSONObject();</span>
+<span class="fc" id="L232">            			json.put(&quot;result&quot;, &quot;success&quot;);</span>
+<span class="fc" id="L233">            		}</span>
+            		else {
+<span class="nc" id="L235">            			json = new JSONObject();</span>
+<span class="nc" id="L236">            			json.put(&quot;result&quot;, &quot;failure&quot;);</span>
+            		}
+<span class="fc" id="L238">            		sendToClient(json.toJSONString()); </span>
+<span class="fc" id="L239">            	break;</span>
+            	case &quot;checkForMove&quot;:
+<span class="fc" id="L241">            		gameId = (int)((long) obj.get(&quot;gameID&quot;));</span>
+<span class="fc" id="L242">            		playerNumber = (int)((long) obj.get(&quot;playerNumber&quot;));</span>
+            		
+<span class="fc" id="L244">            		json = new JSONObject();</span>
+<span class="fc" id="L245">            		game = _server.getGame(gameId);</span>
+            		
+     
+<span class="fc bfc" id="L248" title="All 2 branches covered.">            		if(game.getCurrentPlayer() == playerNumber) {</span>
+<span class="fc" id="L249">            			JSONObject moveObj = game.getLastMove();</span>
+<span class="fc" id="L250">                		int moveColFrom = (int) moveObj.get(&quot;colFrom&quot;);</span>
+<span class="fc" id="L251">                		int moveRowFrom = (int) moveObj.get(&quot;rowFrom&quot;);</span>
+<span class="fc" id="L252">                		int moveColTo = (int) moveObj.get(&quot;colTo&quot;);</span>
+<span class="fc" id="L253">                		int moveRowTo = (int) moveObj.get(&quot;rowTo&quot;);</span>
+                		
+<span class="fc" id="L255">                		json.put(&quot;result&quot;,&quot;success&quot;);</span>
+<span class="fc" id="L256">                		json.put(&quot;colFrom&quot;, moveColFrom);</span>
+<span class="fc" id="L257">                		json.put(&quot;rowFrom&quot;, moveRowFrom);</span>
+<span class="fc" id="L258">                		json.put(&quot;colTo&quot;, moveColTo);</span>
+<span class="fc" id="L259">                		json.put(&quot;rowTo&quot;, moveRowTo);</span>
+<span class="fc" id="L260">            		}</span>
+            		else {
+<span class="fc" id="L262">            			json.put(&quot;result&quot;,&quot;waiting&quot;);</span>
+            		}
+<span class="fc" id="L264">            		sendToClient(json.toJSONString());</span>
+            	break;
+            	
+            }
+<span class="fc" id="L268">		}</span>
+<span class="nc" id="L269">		catch (IOException e1) {</span>
+<span class="nc" id="L270">			e1.printStackTrace();</span>
+		}
+		
+<span class="nc" id="L273">		finally {</span>
+			try {
+<span class="pc bpc" id="L275" title="5 of 6 branches missed.">				if(!_isTest) {</span>
+<span class="nc" id="L276">					_clientSocket.close();</span>
+				}
+<span class="nc" id="L278">			} catch (IOException e) {</span>
+<span class="nc" id="L279">				e.printStackTrace();</span>
+			}
+<span class="nc" id="L281">		}</span>
+<span class="fc" id="L282">	}</span>
+	
+	/**
+	 * Sends a response to the client and set the result string
+	 * @param results
+	 */
+	public void sendToClient(String results) {
+<span class="fc" id="L289">		_toClient.println(results);</span>
+<span class="fc" id="L290">		_results = results;</span>
+<span class="fc" id="L291">	}</span>
+	
+	/**
+	 * Gets the result string that was sent to the client
+	 * @return
+	 */
+	public String getResults() {
+<span class="fc" id="L298">		return _results;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

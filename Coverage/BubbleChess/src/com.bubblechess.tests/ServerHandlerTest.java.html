@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>ServerHandlerTest.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.tests</a> &gt; <span class="el_source">ServerHandlerTest.java</span></div><h1>ServerHandlerTest.java</h1><pre class="source lang-java linenums">package com.bubblechess.tests;
+
+import java.io.BufferedReader;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.util.ArrayList;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Assert;
+import org.junit.Test;
+
+import com.bubblechess.client.Move;
+import com.bubblechess.client.ServerHandler;
+
+import junit.framework.*;
+
+public class ServerHandlerTest extends ServerHandler {
+	
+
+	public ServerHandlerTest() {
+<span class="fc" id="L26">		super(null, 0);</span>
+		// TODO Auto-generated constructor stub
+<span class="fc" id="L28">	}</span>
+
+	@Before
+	public void setup(){
+		
+<span class="fc" id="L33">	}</span>
+	
+	@After
+	public void teardown(){
+		
+<span class="fc" id="L38">	}</span>
+	
+	
+	@Override
+	protected void SetupConnection() {
+		//Port our output to System.out
+<span class="fc" id="L44">		this.toServer = new PrintWriter(System.out);</span>
+<span class="fc" id="L45">	}</span>
+	
+	@Override
+	protected void CloseConnection() {
+		
+<span class="fc" id="L50">	}</span>
+	
+	protected void SendAsServer(String s){
+<span class="nc" id="L53">		fromServer = new BufferedReader(new StringReader(s));</span>
+<span class="nc" id="L54">	}</span>
+	protected void SendAsServer(JSONObject json){
+<span class="fc" id="L56">		fromServer = new BufferedReader(new StringReader(json.toJSONString()));</span>
+<span class="fc" id="L57">	}</span>
+	
+	/**
+	 * #1 - Test login funcitonality
+	 */
+	@Test
+	public void testLogin() {
+		JSONObject serverResult;
+		int result;
+		
+		//Test correct login
+<span class="fc" id="L68">		serverResult = new JSONObject();</span>
+<span class="fc" id="L69">		serverResult.put(&quot;result&quot;,&quot;success&quot;);</span>
+<span class="fc" id="L70">		serverResult.put(&quot;userID&quot;,1);</span>
+<span class="fc" id="L71">		SendAsServer(serverResult);</span>
+<span class="fc" id="L72">		result = Login(&quot;testuser&quot;,&quot;testpass&quot;);</span>
+<span class="fc" id="L73">		Assert.assertEquals(result, 1);</span>
+		
+		//Incorrect password
+<span class="fc" id="L76">		serverResult = new JSONObject();</span>
+<span class="fc" id="L77">		serverResult.put(&quot;result&quot;,&quot;incorrect password&quot;);</span>
+<span class="fc" id="L78">		SendAsServer(serverResult);</span>
+<span class="fc" id="L79">		result = Login(&quot;testuser&quot;,&quot;wrongpass&quot;);</span>
+<span class="fc" id="L80">		Assert.assertEquals(result, -1);</span>
+		
+		//User not found
+<span class="fc" id="L83">		serverResult = new JSONObject();</span>
+<span class="fc" id="L84">		serverResult.put(&quot;result&quot;,&quot;user not found&quot;);</span>
+<span class="fc" id="L85">		SendAsServer(serverResult);</span>
+<span class="fc" id="L86">		result = Login(&quot;notuser&quot;,&quot;testpass&quot;);</span>
+<span class="fc" id="L87">		Assert.assertEquals(result, -2);</span>
+		
+		//Unexpected
+<span class="fc" id="L90">		serverResult = new JSONObject();</span>
+<span class="fc" id="L91">		serverResult.put(&quot;result&quot;,&quot;unexpected&quot;);</span>
+<span class="fc" id="L92">		SendAsServer(serverResult);</span>
+<span class="fc" id="L93">		result = Login(&quot;testuser&quot;,&quot;wrongpass&quot;);</span>
+<span class="fc" id="L94">		Assert.assertEquals(result, -3);</span>
+<span class="fc" id="L95">	}</span>
+	
+	/**
+	 * #0 - Test for ContinueAsGuestTest
+	 */
+	@Test
+	public void testContinueAsGuest() {
+		JSONObject serverResult;
+		int result;
+		
+		//Test correct login
+<span class="fc" id="L106">		serverResult = new JSONObject();</span>
+<span class="fc" id="L107">		serverResult.put(&quot;result&quot;,&quot;success&quot;);</span>
+<span class="fc" id="L108">		serverResult.put(&quot;userID&quot;,5);</span>
+<span class="fc" id="L109">		SendAsServer(serverResult);</span>
+<span class="fc" id="L110">		result = ContinueAsGuest();</span>
+<span class="fc" id="L111">		Assert.assertEquals(result, 5);</span>
+		
+		//unexpected
+<span class="fc" id="L114">		serverResult = new JSONObject();</span>
+<span class="fc" id="L115">		serverResult.put(&quot;result&quot;,&quot;failure&quot;);</span>
+<span class="fc" id="L116">		SendAsServer(serverResult);</span>
+<span class="fc" id="L117">		result = ContinueAsGuest();</span>
+<span class="fc" id="L118">		Assert.assertEquals(result, -1);</span>
+<span class="fc" id="L119">	}</span>
+	
+	/**
+	 * #0 - Test for Register
+	 */
+	@Test
+	public void testRegister() {
+		JSONObject serverResult;
+		int result;
+		
+		//Test correct register
+<span class="fc" id="L130">		serverResult = new JSONObject();</span>
+<span class="fc" id="L131">		serverResult.put(&quot;result&quot;,&quot;success&quot;);</span>
+<span class="fc" id="L132">		serverResult.put(&quot;userID&quot;,10);</span>
+<span class="fc" id="L133">		SendAsServer(serverResult);</span>
+<span class="fc" id="L134">		result = Register(&quot;testuser&quot;,&quot;testpass&quot;);</span>
+<span class="fc" id="L135">		Assert.assertEquals(result, 10);</span>
+		
+		//Existent username
+<span class="fc" id="L138">		serverResult = new JSONObject();</span>
+<span class="fc" id="L139">		serverResult.put(&quot;result&quot;,&quot;username already exists&quot;);</span>
+<span class="fc" id="L140">		SendAsServer(serverResult);</span>
+<span class="fc" id="L141">		result = Register(&quot;testuser&quot;,&quot;testpass&quot;);</span>
+<span class="fc" id="L142">		Assert.assertEquals(result, -1);</span>
+		
+		//Unexpected
+<span class="fc" id="L145">		serverResult = new JSONObject();</span>
+<span class="fc" id="L146">		serverResult.put(&quot;result&quot;,&quot;unexpected&quot;);</span>
+<span class="fc" id="L147">		SendAsServer(serverResult);</span>
+<span class="fc" id="L148">		result = Register(&quot;testuser&quot;,&quot;testpass&quot;);</span>
+<span class="fc" id="L149">		Assert.assertEquals(result, -2);</span>
+<span class="fc" id="L150">	}</span>
+	
+	/**
+	 * #2 - Test for CreateGame
+	 */
+	@Test
+	public void testCreateGame() {
+		JSONObject serverResult;
+		int result;
+		
+		//Valid game creation
+<span class="fc" id="L161">		serverResult = new JSONObject();</span>
+<span class="fc" id="L162">		serverResult.put(&quot;result&quot;,&quot;success&quot;);</span>
+<span class="fc" id="L163">		serverResult.put(&quot;gameID&quot;,1);</span>
+<span class="fc" id="L164">		SendAsServer(serverResult);</span>
+<span class="fc" id="L165">		result = CreateGame(1,1);</span>
+<span class="fc" id="L166">		Assert.assertEquals(result, 1);</span>
+		
+		//Invalid player number
+<span class="fc" id="L169">		serverResult = new JSONObject();</span>
+<span class="fc" id="L170">		serverResult.put(&quot;result&quot;,&quot;failure&quot;);</span>
+<span class="fc" id="L171">		SendAsServer(serverResult);</span>
+<span class="fc" id="L172">		result = CreateGame(1,-1);</span>
+<span class="fc" id="L173">		Assert.assertEquals(result, -1);</span>
+<span class="fc" id="L174">	}</span>
+	
+	/**
+	 * #2 - Test for GetOpponent
+	 */
+	@Test
+	public void testGetOpponent() {
+		JSONObject serverResult;
+		String[] result;
+		
+		//Valid game creation
+<span class="fc" id="L185">		serverResult = new JSONObject();</span>
+<span class="fc" id="L186">		serverResult.put(&quot;result&quot;,&quot;waiting&quot;);</span>
+<span class="fc" id="L187">		SendAsServer(serverResult);</span>
+
+		//Valid game creation
+<span class="fc" id="L190">		serverResult = new JSONObject();</span>
+<span class="fc" id="L191">		serverResult.put(&quot;result&quot;,&quot;success&quot;);</span>
+<span class="fc" id="L192">		serverResult.put(&quot;userID&quot;,1);</span>
+<span class="fc" id="L193">		serverResult.put(&quot;username&quot;,&quot;testopponent&quot;);</span>
+<span class="fc" id="L194">		SendAsServer(serverResult);</span>
+<span class="fc" id="L195">		result = GetOpponent(1,1,1);</span>
+<span class="fc" id="L196">		Assert.assertEquals(result[0], &quot;1&quot;);</span>
+<span class="fc" id="L197">		Assert.assertEquals(result[1], &quot;testopponent&quot;);</span>
+<span class="fc" id="L198">	}</span>
+	
+	/**
+	 * #3 - Test for JoinGame
+	 */
+	@Test
+	public void testJoinGame() {
+		JSONObject serverResult;
+		String[] result;
+		
+		//Valid game creation
+<span class="fc" id="L209">		serverResult = new JSONObject();</span>
+<span class="fc" id="L210">		serverResult.put(&quot;result&quot;,&quot;success&quot;);</span>
+<span class="fc" id="L211">		serverResult.put(&quot;userID&quot;,1);</span>
+<span class="fc" id="L212">		serverResult.put(&quot;username&quot;,&quot;testopponent&quot;);</span>
+<span class="fc" id="L213">		serverResult.put(&quot;playerNumber&quot;,1);</span>
+<span class="fc" id="L214">		SendAsServer(serverResult);</span>
+<span class="fc" id="L215">		result = JoinGame(1,1);</span>
+<span class="fc" id="L216">		Assert.assertEquals(result[0], &quot;1&quot;);</span>
+<span class="fc" id="L217">		Assert.assertEquals(result[1], &quot;testopponent&quot;);</span>
+<span class="fc" id="L218">		Assert.assertEquals(result[2], &quot;1&quot;);</span>
+<span class="fc" id="L219">	}</span>
+	
+	/**
+	 * #3 - Test for GetJoinableGames
+	 */
+	@Test
+	public void testGetJoinableGames() {
+		JSONObject serverResult;
+		ArrayList&lt;Integer&gt; result;
+		
+		//Valid game creation
+<span class="fc" id="L230">		serverResult = new JSONObject();</span>
+<span class="fc" id="L231">		JSONArray games = new JSONArray();</span>
+<span class="fc" id="L232">		games.add(1);</span>
+<span class="fc" id="L233">		serverResult.put(&quot;result&quot;,&quot;success&quot;);</span>
+<span class="fc" id="L234">		serverResult.put(&quot;games&quot;,games);</span>
+<span class="fc" id="L235">		SendAsServer(serverResult);</span>
+<span class="fc" id="L236">		result = GetJoinableGames();</span>
+<span class="fc" id="L237">		Assert.assertEquals(result.size(), 1);</span>
+<span class="fc" id="L238">		Assert.assertEquals((int)result.get(0), 1);</span>
+<span class="fc" id="L239">	}</span>
+	
+	/**
+	 * #46 - Test for SendMove
+	 */
+	@Test
+	public void testSendMove() {
+		JSONObject serverResult;
+		boolean result;
+		
+		//Valid game creation
+<span class="fc" id="L250">		serverResult = new JSONObject();</span>
+<span class="fc" id="L251">		serverResult.put(&quot;result&quot;,&quot;success&quot;);</span>
+		
+<span class="fc" id="L253">		SendAsServer(serverResult);</span>
+<span class="fc" id="L254">		result = SendMove(new Move(new int[] {0,0}, new int[]{1,1}),1,1);</span>
+<span class="fc" id="L255">		Assert.assertEquals(result, true);</span>
+<span class="fc" id="L256">	}</span>
+	
+	
+	/**
+	 * #46 - Test for CheckForMove
+	 */
+	@Test
+	public void testCheckForMove() {
+		JSONObject serverResult;
+		Move result;
+		
+		//Valid game creation
+<span class="fc" id="L268">		serverResult = new JSONObject();</span>
+<span class="fc" id="L269">		serverResult.put(&quot;result&quot;,&quot;waiting&quot;);</span>
+<span class="fc" id="L270">		SendAsServer(serverResult);</span>
+
+		//Valid game creation
+<span class="fc" id="L273">		serverResult = new JSONObject();</span>
+<span class="fc" id="L274">		serverResult.put(&quot;result&quot;,&quot;success&quot;);</span>
+<span class="fc" id="L275">		serverResult.put(&quot;colFrom&quot;,0);</span>
+<span class="fc" id="L276">		serverResult.put(&quot;rowFrom&quot;,0);</span>
+<span class="fc" id="L277">		serverResult.put(&quot;colTo&quot;,1);</span>
+<span class="fc" id="L278">		serverResult.put(&quot;rowTo&quot;,1);</span>
+
+<span class="fc" id="L280">		SendAsServer(serverResult);</span>
+<span class="fc" id="L281">		result = CheckForMove(1,1);</span>
+<span class="fc" id="L282">		Assert.assertEquals(result.colFrom(), 0);</span>
+<span class="fc" id="L283">		Assert.assertEquals(result.rowFrom(), 0);</span>
+<span class="fc" id="L284">		Assert.assertEquals(result.colTo(), 1);</span>
+<span class="fc" id="L285">		Assert.assertEquals(result.rowTo(), 1);</span>
+<span class="fc" id="L286">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

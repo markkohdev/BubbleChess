@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>ServerTest.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.tests</a> &gt; <span class="el_source">ServerTest.java</span></div><h1>ServerTest.java</h1><pre class="source lang-java linenums">package com.bubblechess.tests;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.bubblechess.server.*;
+
+<span class="fc" id="L24">public class ServerTest {</span>
+	
+	protected ServerInstance _si;
+	
+	/**
+	 * Anything needed to be done before all tests
+	 */
+	@Before
+	public void setUp() {
+<span class="fc" id="L33">		_si = new ServerInstance();</span>
+<span class="fc" id="L34">		ChessDB cdb = new ChessDB(true);</span>
+<span class="fc" id="L35">		cdb.createTables();</span>
+<span class="fc" id="L36">	}</span>
+	
+	/**
+	 * Anything needed to be done after all tests
+	 */
+	@After
+	public void tearDown() {	
+		try {
+<span class="fc" id="L44">    		File file = new File(&quot;Test.db&quot;);</span>
+ 
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">    		if(file.delete()){</span>
+    			//System.out.println(file.getName() + &quot; is deleted!&quot;);
+    		} else {
+<span class="nc" id="L49">    			System.out.println(&quot;Delete operation is failed.&quot;);</span>
+    		}
+ 
+<span class="nc" id="L52">    	} catch(Exception e){</span>
+<span class="nc" id="L53">    		e.printStackTrace();</span>
+    	}
+<span class="fc" id="L55">		System.out.println(&quot;-----&quot;);</span>
+<span class="fc" id="L56">	}</span>
+	
+	//Helper functions
+	/**
+	 * Returns result from the request handler
+	 * @return
+	 */
+	private String getResult(RequestHandler requestHandle) {
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		while (requestHandle.getResults() == null) {</span>
+			try {
+<span class="fc" id="L66">				Thread.sleep(1);</span>
+<span class="pc" id="L67">			} catch (InterruptedException e) {</span>
+				// TODO Auto-generated catch block
+<span class="nc" id="L69">				e.printStackTrace();</span>
+			}
+		}
+<span class="fc" id="L72">		return requestHandle.getResults();</span>
+	}
+	
+	/**
+	 * Method to create a user in the datbase
+	 * @return
+	 */
+	private RequestHandler createUser(int userNum) {
+<span class="fc" id="L80">		String request = &quot;{\&quot;request\&quot;:\&quot;createUser\&quot;,\&quot;password\&quot;:\&quot;testPass\&quot;,\&quot;username\&quot;:\&quot;testUser&quot;+userNum+&quot;\&quot;}&quot;;</span>
+<span class="fc" id="L81">		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);</span>
+<span class="fc" id="L82">		requestHandle.start();</span>
+		
+<span class="fc" id="L84">		return requestHandle;</span>
+	}
+	
+	/**
+	 * Creates a game 
+	 * @return
+	 */
+	private RequestHandler createGame() {
+<span class="fc" id="L92">		String request = &quot;{\&quot;playerNumber\&quot;:1,\&quot;userID\&quot;:1,\&quot;request\&quot;:\&quot;createGame\&quot;}&quot;;</span>
+<span class="fc" id="L93">		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);</span>
+<span class="fc" id="L94">		requestHandle.start();</span>
+		
+<span class="fc" id="L96">		return requestHandle;</span>
+	}
+	
+	/** 
+	 * Joins a game
+	 * @return
+	 */
+	private RequestHandler joinGame(int userId) {
+<span class="fc" id="L104">		String request = &quot;{\&quot;gameID\&quot;:1,\&quot;request\&quot;:\&quot;joinGame\&quot;,\&quot;userID\&quot;:&quot;+userId+&quot;}&quot;;</span>
+<span class="fc" id="L105">		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);</span>
+<span class="fc" id="L106">		requestHandle.start();</span>
+		
+<span class="fc" id="L108">		return requestHandle;</span>
+	}
+	
+	//Test cases
+	/**
+	 * Test 29 to see if user is created
+	 */
+	@Test
+	public void createUserTest() {
+<span class="fc" id="L117">		RequestHandler requestHandle = createUser(1);</span>
+		
+<span class="fc" id="L119">		JSONObject json = new JSONObject();</span>
+<span class="fc" id="L120">		json.put(&quot;result&quot;, &quot;success&quot;);</span>
+<span class="fc" id="L121">		json.put(&quot;userID&quot;, '1');</span>
+
+<span class="fc" id="L123">		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));</span>
+
+<span class="fc" id="L125">	}</span>
+	
+	/** 
+	 * #29 - Tests the create user function if a user already exists
+	 */
+	@Test
+	public void createUserFail() {
+<span class="fc" id="L132">		getResult(createUser(1));</span>
+		
+<span class="fc" id="L134">		String request = &quot;{\&quot;request\&quot;:\&quot;createUser\&quot;,\&quot;password\&quot;:\&quot;testPass\&quot;,\&quot;username\&quot;:\&quot;testUser1\&quot;}&quot;;</span>
+<span class="fc" id="L135">		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);</span>
+<span class="fc" id="L136">		requestHandle.start();</span>
+		
+<span class="fc" id="L138">		JSONObject json = new JSONObject();</span>
+<span class="fc" id="L139">		json.put(&quot;result&quot;, &quot;username already exists&quot;);</span>
+
+<span class="fc" id="L141">		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	</span>
+<span class="fc" id="L142">	}</span>
+	
+	/** 
+	 * #30 - Tests the login with a successful login
+	 */
+	@Test
+	public void loginTest() {
+<span class="fc" id="L149">		getResult(createUser(1));</span>
+		
+<span class="fc" id="L151">		String request = &quot;{\&quot;request\&quot;:\&quot;checkLogin\&quot;,\&quot;password\&quot;:\&quot;testPass\&quot;,\&quot;username\&quot;:\&quot;testUser1\&quot;}&quot;;</span>
+<span class="fc" id="L152">		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);</span>
+<span class="fc" id="L153">		requestHandle.start();</span>
+		
+<span class="fc" id="L155">		JSONObject json = new JSONObject();</span>
+<span class="fc" id="L156">		json.put(&quot;result&quot;, &quot;success&quot;);</span>
+<span class="fc" id="L157">		json.put(&quot;userID&quot;, 1);</span>
+
+<span class="fc" id="L159">		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	</span>
+<span class="fc" id="L160">	}</span>
+	
+	/**
+	 * #30 - Tests the login with a bad username
+	 */
+	@Test
+	public void loginBadUsername() {
+<span class="fc" id="L167">		getResult(createUser(1));</span>
+		
+<span class="fc" id="L169">		String request = &quot;{\&quot;request\&quot;:\&quot;checkLogin\&quot;,\&quot;password\&quot;:\&quot;testPass\&quot;,\&quot;username\&quot;:\&quot;FailUser\&quot;}&quot;;</span>
+<span class="fc" id="L170">		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);</span>
+<span class="fc" id="L171">		requestHandle.start();</span>
+		
+<span class="fc" id="L173">		JSONObject json = new JSONObject();</span>
+<span class="fc" id="L174">		json.put(&quot;result&quot;, &quot;user not found&quot;);</span>
+
+<span class="fc" id="L176">		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	</span>
+<span class="fc" id="L177">	}</span>
+	
+	/**
+	 * #30 - Tests the login with a bad password
+	 */
+	@Test
+	public void loginBadPassword() {
+<span class="fc" id="L184">		getResult(createUser(1));</span>
+		
+<span class="fc" id="L186">		String request = &quot;{\&quot;request\&quot;:\&quot;checkLogin\&quot;,\&quot;password\&quot;:\&quot;FailPass\&quot;,\&quot;username\&quot;:\&quot;testUser1\&quot;}&quot;;</span>
+<span class="fc" id="L187">		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);</span>
+<span class="fc" id="L188">		requestHandle.start();</span>
+		
+<span class="fc" id="L190">		JSONObject json = new JSONObject();</span>
+<span class="fc" id="L191">		json.put(&quot;result&quot;, &quot;incorrect password&quot;);</span>
+
+<span class="fc" id="L193">		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	</span>
+<span class="fc" id="L194">	}</span>
+	
+	/**
+	 * #32 - Successfully creates a game
+	 */
+	@Test
+	public void createGameTest() {
+<span class="fc" id="L201">		getResult(createUser(1));</span>
+<span class="fc" id="L202">		RequestHandler requestHandle = createGame();</span>
+		
+<span class="fc" id="L204">		JSONObject json = new JSONObject();</span>
+<span class="fc" id="L205">		json.put(&quot;result&quot;, &quot;success&quot;);</span>
+<span class="fc" id="L206">		json.put(&quot;gameID&quot;, 1);</span>
+		
+<span class="fc" id="L208">		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	</span>
+<span class="fc" id="L209">	}</span>
+	
+	/**
+	 * #32 - List of joinable games
+	 */
+	@Test
+	public void joinableGames() {
+<span class="fc" id="L216">		getResult(createUser(1));</span>
+<span class="fc" id="L217">		getResult(createGame());</span>
+		
+<span class="fc" id="L219">		String request = &quot;{\&quot;request\&quot;:\&quot;getJoinableGames\&quot;}&quot;;</span>
+<span class="fc" id="L220">		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);</span>
+<span class="fc" id="L221">		requestHandle.start();</span>
+		
+<span class="fc" id="L223">		ArrayList&lt;Integer&gt; joinableGames = new ArrayList&lt;Integer&gt;();</span>
+<span class="fc" id="L224">		joinableGames.add(1);</span>
+<span class="fc" id="L225">		JSONArray games = new JSONArray();</span>
+<span class="fc" id="L226">		games.add(joinableGames.get(0));</span>
+		
+<span class="fc" id="L228">		JSONObject json = new JSONObject();</span>
+<span class="fc" id="L229">		json.put(&quot;result&quot;, &quot;success&quot;);</span>
+<span class="fc" id="L230">		json.put(&quot;games&quot;, games);</span>
+		
+<span class="fc" id="L232">		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	</span>
+<span class="fc" id="L233">	}</span>
+	
+	/**
+	 * #32 - Successfully joins a game
+	 */
+	@Test
+	public void joinGameTest() {
+<span class="fc" id="L240">		getResult(createUser(1));</span>
+<span class="fc" id="L241">		getResult(createGame());</span>
+<span class="fc" id="L242">		getResult(createUser(2));</span>
+		
+<span class="fc" id="L244">		RequestHandler requestHandle = joinGame(2);</span>
+		
+<span class="fc" id="L246">		JSONObject json = new JSONObject();</span>
+<span class="fc" id="L247">		json.put(&quot;result&quot;, &quot;success&quot;);</span>
+<span class="fc" id="L248">		json.put(&quot;userID&quot;, 1);</span>
+<span class="fc" id="L249">		json.put(&quot;username&quot;, &quot;testUser1&quot;);</span>
+<span class="fc" id="L250">		json.put(&quot;playerNumber&quot;, 1);</span>
+		
+<span class="fc" id="L252">		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	</span>
+<span class="fc" id="L253">	}</span>
+	
+	/**
+	 * #34 - Gets opponent information 
+	 */
+	@Test
+	public void getOpponent() {
+<span class="fc" id="L260">		getResult(createUser(1));</span>
+<span class="fc" id="L261">		getResult(createGame());</span>
+<span class="fc" id="L262">		getResult(createUser(2));</span>
+<span class="fc" id="L263">		getResult(joinGame(2));</span>
+		
+<span class="fc" id="L265">		String request = &quot;{\&quot;playerNumber\&quot;:1,\&quot;userID\&quot;:1,\&quot;gameID\&quot;:1,\&quot;request\&quot;:\&quot;getOpponent\&quot;}&quot;;</span>
+<span class="fc" id="L266">		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);</span>
+<span class="fc" id="L267">		requestHandle.start();</span>
+		
+<span class="fc" id="L269">		JSONObject json = new JSONObject();</span>
+<span class="fc" id="L270">		json.put(&quot;result&quot;, &quot;success&quot;);</span>
+<span class="fc" id="L271">		json.put(&quot;userID&quot;, 2);</span>
+<span class="fc" id="L272">		json.put(&quot;username&quot;, &quot;testUser2&quot;);</span>
+<span class="fc" id="L273">		json.put(&quot;playerNumber&quot;, 2);</span>
+		
+<span class="fc" id="L275">		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	</span>
+<span class="fc" id="L276">	}</span>
+	
+	/**
+	 * #34 - Gets opponent information 
+	 */
+	@Test
+	public void getOpponentWait() {
+<span class="fc" id="L283">		getResult(createUser(1));</span>
+<span class="fc" id="L284">		getResult(createGame());</span>
+<span class="fc" id="L285">		getResult(createUser(2));</span>
+		
+<span class="fc" id="L287">		String request = &quot;{\&quot;playerNumber\&quot;:1,\&quot;userID\&quot;:1,\&quot;gameID\&quot;:1,\&quot;request\&quot;:\&quot;getOpponent\&quot;}&quot;;</span>
+<span class="fc" id="L288">		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);</span>
+<span class="fc" id="L289">		requestHandle.start();</span>
+		
+<span class="fc" id="L291">		JSONObject json = new JSONObject();</span>
+<span class="fc" id="L292">		json.put(&quot;result&quot;, &quot;waiting&quot;);</span>
+		
+<span class="fc" id="L294">		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	</span>
+<span class="fc" id="L295">	}</span>
+	
+	/**
+	 * #36 - Sends move to server 
+	 */
+	@Test
+	public void insertMove() {
+<span class="fc" id="L302">		getResult(createUser(1));</span>
+<span class="fc" id="L303">		getResult(createGame());</span>
+<span class="fc" id="L304">		getResult(createUser(2));</span>
+<span class="fc" id="L305">		getResult(joinGame(2));</span>
+		
+<span class="fc" id="L307">		String request = &quot;{\&quot;gameID\&quot;:1,\&quot;userID\&quot;:1,\&quot;colFrom\&quot;:0,\&quot;rowFrom\&quot;:0,\&quot;colTo\&quot;:0,\&quot;rowTo\&quot;:1,\&quot;request\&quot;:\&quot;insertMove\&quot;}&quot;;</span>
+<span class="fc" id="L308">		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);</span>
+<span class="fc" id="L309">		requestHandle.start();</span>
+		
+<span class="fc" id="L311">		JSONObject json = new JSONObject();</span>
+<span class="fc" id="L312">		json.put(&quot;result&quot;, &quot;success&quot;);</span>
+		
+<span class="fc" id="L314">		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	</span>
+<span class="fc" id="L315">	}</span>
+	
+	/**
+	 * #37 - Check for move from the server for player 2 
+	 */
+	@Test
+	public void checkForMove() {
+<span class="fc" id="L322">		getResult(createUser(1));</span>
+<span class="fc" id="L323">		getResult(createGame());</span>
+<span class="fc" id="L324">		getResult(createUser(2));</span>
+<span class="fc" id="L325">		getResult(joinGame(2));</span>
+		
+<span class="fc" id="L327">		String request = &quot;{\&quot;gameID\&quot;:1,\&quot;userID\&quot;:1,\&quot;colFrom\&quot;:0,\&quot;rowFrom\&quot;:0,\&quot;colTo\&quot;:0,\&quot;rowTo\&quot;:1,\&quot;request\&quot;:\&quot;insertMove\&quot;}&quot;;</span>
+<span class="fc" id="L328">		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);</span>
+<span class="fc" id="L329">		requestHandle.start();</span>
+<span class="fc" id="L330">		getResult(requestHandle);</span>
+		
+<span class="pc bpc" id="L332" title="1 of 2 branches missed.">		while (requestHandle.getResults() == null) {</span>
+			try {
+<span class="nc" id="L334">				Thread.sleep(1);</span>
+<span class="nc" id="L335">			} catch (InterruptedException e) {</span>
+				// TODO Auto-generated catch block
+<span class="nc" id="L337">				e.printStackTrace();</span>
+			}
+		}
+		
+<span class="fc" id="L341">		String request2 = &quot;{\&quot;playerNumber\&quot;:2,\&quot;gameID\&quot;:1, \&quot;request\&quot;:\&quot;checkForMove\&quot;}&quot;;</span>
+<span class="fc" id="L342">		RequestHandler requestHandle2 = new RequestHandler(null, _si, request2, System.out);</span>
+<span class="fc" id="L343">		requestHandle2.start();</span>
+<span class="fc" id="L344">		getResult(requestHandle2);</span>
+		
+<span class="fc" id="L346">		JSONObject json = new JSONObject();</span>
+<span class="fc" id="L347">		json.put(&quot;result&quot;, &quot;success&quot;);</span>
+<span class="fc" id="L348">		json.put(&quot;colFrom&quot;, 0);</span>
+<span class="fc" id="L349">		json.put(&quot;rowFrom&quot;, 0);</span>
+<span class="fc" id="L350">		json.put(&quot;colTo&quot;, 0);</span>
+<span class="fc" id="L351">		json.put(&quot;rowTo&quot;, 1);</span>
+		
+<span class="fc" id="L353">		Assert.assertEquals(json.toJSONString(), getResult(requestHandle2));	</span>
+<span class="fc" id="L354">	}</span>
+	
+	/**
+	 * #37 - Check for move from the server for player 1
+	 */
+	@Test
+	public void checkForMoveWait() {
+<span class="fc" id="L361">		getResult(createUser(1));</span>
+<span class="fc" id="L362">		getResult(createGame());</span>
+<span class="fc" id="L363">		getResult(createUser(2));</span>
+<span class="fc" id="L364">		getResult(joinGame(2));</span>
+		
+<span class="fc" id="L366">		String request = &quot;{\&quot;gameID\&quot;:1,\&quot;userID\&quot;:1,\&quot;colFrom\&quot;:0,\&quot;rowFrom\&quot;:0,\&quot;colTo\&quot;:0,\&quot;rowTo\&quot;:1,\&quot;request\&quot;:\&quot;insertMove\&quot;}&quot;;</span>
+<span class="fc" id="L367">		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);</span>
+<span class="fc" id="L368">		requestHandle.start();</span>
+<span class="fc" id="L369">		getResult(requestHandle);</span>
+		
+<span class="pc bpc" id="L371" title="1 of 2 branches missed.">		while (requestHandle.getResults() == null) {</span>
+			try {
+<span class="nc" id="L373">				Thread.sleep(1);</span>
+<span class="nc" id="L374">			} catch (InterruptedException e) {</span>
+				// TODO Auto-generated catch block
+<span class="nc" id="L376">				e.printStackTrace();</span>
+			}
+		}
+		
+<span class="fc" id="L380">		String request2 = &quot;{\&quot;playerNumber\&quot;:1,\&quot;gameID\&quot;:1, \&quot;request\&quot;:\&quot;checkForMove\&quot;}&quot;;</span>
+<span class="fc" id="L381">		RequestHandler requestHandle2 = new RequestHandler(null, _si, request2, System.out);</span>
+<span class="fc" id="L382">		requestHandle2.start();</span>
+<span class="fc" id="L383">		getResult(requestHandle2);</span>
+		
+<span class="fc" id="L385">		JSONObject json = new JSONObject();</span>
+<span class="fc" id="L386">		json.put(&quot;result&quot;, &quot;waiting&quot;);</span>
+		
+<span class="fc" id="L388">		Assert.assertEquals(json.toJSONString(), getResult(requestHandle2));	</span>
+<span class="fc" id="L389">	}</span>
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

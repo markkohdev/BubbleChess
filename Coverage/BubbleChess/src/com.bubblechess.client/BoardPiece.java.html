@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>BoardPiece.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.client</a> &gt; <span class="el_source">BoardPiece.java</span></div><h1>BoardPiece.java</h1><pre class="source lang-java linenums"><span class="nc" id="L1">package com.bubblechess.client;</span>
+
+import java.util.ArrayList;
+
+public interface BoardPiece {
+
+<span class="fc" id="L7">	public enum Color {WHITE, BLACK};</span>
+		
+	/**
+	 * Create a deep copy of the BoardPiece
+	 * @return A deep copy of the BoardPiece
+	 */
+	public BoardPiece clone();
+	
+	/**
+	 * Get a list of possible moves for a piece in the passed location
+	 * @param x
+	 * @param y
+	 * @return A list of possible moves
+	 */
+	public ArrayList&lt;Move&gt; getMoves(int x, int y);
+	
+	/**
+	 * Get a list of possible special moves for a piece in the passed location
+	 * This includes moves such as castling and en passant
+	 * @param x
+	 * @param y
+	 * @return A list of possible special moves
+	 */
+	public ArrayList&lt;Move&gt; getSpecialMoves(int x, int y);
+	
+	/**
+	 * Get the piece's color (enum)
+	 * @return The piece's color
+	 */
+	public Color getColor();
+	
+	/**
+	 * Get the piece's ID number
+	 * @return The piece's ID
+	 */
+	public int getPieceID();
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

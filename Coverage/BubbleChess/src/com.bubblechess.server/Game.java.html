@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Game.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.server</a> &gt; <span class="el_source">Game.java</span></div><h1>Game.java</h1><pre class="source lang-java linenums">package com.bubblechess.server;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.*;
+
+import org.json.simple.JSONObject;
+
+public class Game {
+	
+	//User1 is white user2 is black
+<span class="fc" id="L13">	private int _user1Id = -1;</span>
+<span class="fc" id="L14">	private int _user2Id = -1;</span>
+	
+	private int _gameId;
+	private JSONObject _lastMove;
+	
+<span class="fc" id="L19">	private int _currentUser = 1;</span>
+	private ChessDB _cdb;
+	
+	/**
+	 * Constructor for the Game Object
+	 * @param gameId
+	 * @param playerNumber
+	 * @param userId
+	 * @param cdb
+	 */
+<span class="fc" id="L29">	public Game(int gameId, int playerNumber, int userId, ChessDB cdb) {</span>
+<span class="fc" id="L30">		setUser(userId, playerNumber);</span>
+<span class="fc" id="L31">		_gameId = gameId;</span>
+<span class="fc" id="L32">		_cdb = cdb;</span>
+		
+<span class="fc" id="L34">	}</span>
+	
+	//Getters
+	/**
+	 * Gets an opponents userID from a playerNumber
+	 * @param playerNumber
+	 * @return
+	 */
+	public int getOpponentId(int playerNumber) {
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">		if(playerNumber == 1) {</span>
+<span class="fc" id="L44">			return _user2Id;</span>
+		}
+<span class="nc bnc" id="L46" title="All 2 branches missed.">		else if(playerNumber == 2) {</span>
+<span class="nc" id="L47">			return _user1Id;</span>
+		}
+		else {
+<span class="nc" id="L50">			return -1;</span>
+		}
+	}
+	
+	/**
+	 * Gets the id of the user that is in the game waiting for an opponent
+	 * @return
+	 */
+	public int getOtherUser() {
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">		if(_user1Id == -1) {</span>
+<span class="nc" id="L60">			return _user2Id;</span>
+		}
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">		else if (_user2Id == -1) {</span>
+<span class="fc" id="L63">			return _user1Id;</span>
+		}
+		else {
+<span class="nc" id="L66">			return -1;</span>
+		}
+	}
+	/**
+	 * Gets the current player number for the turn
+	 * @return
+	 */
+	public int getCurrentPlayer() {
+<span class="fc" id="L74">		return _currentUser;</span>
+	}
+	
+	/**
+	 * Gets the player number from the userID
+	 * @param userId
+	 * @return
+	 */
+	public int getPlayerNumber(int userId) {
+<span class="fc bfc" id="L83" title="All 2 branches covered.">		if(userId == _user1Id) {</span>
+<span class="fc" id="L84">			return 1;</span>
+		}
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">		else if(userId == _user2Id) {</span>
+<span class="fc" id="L87">			return 2;</span>
+		}
+		else {
+<span class="nc" id="L90">			return -1;</span>
+		}
+	}
+	
+	/**
+	 * Gets the last move that was executed in the game as JSON
+	 * @return
+	 */
+	public JSONObject getLastMove() {
+<span class="fc" id="L99">		return _lastMove;</span>
+	}
+	
+	//Setters
+	/**
+	 * Sets a user id to a player
+	 * @param userId
+	 * @param playerNumber
+	 */
+	public void setUser(int userId, int playerNumber) {
+<span class="fc bfc" id="L109" title="All 2 branches covered.">		if(playerNumber == 1) {</span>
+<span class="fc" id="L110">			_user1Id = userId;</span>
+<span class="fc" id="L111">		}</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		else if(playerNumber == 2) {</span>
+<span class="fc" id="L113">			_user2Id = userId;</span>
+		}
+<span class="fc" id="L115">	}</span>
+	
+	//Methods
+	/**
+	 * Allows a user to join an existing game and become a player
+	 * @param userId
+	 * @return
+	 */
+	public boolean joinGame(int userId) {
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">		if(_user1Id == -1) {</span>
+<span class="nc" id="L125">			setUser(userId, 1);</span>
+<span class="nc" id="L126">			return true;</span>
+		}
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">		else if(_user2Id == -1) {</span>
+<span class="fc" id="L129">			setUser(userId, 2);</span>
+<span class="fc" id="L130">			return true;</span>
+		}
+		else {
+			//fail
+<span class="nc" id="L134">			return false;</span>
+		}
+	}
+	
+	//Game Methods
+	/**
+	 * Inserts a move into a game and sets it as the last move. After this it will add it to the database
+	 * @param userId
+	 * @param colFrom
+	 * @param rowFrom
+	 * @param colTo
+	 * @param rowTo
+	 * @throws IOException
+	 */
+	public boolean insertMove(int userId, int colFrom, int rowFrom, int colTo, int rowTo) throws IOException {
+<span class="fc" id="L149">		boolean moveCheck = _cdb.insertMove(userId, _gameId, colFrom, rowFrom, colTo, rowTo);</span>
+		
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">		if(_currentUser == 1) {</span>
+<span class="fc" id="L152">			_currentUser = 2;</span>
+<span class="fc" id="L153">		}</span>
+		else {
+<span class="nc" id="L155">			_currentUser = 1;</span>
+		}
+		
+<span class="fc" id="L158">		JSONObject move = new JSONObject();</span>
+<span class="fc" id="L159">		move.put(&quot;userID&quot;, userId);</span>
+<span class="fc" id="L160">		move.put(&quot;colFrom&quot;, colFrom);</span>
+<span class="fc" id="L161">		move.put(&quot;rowFrom&quot;, rowFrom);</span>
+<span class="fc" id="L162">		move.put(&quot;colTo&quot;, colTo);</span>
+<span class="fc" id="L163">		move.put(&quot;rowTo&quot;, rowTo);</span>
+
+<span class="fc" id="L165">		_lastMove = move;</span>
+
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">		if(moveCheck) {</span>
+<span class="fc" id="L168">			return true;</span>
+		}
+		else {
+<span class="nc" id="L171">			return false;</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>
