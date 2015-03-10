@@ -11,6 +11,7 @@ public class BubbleChessDriver {
 	
 	
 	public static void main(String[] args){
+
 		//Run all the things here
 		int close = 0;
 		
@@ -100,7 +101,9 @@ public class BubbleChessDriver {
 				break;
 			}
 		}
+		
 		return close;
+
 	}
 	
 
