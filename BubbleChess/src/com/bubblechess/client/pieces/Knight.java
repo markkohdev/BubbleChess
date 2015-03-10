@@ -14,12 +14,12 @@ public class Knight extends ChessPiece {
 		
 		// Modify directional vectors for knight movement
 		N = new int[]{1,2};
-		E = new int[]{2,1};
-		S = new int[]{2,-1};
-		W = new int[]{1,-2};
-		NE = new int[]{-1,-2};
-		SE = new int[]{-2,-1};
-		SW = new int[]{-2,1};
+		NE = new int[]{2,1};
+		E = new int[]{2,-1};
+		SE = new int[]{1,-2};
+		S = new int[]{-1,-2};
+		SW = new int[]{-2,-1};
+		W = new int[]{-2,1};
 		NW = new int[]{-1,2};
 		
 		dirs = new int[][]{N,NE,E,SE,S,SW,W,NW};
