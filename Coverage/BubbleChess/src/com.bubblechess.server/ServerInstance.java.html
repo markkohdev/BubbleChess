@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>ServerInstance.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.server</a> &gt; <span class="el_source">ServerInstance.java</span></div><h1>ServerInstance.java</h1><pre class="source lang-java linenums">package com.bubblechess.server;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+public class ServerInstance {
+	
+	private Map _games;
+	private ArrayList&lt;Integer&gt; _joinableGames;
+
+	/**
+	 * Constructor for Server instance
+	 */
+<span class="fc" id="L15">	public ServerInstance() {</span>
+<span class="fc" id="L16">		_games = new HashMap();</span>
+<span class="fc" id="L17">		_joinableGames = new ArrayList&lt;Integer&gt;();</span>
+<span class="fc" id="L18">	}</span>
+	
+	//getters
+	/**
+	 * Gets the game object of a specific game ID
+	 * @param gameId
+	 * @return
+	 */
+	public Game getGame(int gameId) {
+<span class="fc" id="L27">		return (Game) _games.get(gameId);</span>
+	}
+	
+	/**
+	 * Returns a list of games
+	 * @return
+	 */
+	public Map getGames() {
+<span class="nc" id="L35">		return _games;</span>
+	}
+	
+	/**
+	 * Returns a list of joinable games
+	 * @return
+	 */
+	public ArrayList&lt;Integer&gt; getJoinableGames() {
+<span class="fc" id="L43">		return _joinableGames;</span>
+	}
+	
+	//setters
+	/** 
+	 * Adds a game object to the games list
+	 * @param gameId
+	 * @param game
+	 */
+	public void addGameThread(int gameId, Game game) {
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		if (_games.get(gameId) == null) {</span>
+<span class="fc" id="L54">			_games.put(gameId, game);</span>
+		}
+<span class="fc" id="L56">	}</span>
+	
+	/**
+	 * Adds a game object to the joinable games list
+	 * @param gameId
+	 */
+	public void addJoinableGame(int gameId) {
+<span class="fc" id="L63">		_joinableGames.add(gameId);</span>
+<span class="fc" id="L64">	}</span>
+	
+	//methods
+	/**
+	 * Removes a game from the joinable games list
+	 * @param gameId
+	 */
+	public void removeJoinableGame(int gameId) {
+<span class="fc" id="L72">		int index = _joinableGames.indexOf(gameId);</span>
+<span class="fc" id="L73">		_joinableGames.remove(index);</span>
+<span class="fc" id="L74">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

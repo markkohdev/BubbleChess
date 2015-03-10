@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Pawn.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.client.pieces</a> &gt; <span class="el_source">Pawn.java</span></div><h1>Pawn.java</h1><pre class="source lang-java linenums">package com.bubblechess.client.pieces;
+
+import java.util.ArrayList;
+
+import com.bubblechess.client.BoardPiece;
+import com.bubblechess.client.ChessPiece;
+import com.bubblechess.client.Move;
+
+public class Pawn extends ChessPiece {
+
+<span class="fc" id="L11">	protected int[][] dirsWhite = {N,NE,NW};</span>
+<span class="fc" id="L12">	protected int[][] dirsBlack = {S,SE,SW};</span>
+	
+	/**
+	 * Constructor for the Pawn Piece
+	 * @param col
+	 */
+<span class="fc" id="L18">	public Pawn(Color col) {</span>
+<span class="fc" id="L19">		color = col;</span>
+<span class="fc" id="L20">		hasMoved = false;</span>
+<span class="fc" id="L21">		id=5;</span>
+<span class="fc" id="L22">	}</span>
+	
+	/**
+	 * Gets possible moves a piece can make
+	 * @return
+	 */
+	@Override
+	public ArrayList&lt;Move&gt; getMoves(int x, int y) {
+<span class="fc" id="L30">		ArrayList&lt;Move&gt; moves = new ArrayList&lt;Move&gt;();</span>
+<span class="fc" id="L31">		int from[] = {x,y};</span>
+<span class="fc" id="L32">		int to[] = new int[2];</span>
+		
+<span class="fc bfc" id="L34" title="All 2 branches covered.">		if (color == Color.WHITE) {</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">			for (int i=0;i&lt;dirsWhite.length;i++) {</span>
+<span class="fc" id="L36">				to[0] = x + dirsWhite[i][0]; // next x</span>
+<span class="fc" id="L37">				to[1] = y + dirsWhite[i][1]; // next y</span>
+				
+				// if coordinate is in the board
+<span class="pc bpc" id="L40" title="2 of 8 branches missed.">				if (to[0]&gt;=0 &amp;&amp; to[0]&lt;=7 &amp;&amp; to[1]&gt;=0 &amp;&amp; to[1]&lt;=7) {</span>
+<span class="fc" id="L41">					moves.add(new Move(from, to));</span>
+				}
+			}
+		}
+		
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		if (color == Color.BLACK) {</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">			for (int i=0;i&lt;dirsBlack.length;i++) {</span>
+<span class="fc" id="L48">				to[0] = x + dirsBlack[i][0]; // next x</span>
+<span class="fc" id="L49">				to[1] = y + dirsBlack[i][1]; // next y</span>
+				
+				// if coordinate is in the board
+<span class="pc bpc" id="L52" title="2 of 8 branches missed.">				if (to[0]&gt;=0 &amp;&amp; to[0]&lt;=7 &amp;&amp; to[1]&gt;=0 &amp;&amp; to[1]&lt;=7) {</span>
+<span class="fc" id="L53">					moves.add(new Move(from, to));</span>
+				}
+			}
+		}
+		
+<span class="fc" id="L58">		return moves;</span>
+	}
+	
+	/**
+	 * Returns the pawns move forward 2 moves
+	 * @return
+	 */
+	@Override
+	public ArrayList&lt;Move&gt; getSpecialMoves(int x, int y){
+<span class="fc" id="L67">		ArrayList&lt;Move&gt; moves = new ArrayList&lt;Move&gt;();</span>
+<span class="fc" id="L68">		int[] from = {x, y};</span>
+<span class="fc" id="L69">		int[] to = new int[2];</span>
+		
+		//Move forward two spaces on first move
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		if (hasMoved==false){</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">			if (color==Color.WHITE){</span>
+<span class="fc" id="L74">				to[0] = x;</span>
+<span class="fc" id="L75">				to[1] = y+2;</span>
+<span class="fc" id="L76">				moves.add(new Move(from, to));</span>
+			}
+<span class="fc bfc" id="L78" title="All 2 branches covered.">			if (color==Color.BLACK){</span>
+<span class="fc" id="L79">				to[0] = x;</span>
+<span class="fc" id="L80">				to[1] = y-2;</span>
+<span class="fc" id="L81">				moves.add(new Move(from, to));</span>
+			}
+		}
+		
+<span class="fc" id="L85">		return moves;</span>
+	}
+	
+	/**
+	 * Returns the directional movements of a pawn depending on color
+	 * @return An array of directional vectors
+	 */
+	@Override
+	public int[][] getDirs() {
+<span class="nc bnc" id="L94" title="All 2 branches missed.">		if (this.getColor() == Color.WHITE) {</span>
+<span class="nc" id="L95">			return dirsWhite;</span>
+		}
+<span class="nc" id="L97">		return dirsBlack;</span>
+	}
+
+	/**
+	 * Clones the piece object
+	 * @return
+	 */
+	@Override
+	public BoardPiece clone() {
+<span class="fc" id="L106">		ChessPiece piece = new Pawn(this.getColor());</span>
+<span class="fc" id="L107">		return piece;</span>
+	}
+
+	/**
+	 * Returns the type of the piece
+	 * @return
+	 */
+	@Override
+	public String getType() {
+<span class="fc" id="L116">		return &quot;Pawn&quot;;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

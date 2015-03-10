@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Rook.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.client.pieces</a> &gt; <span class="el_source">Rook.java</span></div><h1>Rook.java</h1><pre class="source lang-java linenums">package com.bubblechess.client.pieces;
+
+import java.util.ArrayList;
+
+import com.bubblechess.client.BoardPiece;
+import com.bubblechess.client.ChessPiece;
+import com.bubblechess.client.Move;
+
+public class Rook extends ChessPiece {
+	
+	/**
+	 * Constructor for the Rook Piece
+	 * @param col
+	 */
+<span class="fc" id="L15">	public Rook(Color col) {</span>
+<span class="fc" id="L16">		color = col;</span>
+<span class="fc" id="L17">		hasMoved = false;</span>
+		
+<span class="fc" id="L19">		dirs = new int[][]{N,E,S,W};</span>
+<span class="fc" id="L20">		id=2;</span>
+<span class="fc" id="L21">	}</span>
+
+	/**
+	 * Gets possible moves a piece can make
+	 * @return
+	 */
+	@Override
+	public ArrayList&lt;Move&gt; getMoves(int x, int y) {
+<span class="fc" id="L29">		ArrayList&lt;Move&gt; moves = new ArrayList&lt;Move&gt;();</span>
+<span class="fc" id="L30">		int from[] = {x,y};</span>
+<span class="fc" id="L31">		int to[] = new int[2];</span>
+		
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		for (int i=0;i&lt;dirs.length;i++) {</span>
+<span class="fc" id="L34">			to[0] = x + dirs[i][0]; // next x</span>
+<span class="fc" id="L35">			to[1] = y + dirs[i][1]; // next y</span>
+			
+			// while coordinate is in the board
+<span class="fc bfc" id="L38" title="All 8 branches covered.">			while(to[0]&gt;=0 &amp;&amp; to[0]&lt;=7 &amp;&amp; to[1]&gt;=0 &amp;&amp; to[1]&lt;=7) {</span>
+<span class="fc" id="L39">				moves.add(new Move(from, to));</span>
+<span class="fc" id="L40">				to[0] += dirs[i][0];</span>
+<span class="fc" id="L41">				to[1] += dirs[i][1];</span>
+			}
+		}
+<span class="fc" id="L44">		return moves;</span>
+	}
+
+	/**
+	 * Clones the piece object
+	 * @return
+	 */
+	@Override
+	public BoardPiece clone() {
+<span class="fc" id="L53">		ChessPiece piece = new Rook(this.getColor());</span>
+<span class="fc" id="L54">		return piece;</span>
+	}
+
+	/**
+	 * Returns the type of the piece
+	 * @return
+	 */
+	@Override
+	public String getType() {
+<span class="fc" id="L63">		return &quot;Rook&quot;;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

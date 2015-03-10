@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>ChessPiece.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.client</a> &gt; <span class="el_source">ChessPiece.java</span></div><h1>ChessPiece.java</h1><pre class="source lang-java linenums">package com.bubblechess.client;
+
+import java.util.ArrayList;
+
+<span class="fc" id="L5">public abstract class ChessPiece implements BoardPiece {</span>
+
+	protected Color color;
+	protected int[][] dirs;
+	protected boolean hasMoved;
+<span class="fc" id="L10">	protected int id = -1;</span>
+	
+	
+	// Directional vectors as (x,y)
+<span class="fc" id="L14">	protected int[] N = {0,1};</span>
+<span class="fc" id="L15">	protected int[] E = {1,0};</span>
+<span class="fc" id="L16">	protected int[] S = {0,-1};</span>
+<span class="fc" id="L17">	protected int[] W = {-1,0};</span>
+<span class="fc" id="L18">	protected int[] NE = {1,1};</span>
+<span class="fc" id="L19">	protected int[] SE = {1,-1};</span>
+<span class="fc" id="L20">	protected int[] SW = {-1,-1};</span>
+<span class="fc" id="L21">	protected int[] NW = {-1,1};</span>
+	
+	/**
+	 * A deep copy implemented by every ChessPiece subclass
+	 * @return An identical BoardPiece
+	 */
+	public abstract BoardPiece clone();
+	
+	/**
+	 * Returns a list of possible moves (not guaranteed to be legal)
+	 * @param x
+	 * @param y
+	 * @return A list of moves
+	 */
+	public abstract ArrayList&lt;Move&gt; getMoves(int x, int y);
+	
+	/**
+	 * Returns a list of possible special moves (not guaranteed to be legal)
+	 * @param x
+	 * @param y
+	 * @return A list of special moves
+	 */
+	public ArrayList&lt;Move&gt; getSpecialMoves(int x, int y){
+<span class="fc" id="L44">		return new ArrayList&lt;Move&gt;();</span>
+	}
+
+	/**
+	 * Returns the color of this piece
+	 * @return Color.WHITE or Color.BLACK
+	 */
+	public Color getColor() {
+<span class="fc" id="L52">		return color;</span>
+	}
+	
+	/**
+	 * Get the piece's type, e.g. Rook or Pawn
+	 * @return A string representing the type of the piece
+	 */
+	public abstract String getType();
+	
+	/**
+	 * Returns the directional movements of this piece
+	 * @return An array of directional vectors
+	 */
+	public int[][] getDirs() {
+<span class="nc" id="L66">		return dirs;</span>
+	}
+	
+	/**
+	 * Returns true if the piece has moved, false otherwise
+	 * Necessary information to determine if castling is legal
+	 * @return True if moved, False otherwise
+	 */
+	public boolean getHasMoved() {
+<span class="nc" id="L75">		return hasMoved;</span>
+	}
+	
+	/**
+	 * Get the piece ID number
+	 * @return the piece ID
+	 */
+	public int getPieceID(){
+<span class="nc" id="L83">		return id;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

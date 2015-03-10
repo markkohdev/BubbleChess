@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>MainApplicationWindow.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.gui</a> &gt; <span class="el_source">MainApplicationWindow.java</span></div><h1>MainApplicationWindow.java</h1><pre class="source lang-java linenums">package com.bubblechess.gui;
+
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import com.bubblechess.GUIBridge;
+import com.bubblechess.client.ServerHandler;
+
+public class MainApplicationWindow extends JFrame {
+	
+<span class="nc" id="L16">	private static MainApplicationWindow instance = null;	</span>
+	// private JFrame frame;
+	private GUIBridge bridge;
+	private int paneResult;
+	private JPanel previousPanel;
+	private int gamePlaying;
+
+	/**
+	 * Create the application.
+	 */
+<span class="nc" id="L26">	public MainApplicationWindow() {	</span>
+<span class="nc" id="L27">		this.paneResult = -5;</span>
+<span class="nc" id="L28">		this.gamePlaying = 0;</span>
+		//frame = new JFrame();
+<span class="nc" id="L30">		setBounds(0, 0, 1024, 768);</span>
+		//frame.setBounds(100, 100, 450, 300);
+		//frame.setPreferredSize(new Dimension(1024,768));
+<span class="nc" id="L33">		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span>
+		// LoginPanel lP = new LoginPanel();
+		// frame.setContentPane(lP);
+		// frame.setVisible(true);
+<span class="nc" id="L37">	}</span>
+	
+	public static MainApplicationWindow getInstance() {
+<span class="nc bnc" id="L40" title="All 2 branches missed.">		if (instance == null) {</span>
+<span class="nc" id="L41">			instance = new MainApplicationWindow();</span>
+		}
+<span class="nc" id="L43">		return instance;</span>
+	}
+	
+	public void setBridge(GUIBridge b) {
+<span class="nc" id="L47">		this.bridge = b;</span>
+<span class="nc" id="L48">	}</span>
+	
+	public GUIBridge getBridge(){ 
+<span class="nc" id="L51">		return this.bridge;</span>
+	}
+	
+	/**
+	 * Function to launch the application. Created from old main function.
+	 */
+	/*public static void launchApplicationWindow(final GUIBridge b) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					MainApplicationWindow mainWindow = new MainApplicationWindow(b);
+					mainWindow.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}*/
+
+	/**
+	 * sets the JFrame of the window as visible
+	 */
+	public void setFrameVisible(boolean f) { 
+<span class="nc" id="L74">		this.setVisible(f);</span>
+<span class="nc" id="L75">	}</span>
+	
+	/**
+	 * Removes panel received from the frame
+	 * @param panel
+	 */
+	public void removePanel(JPanel panel) {
+<span class="nc" id="L82">		this.remove(panel);</span>
+<span class="nc" id="L83">	}</span>
+	/**
+	 * adds panel received as param to the frame
+	 * @param panel
+	 */
+	public void addPanel(JPanel panel) {
+<span class="nc" id="L89">		this.setContentPane(panel);</span>
+<span class="nc" id="L90">		this.previousPanel = panel;</span>
+<span class="nc" id="L91">		this.setVisible(true);</span>
+<span class="nc" id="L92">		this.resetPaneResult();</span>
+<span class="nc" id="L93">	}</span>
+	
+	public void removePreviousPanel(){
+<span class="nc" id="L96">		this.remove(this.previousPanel);</span>
+<span class="nc" id="L97">	}</span>
+	/**
+	 * Sets panel received as paramter to visible or not
+	 * @param panel
+	 * @param b
+	 */
+	public void setVisiblePanel(JPanel panel, boolean b) {
+<span class="nc" id="L104">		panel.setVisible(b);</span>
+<span class="nc" id="L105">	}</span>
+	
+	public int isGamePlaying() { 
+<span class="nc" id="L108">		return this.gamePlaying;</span>
+	}
+	
+	public void setGamePlaying(int i) { 
+<span class="nc" id="L112">		this.gamePlaying = i;</span>
+<span class="nc" id="L113">	}</span>
+	
+
+	
+	/** 
+	 * Starts the login Panel. Property Listens is watching for when the loginState
+	 * of the LoginPanel is changed the the change event is fired off.
+	 * @param p
+	 */
+	/*public void startLogin(LoginPanel p) {
+		p.addPropertyChangeListener(&quot;loginState&quot;, new PropertyChangeListener() {
+
+			public void propertyChange(PropertyChangeEvent evt) { 
+				int newStateValue = (int) evt.getNewValue();
+				LoginPanel lP = (LoginPanel) evt.getSource();
+				// if value is 1 it will try to login and start main menu if sucess
+				if(newStateValue == 1) {
+					int result = loginFunction(lP);
+					/*if(result &gt;= 0) { 
+						startMainMenu();
+						
+					}
+					if(result &gt;= 0) {
+						setPaneResult(result);
+					}
+					
+					
+				}
+				// fires off create new user screen
+				else if(newStateValue == 2) {
+					setPaneResult(newStateValue);
+					
+				}
+				// fires off continue as guest and if success starts main menu
+				else if(newStateValue == 3) {
+					int result = continueAsGuest();
+					
+					if(result &gt;= 0) {
+						setPaneResult(result);
+					}
+					
+				}
+			}
+		});
+	}*/
+	
+	/**
+	 * Tries to login to server using login function from GUIBridge.
+	 * @param lP
+	 * @returns 0 Sucess, -1 Incorrect Pass, -2 User Not Found
+	 */
+	/*public int loginFunction(LoginPanel lP) {
+		String user = lP.getUserName();
+		String pass = lP.getPassword();
+		
+		int result = this.bridge.Login(user, pass);
+		if(result == -1) {
+			lP.setErrorLabel(&quot;Incorrect Password&quot;);
+		}
+		else if (result == -2) {
+			lP.setErrorLabel(&quot;User Not Found&quot;);
+		}
+		
+		
+		return result;
+	}
+	
+	/**
+	 * calls Continue as guest from bridge
+	 * @return 0 success, -1 failure
+	 */
+	/*public int continueAsGuest() { 
+		return bridge.ContinueAsGuest();
+	}
+	
+	public int registerUser() { 
+		return 0;
+	} */
+	
+	
+	public void setPaneResult(int i) {
+<span class="nc" id="L194">		paneResult = i;</span>
+<span class="nc" id="L195">	}</span>
+	public void resetPaneResult() { 
+<span class="nc" id="L197">		paneResult = 0;</span>
+<span class="nc" id="L198">	}</span>
+	
+	public int getPaneResult() {
+<span class="nc" id="L201">		return this.paneResult;</span>
+	}
+	public void startMainMenu() {
+		
+<span class="nc" id="L205">	}</span>
+	
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

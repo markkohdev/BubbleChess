@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Queen.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.client.pieces</a> &gt; <span class="el_source">Queen.java</span></div><h1>Queen.java</h1><pre class="source lang-java linenums">package com.bubblechess.client.pieces;
+
+import java.util.ArrayList;
+
+import com.bubblechess.client.BoardPiece;
+import com.bubblechess.client.ChessPiece;
+import com.bubblechess.client.Move;
+
+public class Queen extends ChessPiece {
+	
+	/**
+	 * Constructor for the Queen Piece
+	 * @param col
+	 */
+<span class="fc" id="L15">	public Queen(Color col) {</span>
+<span class="fc" id="L16">		color = col;</span>
+<span class="fc" id="L17">		dirs = new int[][]{N,NE,E,SE,S,SW,W,NW};</span>
+<span class="fc" id="L18">		id=1;</span>
+<span class="fc" id="L19">	}</span>
+
+	/**
+	 * Gets possible moves a piece can make
+	 * @return
+	 */
+	@Override
+	public ArrayList&lt;Move&gt; getMoves(int x, int y) {
+<span class="fc" id="L27">		ArrayList&lt;Move&gt; moves = new ArrayList&lt;Move&gt;();</span>
+<span class="fc" id="L28">		int from[] = {x,y};</span>
+<span class="fc" id="L29">		int to[] = new int[2];</span>
+		
+<span class="fc bfc" id="L31" title="All 2 branches covered.">		for (int i=0;i&lt;dirs.length;i++) {</span>
+<span class="fc" id="L32">			to[0] = x + dirs[i][0]; // next x</span>
+<span class="fc" id="L33">			to[1] = y + dirs[i][1]; // next y</span>
+			
+			// while coordinate is in the board
+<span class="fc bfc" id="L36" title="All 8 branches covered.">			while(to[0]&gt;=0 &amp;&amp; to[0]&lt;=7 &amp;&amp; to[1]&gt;=0 &amp;&amp; to[1]&lt;=7) {</span>
+<span class="fc" id="L37">				moves.add(new Move(from, to));</span>
+<span class="fc" id="L38">				to[0] += dirs[i][0];</span>
+<span class="fc" id="L39">				to[1] += dirs[i][1];</span>
+			}
+		}
+<span class="fc" id="L42">		return moves;</span>
+	}
+
+	/**
+	 * Clones the piece object
+	 * @return
+	 */
+	@Override
+	public BoardPiece clone() {
+<span class="fc" id="L51">		ChessPiece piece = new Queen(this.getColor());</span>
+<span class="fc" id="L52">		return piece;</span>
+	}
+
+	/**
+	 * Returns the type of the piece
+	 * @return
+	 */
+	@Override
+	public String getType() {
+<span class="fc" id="L61">		return &quot;Queen&quot;;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>

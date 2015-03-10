@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>ChessDB.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</a> &gt; <a href="../../index.html" class="el_group">BubbleChess</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">com.bubblechess.server</a> &gt; <span class="el_source">ChessDB.java</span></div><h1>ChessDB.java</h1><pre class="source lang-java linenums">package com.bubblechess.server;
+
+import java.sql.*;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+public class ChessDB {
+	
+	private boolean _isTest;
+	
+	/**
+	 * Constructor for the ChessDB
+	 */
+<span class="fc" id="L15">	public ChessDB(boolean isTest) {</span>
+<span class="fc" id="L16">		_isTest = isTest;</span>
+<span class="fc" id="L17">	}</span>
+
+	/**
+	 * Sets up connection to the sqlite database
+	 * @return
+	 */
+	public Connection dbConnect() {
+<span class="fc" id="L24">		 Connection c = null;</span>
+		 try {
+<span class="fc" id="L26">		   	Class.forName(&quot;org.sqlite.JDBC&quot;);</span>
+		    
+<span class="fc" id="L28">		   	String fileName = &quot;&quot;;</span>
+		   	
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">		   	if(_isTest) {</span>
+<span class="fc" id="L31">		   		c = DriverManager.getConnection(&quot;jdbc:sqlite:Test.db&quot;);</span>
+<span class="fc" id="L32">		   	}</span>
+		   	else {
+<span class="nc" id="L34">		   		c = DriverManager.getConnection(&quot;jdbc:sqlite:Chess.db&quot;);</span>
+		   	}
+		   	
+<span class="fc" id="L37">		    c.setAutoCommit(true);</span>
+		    //System.out.println(&quot;Opened database successfully&quot;);
+<span class="pc" id="L39">		} catch (ClassNotFoundException | SQLException e) {</span>
+			// TODO Auto-generated catch block
+<span class="nc" id="L41">			System.out.println(&quot;Database failed to open :(&quot;);</span>
+<span class="nc" id="L42">			e.printStackTrace();</span>
+		}
+<span class="fc" id="L44">		return c;</span>
+	}
+	
+	/**
+	 * Creates the tables in the database
+	 */
+	public void createTables() {
+		//do I need this?
+<span class="fc" id="L52">		Connection c = dbConnect();</span>
+<span class="fc" id="L53">		Statement stmt = null;</span>
+	    try {
+<span class="fc" id="L55">	    	c = dbConnect();</span>
+
+	    	//Users Table
+<span class="fc" id="L58">	    	stmt = c.createStatement();</span>
+<span class="fc" id="L59">	    	String sql = &quot;CREATE TABLE IF NOT EXISTS USERS &quot; +</span>
+	    				&quot;(ID INTEGER PRIMARY KEY	AUTOINCREMENT,&quot; +
+	    				&quot; USERNAME           TEXT   NOT NULL,&quot; + 
+	    				&quot; PASSWORD           TEXT   NOT NULL)&quot;;
+<span class="fc" id="L63">	    	stmt.executeUpdate(sql);</span>
+<span class="fc" id="L64">	    	stmt.close();</span>
+	    	
+	    	//Moves Table
+<span class="fc" id="L67">	    	stmt = c.createStatement();</span>
+<span class="fc" id="L68">	    	sql = &quot;CREATE TABLE IF NOT EXISTS MOVES &quot; +</span>
+	    			&quot;(ID INTEGER PRIMARY 	KEY   	AUTOINCREMENT,&quot; +
+	    			&quot;GAMEID           		INTEGER   NOT NULL,&quot; + 
+	    			&quot;USERID           		INTEGER   NOT NULL,&quot; + 
+	    			&quot;COLFROM           		INTEGER   NOT NULL,&quot; + 
+	    			&quot;ROWFROM           		INTEGER   NOT NULL,&quot; + 
+	    			&quot;COLTO           		INTEGER   NOT NULL,&quot; + 
+	    			&quot;ROWTO           		INTEGER   NOT NULL)&quot;;
+<span class="fc" id="L76">	    	stmt.executeUpdate(sql);</span>
+<span class="fc" id="L77">	    	stmt.close();</span>
+	    	
+	    	//Games Table
+<span class="fc" id="L80">	    	stmt = c.createStatement();</span>
+<span class="fc" id="L81">	    	sql = &quot;CREATE TABLE IF NOT EXISTS GAMES &quot; +</span>
+	    			&quot;(ID INTEGER PRIMARY KEY	   	AUTOINCREMENT,&quot; +
+	    			&quot;USER1ID           		INTEGER,&quot; + 
+	    			&quot;USER2ID           		INTEGER,&quot; + 
+	    			&quot;GAMESTATUS           	INTEGER   	NOT NULL)&quot;;
+<span class="fc" id="L86">	    	stmt.executeUpdate(sql);</span>
+<span class="fc" id="L87">	    	stmt.close();</span>
+	    	
+<span class="fc" id="L89">	    	c.close();</span>
+<span class="pc" id="L90">	    } catch ( Exception e ) {</span>
+<span class="nc" id="L91">	    	System.err.println( e.getClass().getName() + &quot;: &quot; + e.getMessage() );</span>
+<span class="nc" id="L92">	    	System.exit(0);</span>
+	    }
+	    //System.out.println(&quot;Tables created successfully&quot;);
+<span class="fc" id="L95">	}</span>
+	
+	//User information
+	/**
+	 * Returns a userID from a username
+	 * @param userName
+	 * @return
+	 */
+	public int getUser(String userName) {
+<span class="fc" id="L104">		Connection c = dbConnect();</span>
+<span class="fc" id="L105">		int userId = -1;</span>
+		try {
+<span class="fc" id="L107">			Statement stmt = c.createStatement();</span>
+			ResultSet rs;
+<span class="fc" id="L109">			rs = stmt.executeQuery( &quot;SELECT * FROM USERS WHERE USERNAME = '&quot;+userName+&quot;'&quot;);</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">		    while (rs.next()) {</span>
+<span class="fc" id="L111">		    	userId = rs.getInt(&quot;ID&quot;);</span>
+		    }
+<span class="fc" id="L113">		    rs.close();</span>
+<span class="fc" id="L114">		    stmt.close();</span>
+<span class="fc" id="L115">		    c.close();</span>
+<span class="pc" id="L116">		} catch (SQLException e) {</span>
+			// TODO Auto-generated catch block
+<span class="nc" id="L118">			e.printStackTrace();</span>
+		}
+<span class="fc" id="L120">		return userId;</span>
+	}
+	
+	/**
+	 * Returns a username from a userID
+	 * @param userId
+	 * @return
+	 */
+	public String getUsername(int userId) {
+<span class="fc" id="L129">		Connection c = dbConnect();</span>
+		
+<span class="fc" id="L131">		String username = &quot;&quot;;</span>
+		
+		try {
+<span class="fc" id="L134">			Statement stmt = c.createStatement();</span>
+			ResultSet rs;
+<span class="fc" id="L136">			rs = stmt.executeQuery( &quot;SELECT * FROM USERS WHERE ID = '&quot;+userId+&quot;'&quot;);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">		    while (rs.next()) {</span>
+<span class="fc" id="L138">		    	username = rs.getString(&quot;USERNAME&quot;);</span>
+		    }
+<span class="fc" id="L140">		    rs.close();</span>
+<span class="fc" id="L141">		    stmt.close();</span>
+<span class="fc" id="L142">		    c.close();</span>
+<span class="pc" id="L143">		} catch (SQLException e) {</span>
+			// TODO Auto-generated catch block
+<span class="nc" id="L145">			e.printStackTrace();</span>
+		}
+<span class="fc" id="L147">		return username;</span>
+	}
+	
+	/**
+	 * Creates a user in the database
+	 * @param userName
+	 * @param password
+	 */
+	public void insertUser(String userName, String password)
+	{
+<span class="fc" id="L157">		Connection c = dbConnect();</span>
+<span class="fc" id="L158">		Statement stmt = null;</span>
+		try {
+<span class="fc" id="L160">			stmt = c.createStatement();</span>
+<span class="fc" id="L161">			String sql = &quot;INSERT INTO USERS (USERNAME, PASSWORD) &quot; +</span>
+<span class="fc" id="L162">						 &quot;VALUES ('&quot;+userName+&quot;', '&quot;+password+&quot;');&quot;;</span>
+<span class="fc" id="L163">			stmt.executeUpdate(sql);</span>
+<span class="fc" id="L164">			stmt.close();</span>
+<span class="fc" id="L165">			c.close();</span>
+<span class="pc" id="L166">		} catch (SQLException e) {</span>
+			// TODO Auto-generated catch block
+<span class="nc" id="L168">			e.printStackTrace();</span>
+		}
+<span class="fc" id="L170">	}</span>
+	
+	/**
+	 * Checks the login information of a user
+	 * @param userId
+	 * @param password
+	 */
+	public boolean checkLogin(int userId, String password) {
+<span class="fc" id="L178">		Connection c = dbConnect();</span>
+<span class="fc" id="L179">		boolean result = false;</span>
+		
+		try {
+<span class="fc" id="L182">			Statement stmt = c.createStatement();</span>
+			ResultSet rs;
+<span class="fc" id="L184">			rs = stmt.executeQuery( &quot;SELECT * FROM USERS WHERE ID = '&quot;+userId+&quot;';&quot;);</span>
+		   
+<span class="fc bfc" id="L186" title="All 2 branches covered.">			while ( rs.next() ) {</span>
+<span class="fc" id="L187">				String dbUserName = rs.getString(&quot;ID&quot;);</span>
+<span class="fc" id="L188">		    	String dbPass = rs.getString(&quot;PASSWORD&quot;);</span>
+		    	
+<span class="fc bfc" id="L190" title="All 2 branches covered.">		    	if(password.equals(dbPass)) {</span>
+<span class="fc" id="L191">		    		rs.close();</span>
+<span class="fc" id="L192">				    stmt.close();</span>
+<span class="fc" id="L193">				    c.close();</span>
+<span class="fc" id="L194">		    		return true;</span>
+		    	}
+		    }
+<span class="fc" id="L197">		    rs.close();</span>
+<span class="fc" id="L198">		    stmt.close();</span>
+<span class="fc" id="L199">		    c.close();</span>
+<span class="pc" id="L200">		} catch (SQLException e) {</span>
+			// TODO Auto-generated catch block
+<span class="nc" id="L202">			e.printStackTrace();</span>
+		}
+<span class="fc" id="L204">		return result;</span>
+	}
+	
+	//Move information
+	/**
+	 * Gets all moves from a specific game
+	 * @param gameId
+	 * @return
+	 */
+	public String getAllMoves(int gameId) {
+<span class="nc" id="L214">		Connection c = dbConnect();</span>
+<span class="nc" id="L215">		JSONArray moves =  null;</span>
+		
+		try {
+<span class="nc" id="L218">			Statement stmt = c.createStatement();</span>
+			ResultSet rs;
+<span class="nc" id="L220">			rs = stmt.executeQuery( &quot;SELECT * FROM MOVES WHERE GAMEID = &quot;+gameId+&quot;;&quot;);</span>
+		   
+<span class="nc" id="L222">			moves = new JSONArray();</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">			while ( rs.next() ) {</span>
+		    	//int userId, int colFrom, int rowFrom, int colTo, int rowTo
+<span class="nc" id="L225">		    	int userId = rs.getInt(&quot;USERID&quot;);</span>
+<span class="nc" id="L226">		    	int colFrom = rs.getInt(&quot;COLFROM&quot;);</span>
+<span class="nc" id="L227">		    	int rowFrom = rs.getInt(&quot;ROWFROM&quot;);</span>
+<span class="nc" id="L228">		    	int colTo = rs.getInt(&quot;COLTO&quot;);</span>
+<span class="nc" id="L229">		    	int rowTo = rs.getInt(&quot;ROWTO&quot;);</span>
+		    	
+<span class="nc" id="L231">		    	JSONObject json = new JSONObject();</span>
+<span class="nc" id="L232">        		json.put(&quot;userID&quot;,userId);</span>
+<span class="nc" id="L233">        		json.put(&quot;colFrom&quot;,colFrom);</span>
+<span class="nc" id="L234">        		json.put(&quot;rowFrom&quot;,rowFrom);</span>
+<span class="nc" id="L235">        		json.put(&quot;colTo&quot;,colTo);</span>
+<span class="nc" id="L236">        		json.put(&quot;rowTo&quot;,rowTo);</span>
+        		
+<span class="nc" id="L238">        		moves.add(json);</span>
+		    }
+<span class="nc" id="L240">		    rs.close();</span>
+<span class="nc" id="L241">		    stmt.close();</span>
+<span class="nc" id="L242">		    c.close();</span>
+<span class="nc" id="L243">		} catch (SQLException e) {</span>
+			// TODO Auto-generated catch block
+<span class="nc" id="L245">			e.printStackTrace();</span>
+		}
+<span class="nc" id="L247">		return moves.toJSONString();</span>
+	}
+	
+	/**
+	 * Inserts a move into the database for a game
+	 * @param userId
+	 * @param gameId
+	 * @param colFrom
+	 * @param rowFrom
+	 * @param colTo
+	 * @param rowTo
+	 */
+	public boolean insertMove(int userId, int gameId, int colFrom, int rowFrom, int colTo, int rowTo)
+	{
+<span class="fc" id="L261">		Connection c = dbConnect();</span>
+<span class="fc" id="L262">		Statement stmt = null;</span>
+		try {
+<span class="fc" id="L264">			stmt = c.createStatement();</span>
+<span class="fc" id="L265">			String sql = &quot;INSERT INTO MOVES (USERID, GAMEID, COLFROM, ROWFROM, COLTO, ROWTO) &quot; +</span>
+<span class="fc" id="L266">						 &quot;VALUES (&quot;+userId+&quot;, &quot;+gameId+&quot;, &quot;+colFrom+&quot;, &quot;+rowFrom+&quot;, &quot;+colTo+&quot;, &quot;+rowTo+&quot;);&quot;; </span>
+<span class="fc" id="L267">			stmt.executeUpdate(sql);</span>
+<span class="fc" id="L268">			stmt.close();</span>
+<span class="fc" id="L269">			c.close();</span>
+<span class="fc" id="L270">			return true;</span>
+<span class="nc" id="L271">		} catch (SQLException e) {</span>
+			// TODO Auto-generated catch block
+<span class="nc" id="L273">			e.printStackTrace();</span>
+<span class="nc" id="L274">			return false;</span>
+		}
+	   
+	}
+	
+	//Game Information
+	/**
+	 * Returns a game as a JSON string
+	 * @param gameId
+	 * @return
+	 */
+	public String getGame(int gameId) {
+<span class="nc" id="L286">		Connection c = dbConnect();</span>
+		
+<span class="nc" id="L288">		String game = &quot;&quot;;</span>
+		
+		try {
+<span class="nc" id="L291">			Statement stmt = c.createStatement();</span>
+			ResultSet rs;
+<span class="nc" id="L293">			rs = stmt.executeQuery( &quot;SELECT * FROM GAMES WHERE ID = '&quot;+gameId+&quot;'&quot;);</span>
+<span class="nc bnc" id="L294" title="All 2 branches missed.">		    while (rs.next()) {</span>
+<span class="nc" id="L295">		    	int user1Id = rs.getInt(&quot;USER1ID&quot;);</span>
+<span class="nc" id="L296">		    	int user2Id = rs.getInt(&quot;USER2ID&quot;);</span>
+<span class="nc" id="L297">		    	int gameStatus = rs.getInt(&quot;GAMESTATUS&quot;);</span>
+		    	
+<span class="nc" id="L299">		    	JSONObject json = new JSONObject();</span>
+<span class="nc" id="L300">		    	json.put(&quot;user1ID&quot;, user1Id);</span>
+<span class="nc" id="L301">		    	json.put(&quot;user2ID&quot;, user1Id);</span>
+<span class="nc" id="L302">		    	json.put(&quot;gameStatus&quot;, gameStatus);</span>
+		    	
+<span class="nc" id="L304">		    	game = json.toJSONString();</span>
+		    }
+<span class="nc" id="L306">		    rs.close();</span>
+<span class="nc" id="L307">		    stmt.close();</span>
+<span class="nc" id="L308">		    c.close();</span>
+<span class="nc" id="L309">		} catch (SQLException e) {</span>
+			// TODO Auto-generated catch block
+<span class="nc" id="L311">			e.printStackTrace();</span>
+		}
+<span class="nc" id="L313">		return game;</span>
+	}
+	
+	/**
+	 * Inserts a game into the database
+	 * @param userId
+	 * @param playerNumber
+	 */
+	public int insertGame(int userId, int playerNumber)
+	{
+<span class="fc" id="L323">		Connection c = dbConnect();</span>
+<span class="fc" id="L324">		Statement stmt = null;</span>
+<span class="fc" id="L325">		int gameId = -1;</span>
+		try {
+<span class="fc" id="L327">			stmt = c.createStatement();</span>
+			
+<span class="fc" id="L329">			String sql = &quot;&quot;;</span>
+<span class="pc bpc" id="L330" title="1 of 2 branches missed.">			if(playerNumber == 1) {</span>
+<span class="fc" id="L331">				sql = &quot;INSERT INTO GAMES (USER1ID, GAMESTATUS) &quot; +</span>
+<span class="fc" id="L332">						 	 &quot;VALUES ('&quot;+userId+&quot;', '0');&quot;;</span>
+<span class="fc" id="L333">			}</span>
+<span class="nc bnc" id="L334" title="All 2 branches missed.">			else if(playerNumber == 2) {</span>
+<span class="nc" id="L335">				sql = &quot;INSERT INTO GAMES (USER2ID, GAMESTATUS) &quot; +</span>
+<span class="nc" id="L336">					 	     &quot;VALUES ('&quot;+userId+&quot;', '0');&quot;;</span>
+			}
+<span class="fc" id="L338">			stmt.executeUpdate(sql);</span>
+<span class="fc" id="L339">			stmt.close();</span>
+			
+<span class="fc" id="L341">			stmt = c.createStatement();</span>
+<span class="fc" id="L342">			sql = &quot;SELECT last_insert_rowid()&quot;;</span>
+			
+<span class="fc" id="L344">			ResultSet generatedKeys = stmt.executeQuery(sql);</span>
+<span class="pc bpc" id="L345" title="1 of 2 branches missed.">			if(generatedKeys.next()) {</span>
+<span class="fc" id="L346">				gameId = (int) generatedKeys.getLong(1);</span>
+			}
+			
+<span class="fc" id="L349">			c.close();</span>
+<span class="pc" id="L350">		} catch (SQLException e) {</span>
+<span class="nc" id="L351">			e.printStackTrace();</span>
+		}
+		
+<span class="fc" id="L354">		return gameId;</span>
+	}
+	
+	/** 
+	 * Adds an opponent to a game in the DB
+	 * @param userId
+	 * @param playerNumber
+	 * @param gameId
+	 */
+	public void addOpponent(int userId, int playerNumber, int gameId) {
+<span class="fc" id="L364">		Connection c = dbConnect();</span>
+<span class="fc" id="L365">		Statement stmt = null;</span>
+		try {
+<span class="fc" id="L367">			stmt = c.createStatement();</span>
+			
+<span class="fc" id="L369">			String sql = &quot;&quot;;</span>
+<span class="pc bpc" id="L370" title="1 of 2 branches missed.">			if(playerNumber == 1) {</span>
+<span class="nc" id="L371">				sql = &quot;UPDATE GAMES SET USER1ID='&quot;+userId+&quot;', GAMESTATUS='0' &quot; +</span>
+<span class="nc" id="L372">						 	 &quot;WHERE ID = '&quot;+gameId+&quot;';&quot;;</span>
+<span class="nc" id="L373">			}</span>
+<span class="pc bpc" id="L374" title="1 of 2 branches missed.">			else if(playerNumber == 2) {</span>
+<span class="fc" id="L375">				sql = &quot;UPDATE GAMES SET USER2ID='&quot;+userId+&quot;', GAMESTATUS='0' &quot; +</span>
+<span class="fc" id="L376">					 	 &quot;WHERE ID = '&quot;+gameId+&quot;';&quot;;</span>
+			}
+			
+<span class="fc" id="L379">			stmt.executeUpdate(sql);</span>
+<span class="fc" id="L380">			stmt.close();</span>
+<span class="fc" id="L381">			c.close();</span>
+<span class="pc" id="L382">		} catch (SQLException e) {</span>
+			// TODO Auto-generated catch block
+<span class="nc" id="L384">			e.printStackTrace();</span>
+		}
+<span class="fc" id="L386">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span>BubbleChessTestSuite (Mar 10, 2015 7:16:13 PM)</div></body></html>
