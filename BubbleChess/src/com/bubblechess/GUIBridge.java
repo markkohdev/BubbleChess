@@ -116,7 +116,6 @@ public class GUIBridge {
 		assert(color == 1 || color == 2);
 		
 		int result = server.CreateGame(player.getID(), color);
-		System.out.println("Game ID:" + result);
 		
 		if (result >= 0) {
 			//Create user
@@ -280,23 +279,35 @@ public class GUIBridge {
 	public void TestServer(){
 		String testuser = "testuser";
 		String testpass = "testpass";
+		boolean creator = true;
 		
 		System.out.println("Register code: " + this.Register(testuser, testpass));
 		
 		System.out.println("Login code: " + this.Login(testuser, testpass));
 		
-		System.out.println("GameID: " + this.CreateGame(1));
+		if (creator) {
+			System.out.println("Creating game...");
+			System.out.println("GameID: " + this.CreateGame(1));
+			System.out.println("Opponent: " + this.opponent.getUsername());
+			this.PlayMove(new Move(new int[]{4,1},new int[]{4,3}));
+			System.out.println("Move sent.");
+			System.out.println(this.WaitForNextMove());
+		}
+		else {
 		
-		/*ArrayList<Integer> games = this.GetJoinableGames();
-		for(int gameid : games){
-			System.out.println("Joinable: " + gameid);
-		}*/
+			ArrayList<Integer> games = this.GetJoinableGames();
+			for(int gameid : games){
+				System.out.println("Joinable: " + gameid);
+			}
+			
+			System.out.println("Joining Game: " + games.get(0));
+			System.out.println("Game Join: " + this.JoinGame(games.get(0)));
+			System.out.println("Opponent: " + this.opponent.getUsername());
+			
+			System.out.println("Waiting for move...");
+			System.out.println("Recieved move: " + this.WaitForNextMove().toString());
+		}
 		
-		//System.out.println("Game Join: " + this.JoinGame(games.get(0)));
-		
-		//this.PlayMove(new Move(new int[]{0,0},new int[]{0,1}));
-		server.SendMove(new Move(new int[]{0,0},new int[]{0,1}), player.getID(), game.getID());
-		System.out.println(this.WaitForNextMove());
 	}
 
 }

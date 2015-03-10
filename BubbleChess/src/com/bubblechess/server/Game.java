@@ -14,7 +14,7 @@ public class Game {
 	private int _user2Id = -1;
 	
 	private int _gameId;
-	private String _lastMove = "";
+	private JSONObject _lastMove;
 	
 	private int _currentUser = 1;
 	private ChessDB _cdb;
@@ -95,7 +95,7 @@ public class Game {
 	 * Returns last move object as a String
 	 * @return
 	 */
-	public String getLastMove() {
+	public JSONObject getLastMove() {
 		return _lastMove;
 	}
 	
@@ -122,7 +122,7 @@ public class Game {
 	 * @param userId
 	 * @return
 	 */
-	public boolean joinGame(int userId, Socket client) {
+	public boolean joinGame(int userId) {
 		if(_user1Id == -1) {
 			setUser(userId, 1);
 			return true;
@@ -164,7 +164,7 @@ public class Game {
 		move.put("colTo", colTo);
 		move.put("rowTo", rowTo);
 
-		_lastMove = move.toJSONString();
+		_lastMove = move;
 
 		if(moveCheck) {
 			return true;
