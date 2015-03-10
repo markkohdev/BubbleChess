@@ -47,12 +47,11 @@ public class CreateGamePanel extends JPanel {
 		textNewUserName.setBounds(423, 242, 192, 20);
 		add(textNewUserName);*/
 		
-		JButton btnCreateGame = new JButton("Create Game");
+		JButton btnCreateGame = new JButton("Create");
 		btnCreateGame.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				
-				
+				tryCreateGame();		
 			}
 		});
 		btnCreateGame.setBounds(515, 298, 110, 23);
@@ -60,7 +59,7 @@ public class CreateGamePanel extends JPanel {
 		
 		String[] colors = {"White", "Black"};
 		colorDropDown = new JComboBox(colors);
-		colorDropDown.setBounds(423, 242, 192, 20);
+		colorDropDown.setBounds(423, 242, 202, 20);
 		colorDropDown.setSelectedIndex(0);
 		add(colorDropDown);
 

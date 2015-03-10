@@ -25,7 +25,7 @@ public class LoginPanel extends JPanel {
 	
 	private JTextField textUsername;
 	private JPasswordField passwordField;
-	JLabel lblErrorLabel;
+	private JLabel lblErrorLabel;
 	/**
 	 * Login states: 0 Waiting, 1 TryLogin, 2 CreateUser, 3 Continue as guest
 	 */
