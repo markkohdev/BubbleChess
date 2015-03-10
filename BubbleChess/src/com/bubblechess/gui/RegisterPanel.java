@@ -114,7 +114,7 @@ public class RegisterPanel extends JPanel {
 	 * @param msg
 	 */
 	public void setErrorLabel(String msg) {
-		this.setErrorLabel(msg);
+		this.lblErrorLabel.setText(msg);
 	}
 	
 	
