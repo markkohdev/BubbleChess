@@ -10,7 +10,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
@@ -72,6 +74,7 @@ public class ServerTest {
 	
 	/**
 	 * Method to create a user in the datbase
+	 * @return
 	 */
 	private RequestHandler createUser(int userNum) {
 		String request = "{\"request\":\"createUser\",\"password\":\"testPass\",\"username\":\"testUser"+userNum+"\"}";
@@ -80,6 +83,32 @@ public class ServerTest {
 		
 		return requestHandle;
 	}
+	
+	/**
+	 * Creates a game 
+	 * @return
+	 */
+	private RequestHandler createGame() {
+		String request = "{\"playerNumber\":1,\"userID\":1,\"request\":\"createGame\"}";
+		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);
+		requestHandle.start();
+		
+		return requestHandle;
+	}
+	
+	/** 
+	 * Joins a game
+	 * @return
+	 */
+	private RequestHandler joinGame(int userId) {
+		String request = "{\"gameID\":1,\"request\":\"joinGame\",\"userID\":"+userId+"}";
+		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);
+		requestHandle.start();
+		
+		return requestHandle;
+	}
+	
+	//Test cases
 	/**
 	 * Test 29 to see if user is created
 	 */
@@ -92,13 +121,7 @@ public class ServerTest {
 		json.put("userID", '1');
 
 		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));
-		
-		/*{"request":"checkLogin","password":"rocks","username":"Eric"}
-		{"request":"getJoinableGames"}
-		{"gameID":13,"request":"joinGame","userID":2}
-		{"gameID":13,"request":"checkForMove","user":2}
-		{"playerNumber":1,"userID":1,"gameID":13,"request":"getOpponent"}
-		*/
+
 	}
 	
 	/** 
@@ -170,4 +193,105 @@ public class ServerTest {
 		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	
 	}
 	
+	/**
+	 * #32 - Successfully creates a game
+	 */
+	@Test
+	public void createGameTest() {
+		getResult(createUser(1));
+		RequestHandler requestHandle = createGame();
+		
+		JSONObject json = new JSONObject();
+		json.put("result", "success");
+		json.put("gameID", 1);
+		
+		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	
+	}
+	
+	/**
+	 * #32 - List of joinable games
+	 */
+	@Test
+	public void joinableGames() {
+		getResult(createUser(1));
+		getResult(createGame());
+		
+		String request = "{\"request\":\"getJoinableGames\"}";
+		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);
+		requestHandle.start();
+		
+		ArrayList<Integer> joinableGames = new ArrayList<Integer>();
+		joinableGames.add(1);
+		JSONArray games = new JSONArray();
+		games.add(joinableGames.get(0));
+		
+		JSONObject json = new JSONObject();
+		json.put("result", "success");
+		json.put("games", games);
+		
+		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	
+	}
+	
+	/**
+	 * #32 - Successfully joins a game
+	 */
+	@Test
+	public void joinGameTest() {
+		getResult(createUser(1));
+		getResult(createGame());
+		getResult(createUser(2));
+		
+		RequestHandler requestHandle = joinGame(2);
+		
+		JSONObject json = new JSONObject();
+		json.put("result", "success");
+		json.put("userID", 1);
+		json.put("username", "testUser1");
+		json.put("playerNumber", 1);
+		
+		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	
+	}
+	
+	/**
+	 * #34 - Gets opponent information 
+	 */
+	@Test
+	public void getOpponent() {
+		getResult(createUser(1));
+		getResult(createGame());
+		getResult(createUser(2));
+		getResult(joinGame(2));
+		
+		String request = "{\"playerNumber\":1,\"userID\":1,\"gameID\":1,\"request\":\"getOpponent\"}";
+		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);
+		requestHandle.start();
+		
+		JSONObject json = new JSONObject();
+		json.put("result", "success");
+		json.put("userID", 2);
+		json.put("username", "testUser2");
+		json.put("playerNumber", 2);
+		
+		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	
+	}
+	
+	/**
+	 * #36 - Sends move to server 
+	 */
+	/*@Test
+	public void insertMove() {
+		getResult(createUser(1));
+		getResult(createGame());
+		getResult(createUser(2));
+		getResult(joinGame(2));
+		
+		String request = "{\"gameID\":1,\"userID\":1,\"colFrom\":0,\"rowFrom\":0,\"colTo\":0,\"colTo\":1,\"request\":\"insertMove\"}";
+		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);
+		requestHandle.start();
+		
+		JSONObject json = new JSONObject();
+		json.put("result", "success");
+		
+		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	
+	}*/
 }
