@@ -42,6 +42,8 @@ public class MoveValidationTest {
 	 */
 	@After
 	public void tearDown() {
+		chessboard = null;
+		game = null;
 		fen = "";
 	}
 	
@@ -227,6 +229,8 @@ public class MoveValidationTest {
 			}
 		}
 		
+		tearDown();
+		
 		fen = "-----k--/--------/--------/--------/--------/-----r--/--------/----K--R w KQkq - 0 1";
 		setUp();
 		
@@ -242,6 +246,8 @@ public class MoveValidationTest {
 				fail();
 			}
 		}
+		
+		tearDown();
 		
 		fen = "-----k--/--------/--------/--------/--------/----r---/--------/----K--R w KQkq - 0 1";
 		setUp();
