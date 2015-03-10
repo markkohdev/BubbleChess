@@ -9,9 +9,14 @@ import java.awt.Font;
 
 
 
+
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import com.bubblechess.GUIBridge;
+import com.bubblechess.client.BoardPiece;
 
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
@@ -19,7 +24,7 @@ import java.awt.event.MouseEvent;
 
 public class GameBoard extends JPanel {
 	
-	private BoardCell squares[][] = new BoardCell[8][8];
+	private BoardCell squares[][];
 	private int selectedCol, selectedRow;	
 	private Color c1, c2;
 	
@@ -55,7 +60,7 @@ public class GameBoard extends JPanel {
 	/**
 	 * Default Constructor of GameBoard
 	 */
-	public GameBoard() {
+	/*public GameBoard() {
 		setBackground(Color.WHITE);
 		setPreferredSize(new Dimension(500, 500));
 		setLayout(new GridLayout(8, 8));
@@ -84,7 +89,7 @@ public class GameBoard extends JPanel {
 
 
 
-	}
+	}*/
 	
 	// Dark Square RGB: 92, 129, 152
 	// Light Square RGB: 140, 150, 155
@@ -93,13 +98,12 @@ public class GameBoard extends JPanel {
 	 * Constructor of GameBoard, adding pieces to board with players color on proper side
 	 * @param color
 	 */
-	public GameBoard(int color) {
+	public GameBoard(int color){
+		squares = new BoardCell[8][8];
 		setBackground(Color.WHITE);
 		setPreferredSize(new Dimension(500, 500));
 		setLayout(new GridLayout(8, 8));
 		setBounds(0,0,500,500);
-
-
 		for(int i = 0; i < 8; i++)
 		{
 			for(int j = 0; j < 8; j++)
@@ -109,21 +113,18 @@ public class GameBoard extends JPanel {
 				cell.setColumn(j);
 				cell.setRow(i);
 				if((i+j)%2 == 0) {
-					cell.setBackColor(Color.white);
-					
+					cell.setBackColor(Color.white);	
 				}
 				else {
 					cell.setBackColor(Color.black);
-				}
-					
+				}					
 				squares[j][i] = cell;	
-				
 			}
 			
 		}
 		
+		this.initializeBoardPieces(color);
 		
-		this.addPiecesToBoard(color);
 		
 		for(int i = 0; i < 8; i++)
 		{
@@ -135,22 +136,72 @@ public class GameBoard extends JPanel {
 			}
 			
 		}
-
-
-
 	}
 	
-
+	public void refreshBoard(int color, BoardPiece[][] clientBoard) {
+		
+		// if (color invert the board
+		
+		
+		for(int i = 0; i < 8; i++)
+		{
+			for(int j = 0; j < 8; j++)
+			{
+				this.add(squares[j][i]);	
+			}
+			
+		}
+	}
+	/*
+	public void repaintBoard() {
+		for(int i = 0; i < 8; i++)
+		{
+			for(int j = 0; j < 8; j++)
+			{
+				squares[j][i].repaint();
+			}
+		}
+	}
+	public void revalidateBoard() {
+		
+		for(int i = 0; i < 8; i++)
+		{
+			for(int j = 0; j < 8; j++)
+			{
+				squares[j][i].revalidate();
+			}
+		}
+		
+	}
+	
+	public void removeAllPieces() {
+		for(int i = 0; i < 8; i++)
+		{
+			for(int j = 0; j < 8; j++)
+			{
+				squares[j][i].removeAll();
+				squares[j][i].repaint();
+			}
+		}
+	}*/
+	
+	/*public void refreshBoard(BoardPiece[][] clientBoard) {
+		// empty is -1 
+		String[] unicode = {"", "\u265A", "\u265B", "\u265C", "\u265D", "\u265E", "\u265F" };
+	}
+	
+	public void removePiecesFromBoard() {
+		
+	}*/
 	
 	/**
 	 * Add Pieces to board using param to determine placement of pieces
 	 * @param color
 	 */
-	public void addPiecesToBoard(int color) {
+	public void initializeBoardPieces(int color) {		
 		
-		//String[] unicode = { "\u2654", "\u2655", "\u2656", "\u2657", "\u2658", "\u2659" };
 		// unicode	 =		{"king",   "queen",  "rook",   "bishop", "knight", "pawn" }  
-        String[] unicode = { "\u265A", "\u265B", "\u265C", "\u265D", "\u265E", "\u265F" };
+        String[] unicode = {"\u265A", "\u265B", "\u265C", "\u265D", "\u265E", "\u265F" };
         
 		if(color == 1) { 
 			c1 = new Color(139,69,19);
@@ -164,7 +215,10 @@ public class GameBoard extends JPanel {
 		for(int i = 0; i < 8; i++)
 		{
 			BoardCell currentPawnPanel = squares[i][1];
-			currentPawnPanel.addChessPiece(unicode[5], c1);			
+			currentPawnPanel.addChessPiece(unicode[5], c1);	
+			//currentPawnPanel.invalidate();
+			//currentPawnPanel.validate();
+			//currentPawnPanel.repaint();
 			squares[i][1] = currentPawnPanel;
 			
 			
@@ -177,9 +231,19 @@ public class GameBoard extends JPanel {
 						break;
 				case 2: pieceUni = unicode[3];
 						break;
-				case 3: pieceUni = unicode[1];
+				case 3: if (color == 1){
+						pieceUni = unicode[1];
+						}
+						else {
+						pieceUni = unicode[0];
+						}
 						break;
-				case 4: pieceUni = unicode[0];
+				case 4: if (color == 1){
+						pieceUni = unicode[0];
+						}
+						else {
+						pieceUni = unicode[1];
+						}
 						break;
 				case 5: pieceUni = unicode[3];
 						break;
@@ -194,6 +258,9 @@ public class GameBoard extends JPanel {
 			
 			BoardCell currentPiecePanel = squares[i][0];
 			currentPiecePanel.addChessPiece(pieceUni, c1);
+			//currentPiecePanel.invalidate();
+			//currentPiecePanel.validate();
+			//currentPiecePanel.repaint();
 			squares[i][0] = currentPiecePanel;
 		}
 		
@@ -203,7 +270,10 @@ public class GameBoard extends JPanel {
 		{
 			BoardCell currentPawnPanel = squares[i][6];
 			currentPawnPanel.addChessPiece(unicode[5], c2);
-			//currentPawnPanel.changeListenerState(true, pieceListener);
+			currentPawnPanel.changeListenerState(pieceListener);
+			//currentPawnPanel.invalidate();
+			//currentPawnPanel.validate();
+			//currentPawnPanel.repaint();
 			squares[i][6] = currentPawnPanel;
 			
 			String pieceUni;
@@ -231,7 +301,10 @@ public class GameBoard extends JPanel {
 			
 			BoardCell currentPiecePanel = squares[i][7];
 			currentPiecePanel.addChessPiece(pieceUni, c2);
-			// currentPiecePanel.changeListenerState(true, pieceListener);
+			currentPiecePanel.changeListenerState(pieceListener);
+			//currentPiecePanel.invalidate();
+			//currentPiecePanel.validate();
+			//currentPiecePanel.repaint();
 			squares[i][7] = currentPiecePanel;
 			
 			
