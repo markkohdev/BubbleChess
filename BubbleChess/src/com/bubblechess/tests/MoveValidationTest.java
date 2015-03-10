@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.bubblechess.client.Board;
+import com.bubblechess.client.BoardPiece.Color;
 import com.bubblechess.client.ChessBoard;
 import com.bubblechess.client.Game;
 import com.bubblechess.client.Move;
@@ -66,6 +67,25 @@ public class MoveValidationTest {
 		Assert.assertEquals(legalMoves.get(0).from()[1], generatedMoves.get(0).from()[1]);
 		Assert.assertEquals(legalMoves.get(0).to()[0], generatedMoves.get(0).to()[0]);
 		Assert.assertEquals(legalMoves.get(0).to()[1], generatedMoves.get(0).to()[1]);
+		
+		tearDown();
+	}
+	
+	/**
+	 * Tests the ChessBoard.inCheck(Color color) method
+	 */
+	public void inCheck(){
+		fen = "k-------/--------/--------/---q----/--------/---K----/--------/-------- w KQkq - 0 1";
+		setUp();
+		
+		Assert.assertEquals(true, chessboard.inCheck(Color.WHITE));
+		
+		tearDown();
+		
+		fen = "K-------/--------/--------/---Q----/--------/---k----/--------/-------- b KQkq - 0 1";
+		setUp();
+		
+		Assert.assertEquals(true, chessboard.inCheck(Color.BLACK));
 		
 		tearDown();
 	}

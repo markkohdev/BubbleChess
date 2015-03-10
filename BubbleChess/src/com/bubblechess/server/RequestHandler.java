@@ -30,7 +30,6 @@ public class RequestHandler extends Thread {
 	 * @param server
 	 */
 	public RequestHandler(Socket clientSocket, ServerInstance server) {
-		// TODO Auto-generated constructor stub
 		_clientSocket = clientSocket;
 		_server = server;
 		_cdb = new ChessDB(false);
@@ -40,7 +39,6 @@ public class RequestHandler extends Thread {
 				_in = new BufferedReader(new InputStreamReader(_clientSocket.getInputStream()));
 				_request = _in.readLine();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -52,7 +50,6 @@ public class RequestHandler extends Thread {
 	 * @param isTest
 	 */
 	public RequestHandler(Socket clientSocket, ServerInstance server, String request, PrintStream stream) {
-		// TODO Auto-generated constructor stub
 		_clientSocket = clientSocket;
 		_server = server;
 		_cdb = new ChessDB(true);
@@ -199,11 +196,14 @@ public class RequestHandler extends Thread {
 
             		_server.addGameThread(newId, game);
             		_server.addJoinableGame(newId);
+            		
             		//Return gameid
             		json = new JSONObject();
             		json.put("result", "success");
             		json.put("gameID", newId);
-            		sendToClient(json.toJSONString());  
+            		sendToClient(json.toJSONString()); 
+            		
+            		//TODO: Add failure method
             	break;
             	case "getOpponent":
             		int gameId = (int)((long) obj.get("gameID"));
@@ -222,13 +222,12 @@ public class RequestHandler extends Thread {
                 		json.put("result","success");
                 		json.put("userID", oppId);
                 		json.put("username", oppUsername);
-                		json.put("playNumber", oppPlayerNumber);
+                		json.put("playerNumber", oppPlayerNumber);
                 		sendToClient(json.toJSONString());
             		}
             		else {
             			json = new JSONObject();
                 		json.put("result","waiting");
-                		System.out.println(json.toJSONString());
                 		sendToClient(json.toJSONString());
             		}
             	break;
@@ -271,8 +270,6 @@ public class RequestHandler extends Thread {
             			json.put("username", otherUsername);
             			json.put("playerNumber", otherPlayerNumber);
             			sendToClient(json.toJSONString());  
-            			
-            			System.out.println("Joined("+otherPlayer+", "+userId+")");
             		}
             		else {
             			json = new JSONObject();
@@ -327,12 +324,6 @@ public class RequestHandler extends Thread {
             			json.put("result","waiting");
             		}
             		sendToClient(json.toJSONString());
-            	break;
-            	case "getAllMoves":
-            		gameId = (int)((long) obj.get("gameID"));
-           
-            		Game allMovesThread = _server.getGame(gameId);
-            		//allMovesThread.getAllMoves(_clientSocket);
             	break;
             	
             }
