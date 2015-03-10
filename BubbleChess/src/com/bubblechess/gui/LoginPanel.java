@@ -66,23 +66,20 @@ public class LoginPanel extends JPanel {
 		btnLogin.setBounds(625, 297, 89, 23);
 		add(btnLogin);
 		
-		JTextPane txtpnDontHaveAn = new JTextPane();
-		txtpnDontHaveAn.addMouseListener(new MouseAdapter() {
+		JButton btnDontHaveAn = new JButton("Click Here To Register");
+		btnDontHaveAn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				continueAsGuest();
+				goToRegister();
 			}
 		});
-		txtpnDontHaveAn.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		txtpnDontHaveAn.setBackground(Color.LIGHT_GRAY);
-		txtpnDontHaveAn.setText("Don't Have An Account Register Here");
-		txtpnDontHaveAn.setBounds(423, 331, 291, 20);
-		add(txtpnDontHaveAn);
+		btnDontHaveAn.setBounds(423, 331, 291, 20);
+		add(btnDontHaveAn);
 		
 		JTextArea txtrOr = new JTextArea();
 		txtrOr.setFont(new Font("Tahoma", Font.BOLD, 18));
 		txtrOr.setBackground(Color.LIGHT_GRAY);
-		txtrOr.setText("_______________________________________________ OR ___________________________________________________________");
+		txtrOr.setText("_______________________________________________________ OR ______________________________________________________");
 		txtrOr.setBounds(10, 401, 1004, 51);
 		add(txtrOr);
 		
@@ -90,7 +87,7 @@ public class LoginPanel extends JPanel {
 		btnContinueAsGuest.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				goToRegister();
+				continueAsGuest();
 			}
 		});
 		btnContinueAsGuest.setBounds(423, 508, 291, 23);

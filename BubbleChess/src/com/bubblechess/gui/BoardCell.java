@@ -90,20 +90,15 @@ public class BoardCell extends JPanel {
 	public int getColumn() {
 		return this.column;
 	}
+	
 
 	/**
 	 * Changes haveListen to true/false and adds/removes MouseAdapter param as mouse listener for cell
 	 * @param b
 	 * @param listener
 	 */
-	public void changeListenerState(boolean b, MouseAdapter listener) {
-		if (b) {
-			this.haveListener = true;
+	public void changeListenerState(MouseAdapter listener) {
 			this.addMouseListener(listener);
-		} else {
-			this.haveListener = false;
-			this.removeMouseListener(listener);
-		}
 	}
 
 	/* Function not used. changeListenState should be used instead.
@@ -161,8 +156,12 @@ public class BoardCell extends JPanel {
 		piece.setForeground(c);
 		piece.setOpaque(false);
 		piece.setHorizontalAlignment(JLabel.CENTER);
+		piece.setVisible(true);
+		// piece.setVisible(true);
 		add(piece);
-
+		//this.revalidate();
+		//this.repaint();
+		//this.validate();
 	}
 
 	/**

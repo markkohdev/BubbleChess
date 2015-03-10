@@ -13,4 +13,6 @@ public interface BoardPiece {
 	public ArrayList<Move> getSpecialMoves(int x, int y);
 	
 	public Color getColor();
+	
+	public int getPieceID();
 }

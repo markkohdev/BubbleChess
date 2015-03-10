@@ -23,6 +23,7 @@ public class Knight extends ChessPiece {
 		NW = new int[]{-1,2};
 		
 		dirs = new int[][]{N,NE,E,SE,S,SW,W,NW};
+		id=4;
 	}
 
 	@Override

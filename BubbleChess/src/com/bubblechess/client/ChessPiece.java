@@ -7,6 +7,8 @@ public abstract class ChessPiece implements BoardPiece {
 	protected Color color;
 	protected int[][] dirs;
 	protected boolean hasMoved;
+	protected int id = -1;
+	
 	
 	// Directional vectors as (x,y)
 	protected int[] N = {0,1};
@@ -70,5 +72,12 @@ public abstract class ChessPiece implements BoardPiece {
 	 */
 	public boolean getHasMoved() {
 		return hasMoved;
+	}
+	
+	/**
+	 * Get the pieceID
+	 */
+	public int getPieceID(){
+		return id;
 	}
 }
