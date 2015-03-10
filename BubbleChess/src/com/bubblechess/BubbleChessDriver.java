@@ -23,41 +23,11 @@ public class BubbleChessDriver {
 		mainAppWindow.setBridge(bridge);
 		mainAppWindow.addPanel(login);
 		mainAppWindow.setFrameVisible(true);
+		close = 0;
 		
-		close = appMenus();
-		
-		
-		if (close != 1) {
-			// play game
-			
-		}
-
-		
-		
-		
-		//int playerNum = bridge.GetPlayerNumber();
-		//GamePlayPanel gameScreen = new GamePlayPanel(playerNum);
-		//Spawn GUI here.  Pass it into GUIBridge.  Let it roll from there?
-
-		//MainApplicationWindow mainAppWindow = new MainApplicationWindow(gameScreen);
-		// LoginPanel loginScreen = new LoginPanel(GUIBridge);
-		
-		/*while(!bridge.EndState()) {
-		}*/
-		
-	}
-		
-		
-		
-	public static int appMenus() {
-		int close = 0;
-		int gameID = 0;
-		int userColor = 0;
-		MainApplicationWindow mainAppWindow = MainApplicationWindow.getInstance();
-		GUIBridge b = mainAppWindow.getBridge();
-		// 1 white, 2 black
-		int gamePlaying = mainAppWindow.isGamePlaying();
-		while(gamePlaying == 0) {
+		while (close != 1) {
+			int gameID = 0;
+			int userColor = 0;
 			int pane = mainAppWindow.getPaneResult();
 			switch(pane) {
 			case 1:
@@ -83,88 +53,31 @@ public class BubbleChessDriver {
 				break;
 			case 5:
 				// JoinGame
-				b = mainAppWindow.getBridge();
-				ArrayList<Integer> games = b.GetJoinableGames();
+				ArrayList<Integer> games = bridge.GetJoinableGames();
 				JoinPanel joinP = new JoinPanel(games);
-				
+				mainAppWindow.addPanel(joinP);
 				break;
 			case 6:
 				// gameplay
-				b = mainAppWindow.getBridge();
-				userColor = b.GetPlayerNumber();
-				if(userColor != 0) {
-					GamePlayPanel gamePanel = new GamePlayPanel(userColor);
+				WaitingForOppPanel waitingPanel = new WaitingForOppPanel();
+				mainAppWindow.addPanel(waitingPanel);
+				boolean haveOpponent = bridge.WaitForOpponent();
+				if(haveOpponent) {
+					GamePlayPanel gamePanel = new GamePlayPanel();
 					mainAppWindow.addPanel(gamePanel);
-					mainAppWindow.setGamePlaying(1);
 				}
 				break;
 			case 7:
 				close = -1;
 				break;
-			default:
+			case 8:
+				EndScreenPanel endPanel = new EndScreenPanel();
+				mainAppWindow.addPanel(endPanel);
 				break;
-				}
-			if (close == -1) {
+			default:
 				break;
 			}
 		}
-		
-		return close;
-
 	}
-	
-
-
-
-	
-	/*int gamePlaying = mainAppWindow.isGamePlaying();
-	int gameID = 0;
-	// 1 white, 2 black
-	int userColor;
-	int gamePlaying = mainAppWindow.isGamePlaying();
-	while(gamePlaying == 0) {
-
-		int pane = mainAppWindow.getPaneResult();
-		switch(pane) {
-		case 1:
-			// login
-			LoginPanel newLogPanel = new LoginPanel();
-			mainAppWindow.addPanel(newLogPanel);
-			break;
-		case 2:
-			// create
-			RegisterPanel newRegister = new RegisterPanel();
-			mainAppWindow.addPanel(newRegister);
-			break;
-		case 3:
-			// mainmenu
-			MainMenuPanel newMenuPanel = new MainMenuPanel();
-			mainAppWindow.addPanel(newMenuPanel);
-			break;
-		case 4:
-			// create
-			CreateGamePanel createPanel = new CreateGamePanel();
-			mainAppWindow.addPanel(createPanel);
-			gameID = createPanel.getGameID();
-			break;
-		case 5:
-			// JoinGame
-			
-			break;
-		case 6:
-			// gameplay
-			userColor = bridge.GetPlayerNumber();
-			if(userColor != 0) {
-				GamePlayPanel gamePanel = new GamePlayPanel(userColor);
-				mainAppWindow.addPanel(gamePanel);
-				mainAppWindow.setGamePlaying(1);
-			}
-			break;
-		case 7:
-			close = 1;
-			break;
-		default:
-			break;		
-	}*/
 	
 }

@@ -23,7 +23,6 @@ public class JoinPanel extends JPanel {
 	 * Create the panel.
 	 */
 	public JoinPanel(ArrayList<Integer> games) {
-		
 		int numGames = games.size();
 		String[] joinableGames = new String[numGames];
 		for (int i = 0; i < numGames; i++) {
