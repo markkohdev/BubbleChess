@@ -276,16 +276,35 @@ public class ServerTest {
 	}
 	
 	/**
+	 * #34 - Gets opponent information 
+	 */
+	@Test
+	public void getOpponentWait() {
+		getResult(createUser(1));
+		getResult(createGame());
+		getResult(createUser(2));
+		
+		String request = "{\"playerNumber\":1,\"userID\":1,\"gameID\":1,\"request\":\"getOpponent\"}";
+		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);
+		requestHandle.start();
+		
+		JSONObject json = new JSONObject();
+		json.put("result", "waiting");
+		
+		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	
+	}
+	
+	/**
 	 * #36 - Sends move to server 
 	 */
-	/*@Test
+	@Test
 	public void insertMove() {
 		getResult(createUser(1));
 		getResult(createGame());
 		getResult(createUser(2));
 		getResult(joinGame(2));
 		
-		String request = "{\"gameID\":1,\"userID\":1,\"colFrom\":0,\"rowFrom\":0,\"colTo\":0,\"colTo\":1,\"request\":\"insertMove\"}";
+		String request = "{\"gameID\":1,\"userID\":1,\"colFrom\":0,\"rowFrom\":0,\"colTo\":0,\"rowTo\":1,\"request\":\"insertMove\"}";
 		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);
 		requestHandle.start();
 		
@@ -293,5 +312,80 @@ public class ServerTest {
 		json.put("result", "success");
 		
 		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	
-	}*/
+	}
+	
+	/**
+	 * #37 - Check for move from the server for player 2 
+	 */
+	@Test
+	public void checkForMove() {
+		getResult(createUser(1));
+		getResult(createGame());
+		getResult(createUser(2));
+		getResult(joinGame(2));
+		
+		String request = "{\"gameID\":1,\"userID\":1,\"colFrom\":0,\"rowFrom\":0,\"colTo\":0,\"rowTo\":1,\"request\":\"insertMove\"}";
+		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);
+		requestHandle.start();
+		getResult(requestHandle);
+		
+		while (requestHandle.getResults() == null) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		String request2 = "{\"playerNumber\":2,\"gameID\":1, \"request\":\"checkForMove\"}";
+		RequestHandler requestHandle2 = new RequestHandler(null, _si, request2, System.out);
+		requestHandle2.start();
+		getResult(requestHandle2);
+		
+		JSONObject json = new JSONObject();
+		json.put("result", "success");
+		json.put("colFrom", 0);
+		json.put("rowFrom", 0);
+		json.put("colTo", 0);
+		json.put("rowTo", 1);
+		
+		Assert.assertEquals(json.toJSONString(), getResult(requestHandle2));	
+	}
+	
+	/**
+	 * #37 - Check for move from the server for player 1
+	 */
+	@Test
+	public void checkForMoveWait() {
+		getResult(createUser(1));
+		getResult(createGame());
+		getResult(createUser(2));
+		getResult(joinGame(2));
+		
+		String request = "{\"gameID\":1,\"userID\":1,\"colFrom\":0,\"rowFrom\":0,\"colTo\":0,\"rowTo\":1,\"request\":\"insertMove\"}";
+		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);
+		requestHandle.start();
+		getResult(requestHandle);
+		
+		while (requestHandle.getResults() == null) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		String request2 = "{\"playerNumber\":1,\"gameID\":1, \"request\":\"checkForMove\"}";
+		RequestHandler requestHandle2 = new RequestHandler(null, _si, request2, System.out);
+		requestHandle2.start();
+		getResult(requestHandle2);
+		
+		JSONObject json = new JSONObject();
+		json.put("result", "waiting");
+		
+		Assert.assertEquals(json.toJSONString(), getResult(requestHandle2));	
+	}
+	
 }
