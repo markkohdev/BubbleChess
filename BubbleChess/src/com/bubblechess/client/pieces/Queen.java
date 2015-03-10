@@ -8,12 +8,20 @@ import com.bubblechess.client.Move;
 
 public class Queen extends ChessPiece {
 	
+	/**
+	 * Constructor for the Queen Piece
+	 * @param col
+	 */
 	public Queen(Color col) {
 		color = col;
 		dirs = new int[][]{N,NE,E,SE,S,SW,W,NW};
 		id=1;
 	}
 
+	/**
+	 * Gets possible moves a piece can make
+	 * @return
+	 */
 	@Override
 	public ArrayList<Move> getMoves(int x, int y) {
 		ArrayList<Move> moves = new ArrayList<Move>();
@@ -34,12 +42,20 @@ public class Queen extends ChessPiece {
 		return moves;
 	}
 
+	/**
+	 * Clones the piece object
+	 * @return
+	 */
 	@Override
 	public BoardPiece clone() {
 		ChessPiece piece = new Queen(this.getColor());
 		return piece;
 	}
 
+	/**
+	 * Returns the type of the piece
+	 * @return
+	 */
 	@Override
 	public String getType() {
 		return "Queen";

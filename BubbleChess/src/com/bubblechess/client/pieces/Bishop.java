@@ -8,12 +8,20 @@ import com.bubblechess.client.Move;
 
 public class Bishop extends ChessPiece {
 
+	/**
+	 * Constructor for the Bishop Piece
+	 * @param col
+	 */
 	public Bishop(Color col) {
 		color = col;
 		dirs = new int[][]{NE,SE,SW,NW};
 		id=3;
 	}
 	
+	/**
+	 * Gets possible moves a piece can make
+	 * @return
+	 */
 	@Override
 	public ArrayList<Move> getMoves(int x, int y) {
 		ArrayList<Move> moves = new ArrayList<Move>();
@@ -34,12 +42,20 @@ public class Bishop extends ChessPiece {
 		return moves;
 	}
 
+	/**
+	 * Clones the piece object
+	 * @return
+	 */
 	@Override
 	public BoardPiece clone() {
 		ChessPiece piece = new Bishop(this.getColor());
 		return piece;
 	}
 
+	/**
+	 * Returns the type of the piece
+	 * @return
+	 */
 	@Override
 	public String getType() {
 		return "Bishop";

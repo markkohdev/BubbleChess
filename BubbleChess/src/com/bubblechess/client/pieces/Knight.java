@@ -8,7 +8,10 @@ import com.bubblechess.client.Move;
 
 public class Knight extends ChessPiece {
 	
-	
+	/**
+	 * Constructor for the Knight Piece
+	 * @param col
+	 */
 	public Knight(Color col) {
 		color = col;
 		
@@ -26,6 +29,10 @@ public class Knight extends ChessPiece {
 		id=4;
 	}
 
+	/**
+	 * Gets possible moves a piece can make
+	 * @return
+	 */
 	@Override
 	public ArrayList<Move> getMoves(int x, int y) {
 		ArrayList<Move> moves = new ArrayList<Move>();
@@ -53,12 +60,20 @@ public class Knight extends ChessPiece {
 		return dirs;
 	}
 	
+	/**
+	 * Clones the piece object
+	 * @return
+	 */
 	@Override
 	public BoardPiece clone() {
 		ChessPiece piece = new Knight(this.getColor());
 		return piece;
 	}
 
+	/**
+	 * Returns the type of the piece
+	 * @return
+	 */
 	@Override
 	public String getType() {
 		return "Knight";

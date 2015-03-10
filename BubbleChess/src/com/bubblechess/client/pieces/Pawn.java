@@ -11,12 +11,20 @@ public class Pawn extends ChessPiece {
 	protected int[][] dirsWhite = {N,NE,NW};
 	protected int[][] dirsBlack = {S,SE,SW};
 	
+	/**
+	 * Constructor for the Pawn Piece
+	 * @param col
+	 */
 	public Pawn(Color col) {
 		color = col;
 		hasMoved = false;
 		id=5;
 	}
 	
+	/**
+	 * Gets possible moves a piece can make
+	 * @return
+	 */
 	@Override
 	public ArrayList<Move> getMoves(int x, int y) {
 		ArrayList<Move> moves = new ArrayList<Move>();
@@ -50,6 +58,10 @@ public class Pawn extends ChessPiece {
 		return moves;
 	}
 	
+	/**
+	 * Returns the pawns move forward 2 moves
+	 * @return
+	 */
 	@Override
 	public ArrayList<Move> getSpecialMoves(int x, int y){
 		ArrayList<Move> moves = new ArrayList<Move>();
@@ -85,12 +97,20 @@ public class Pawn extends ChessPiece {
 		return dirsBlack;
 	}
 
+	/**
+	 * Clones the piece object
+	 * @return
+	 */
 	@Override
 	public BoardPiece clone() {
 		ChessPiece piece = new Pawn(this.getColor());
 		return piece;
 	}
 
+	/**
+	 * Returns the type of the piece
+	 * @return
+	 */
 	@Override
 	public String getType() {
 		return "Pawn";
