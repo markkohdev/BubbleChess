@@ -59,6 +59,9 @@ public class RequestHandler extends Thread {
 		_isTest = true;
 	}
 	
+	/**
+	 * Main Thread method 
+	 */
 	public void run (){
 		try {
 
@@ -263,7 +266,6 @@ public class RequestHandler extends Thread {
             }
 		}
 		catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
@@ -273,14 +275,13 @@ public class RequestHandler extends Thread {
 					_clientSocket.close();
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 	}
 	
 	/**
-	 * Sends a response to the client and the System.out
+	 * Sends a response to the client and set the result string
 	 * @param results
 	 */
 	public void sendToClient(String results) {
@@ -288,6 +289,10 @@ public class RequestHandler extends Thread {
 		_results = results;
 	}
 	
+	/**
+	 * Gets the result string that was sent to the client
+	 * @return
+	 */
 	public String getResults() {
 		return _results;
 	}
