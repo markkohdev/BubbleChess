@@ -284,6 +284,7 @@ public class ServerHandler {
 				}
 			}
 		}
+		CloseConnection();
 		return retVal;
 	}
 	
