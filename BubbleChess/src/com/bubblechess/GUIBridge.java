@@ -147,6 +147,13 @@ public class GUIBridge {
 		String[] user2 = server.GetOpponent(game.getID(), player.getID(), GetPlayerNumber());
 		if (user2 != null) {
 			opponent = new User(Integer.parseInt(user2[0]),user2[1]);
+			
+			//If we're player 1, our opponent is player2
+			if(GetPlayerNumber()==1){
+				game.setUser2(opponent);
+			}
+			else
+				game.setUser1(opponent);
 			return true;
 		}
 		else {
