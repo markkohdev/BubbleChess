@@ -298,9 +298,21 @@ public class GUIBridge {
 			System.out.println("GameID: " + this.CreateGame(1));
 			WaitForOpponent();
 			System.out.println("Opponent: " + this.opponent.getUsername());
-			this.PlayMove(new Move(new int[]{4,1},new int[]{4,3}));
+			this.PlayMove(new Move(new int[]{4,1}, new int[]{4,3}));
 			System.out.println("Move sent.");
-			System.out.println(this.WaitForNextMove());
+			System.out.println("Waiting for move...");
+			System.out.println("Received move: " + this.WaitForNextMove().toString());
+			this.PlayMove(new Move(new int[]{3,0}, new int[]{7,4}));
+			System.out.println("Move sent.");
+			System.out.println("Waiting for move...");
+			System.out.println("Received move: " + this.WaitForNextMove().toString());
+			this.PlayMove(new Move(new int[]{5,0}, new int[]{2,3}));
+			System.out.println("Move sent.");
+			System.out.println("Waiting for move...");
+			System.out.println("Received move: " + this.WaitForNextMove().toString());
+			this.PlayMove(new Move(new int[]{7,4}, new int[]{5,6}));
+			System.out.println("Move sent.");
+			
 		}
 		else {
 		
@@ -314,7 +326,20 @@ public class GUIBridge {
 			System.out.println("Opponent: " + this.opponent.getUsername());
 			
 			System.out.println("Waiting for move...");
-			System.out.println("Recieved move: " + this.WaitForNextMove().toString());
+			System.out.println("Received move: " + this.WaitForNextMove().toString());
+			this.PlayMove(new Move(new int[]{4,6}, new int[]{4,4}));
+			System.out.println("Move sent.");
+			System.out.println("Waiting for move...");
+			System.out.println("Received move: " + this.WaitForNextMove().toString());
+			this.PlayMove(new Move(new int[]{1,7}, new int[]{2,5}));
+			System.out.println("Move sent.");
+			System.out.println("Waiting for move...");
+			System.out.println("Received move: " + this.WaitForNextMove().toString());
+			this.PlayMove(new Move(new int[]{5,7}, new int[]{2,4}));
+			System.out.println("Move sent.");
+			System.out.println("Waiting for move...");
+			System.out.println("Received move: " + this.WaitForNextMove().toString());
+			
 		}
 		
 	}

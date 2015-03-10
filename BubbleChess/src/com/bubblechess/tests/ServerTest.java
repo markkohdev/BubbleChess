@@ -1,8 +1,11 @@
 package com.bubblechess.tests;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
@@ -18,20 +21,16 @@ import com.bubblechess.server.*;
 
 public class ServerTest {
 	
-	protected RequestHandler _requestHandle;
 	protected ServerInstance _si;
-	protected PrintWriter _printWriter;
-	protected StringWriter _console;
 	
 	/**
 	 * Anything needed to be done before all tests
 	 */
 	@Before
 	public void setUp() {
-		_requestHandle = null;
 		_si = new ServerInstance();
-		_console = new StringWriter();
-		_printWriter = new PrintWriter(_console, true);
+		ChessDB cdb = new ChessDB(true);
+		cdb.createTables();
 	}
 	
 	/**
@@ -39,25 +38,60 @@ public class ServerTest {
 	 */
 	@After
 	public void tearDown() {	
+		try {
+    		File file = new File("Test.db");
+ 
+    		if(file.delete()){
+    			//System.out.println(file.getName() + " is deleted!");
+    		} else {
+    			System.out.println("Delete operation is failed.");
+    		}
+ 
+    	} catch(Exception e){
+    		e.printStackTrace();
+    	}
+		System.out.println("-----");
 	}
 	
+	//Helper functions
+	/**
+	 * Returns result from the request handler
+	 * @return
+	 */
+	private String getResult(RequestHandler requestHandle) {
+		while (requestHandle.getResults() == null) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return requestHandle.getResults();
+	}
+	
+	/**
+	 * Method to create a user in the datbase
+	 */
+	private RequestHandler createUser(int userNum) {
+		String request = "{\"request\":\"createUser\",\"password\":\"testPass\",\"username\":\"testUser"+userNum+"\"}";
+		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);
+		requestHandle.start();
+		
+		return requestHandle;
+	}
 	/**
 	 * Test 29 to see if user is created
 	 */
 	@Test
-	public void createUser() {
-		String request = "{\"request\":\"createUser\",\"password\":\"testPass\",\"username\":\"testUser\"}";
-		_requestHandle = new RequestHandler(null, _si, request, _printWriter);
-		_requestHandle.start();
+	public void createUserTest() {
+		RequestHandler requestHandle = createUser(1);
 		
 		JSONObject json = new JSONObject();
 		json.put("result", "success");
 		json.put("userID", '1');
-		
-		System.out.println(json.toJSONString());
-		System.out.println(_console.toString());
-		
-		Assert.assertEquals(0, 0);
+
+		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));
 		
 		/*{"request":"checkLogin","password":"rocks","username":"Eric"}
 		{"request":"getJoinableGames"}
@@ -67,19 +101,73 @@ public class ServerTest {
 		*/
 	}
 	
-	/*@Test
-	public void createUser2(){
-		String request = "{\"request\":\"createUser\",\"password\":\"testPass\",\"username\":\"testUser\"}";
-		//_toServer.println(request);
+	/** 
+	 * #29 - Tests the create user function if a user already exists
+	 */
+	@Test
+	public void createUserFail() {
+		getResult(createUser(1));
 		
-		int result = 0;
-		Assert.assertEquals(0, result);
+		String request = "{\"request\":\"createUser\",\"password\":\"testPass\",\"username\":\"testUser1\"}";
+		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);
+		requestHandle.start();
 		
-		/*{"request":"checkLogin","password":"rocks","username":"Eric"}
-		{"request":"getJoinableGames"}
-		{"gameID":13,"request":"joinGame","userID":2}
-		{"gameID":13,"request":"checkForMove","user":2}
-		{"playerNumber":1,"userID":1,"gameID":13,"request":"getOpponent"}
+		JSONObject json = new JSONObject();
+		json.put("result", "username already exists");
+
+		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	
+	}
+	
+	/** 
+	 * #30 - Tests the login with a successful login
+	 */
+	@Test
+	public void loginTest() {
+		getResult(createUser(1));
 		
-	}*/
+		String request = "{\"request\":\"checkLogin\",\"password\":\"testPass\",\"username\":\"testUser1\"}";
+		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);
+		requestHandle.start();
+		
+		JSONObject json = new JSONObject();
+		json.put("result", "success");
+		json.put("userID", 1);
+
+		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	
+	}
+	
+	/**
+	 * #30 - Tests the login with a bad username
+	 */
+	@Test
+	public void loginBadUsername() {
+		getResult(createUser(1));
+		
+		String request = "{\"request\":\"checkLogin\",\"password\":\"testPass\",\"username\":\"FailUser\"}";
+		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);
+		requestHandle.start();
+		
+		JSONObject json = new JSONObject();
+		json.put("result", "user not found");
+
+		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	
+	}
+	
+	/**
+	 * #30 - Tests the login with a bad password
+	 */
+	@Test
+	public void loginBadPassword() {
+		getResult(createUser(1));
+		
+		String request = "{\"request\":\"checkLogin\",\"password\":\"FailPass\",\"username\":\"testUser1\"}";
+		RequestHandler requestHandle = new RequestHandler(null, _si, request, System.out);
+		requestHandle.start();
+		
+		JSONObject json = new JSONObject();
+		json.put("result", "incorrect password");
+
+		Assert.assertEquals(json.toJSONString(), getResult(requestHandle));	
+	}
+	
 }
