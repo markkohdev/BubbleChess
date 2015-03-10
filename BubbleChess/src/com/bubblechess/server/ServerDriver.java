@@ -28,22 +28,8 @@ public class ServerDriver {
 		while (true) {
 			_client = _server.accept();
 		      
-			_rh = new RequestHandler(_client, si, _testDb);
+			_rh = new RequestHandler(_client, si);
 			_rh.start();
-		}
-	}
-	
-	/**
-	 * Closes all of the open connections in the server
-	 */
-	public void closeConnections() {
-		_rh.interrupt();
-		try {
-			_client.close();
-			_server.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 	

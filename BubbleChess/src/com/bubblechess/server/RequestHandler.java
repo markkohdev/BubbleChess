@@ -15,27 +15,53 @@ import org.json.simple.parser.ParseException;
 public class RequestHandler extends Thread {
 	private Socket _clientSocket = null;
 	private ServerInstance _server = null;
-	protected PrintWriter toClient;
+	protected PrintWriter _toClient;
+	protected BufferedReader _in;
+	protected String _request;
+	protected boolean _isTest = false;
+	
 	protected ChessDB _cdb;
 	
-	public RequestHandler(Socket clientSocket, ServerInstance server, boolean testDb) {
+	/** 
+	 * Constructor for main execution
+	 * @param clientSocket
+	 * @param server
+	 */
+	public RequestHandler(Socket clientSocket, ServerInstance server) {
 		// TODO Auto-generated constructor stub
 		_clientSocket = clientSocket;
 		_server = server;
-		_cdb = new ChessDB(testDb);
+		_cdb = new ChessDB(false);
 		
-		try {
-			toClient = new PrintWriter(_clientSocket.getOutputStream(), true);
+		try {	
+				_toClient = new PrintWriter(_clientSocket.getOutputStream(), true);
+				_in = new BufferedReader(new InputStreamReader(_clientSocket.getInputStream()));
+				_request = _in.readLine();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
+	/**
+	 * Constructor used for testing purposes
+	 * @param clientSocket
+	 * @param server
+	 * @param isTest
+	 */
+	public RequestHandler(Socket clientSocket, ServerInstance server, String request, PrintWriter client) {
+		// TODO Auto-generated constructor stub
+		_clientSocket = clientSocket;
+		_server = server;
+		_cdb = new ChessDB(true);
+		
+		_toClient = client;
+		_request = request;
+		_isTest = true;
+	}
+	
 	public void run (){
 		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(_clientSocket.getInputStream()));
-            
             //Input
             /* Basic Move JSON
             { 
@@ -102,13 +128,13 @@ public class RequestHandler extends Thread {
             }
             */
             //String request = "{ \"request\": \"joinGame\",\"userID\": \"1234\",\"gameID\": \"1234\"}";
-            
-            String request = in.readLine();
-           
+			
             //JSON parsing
-			System.out.println(request);
-    		JSONObject obj = (JSONObject) JSONValue.parse(request);
-             
+			if(!_isTest) {
+				System.out.println(_request);
+			}
+
+    		JSONObject obj = (JSONObject) JSONValue.parse(_request);
             String requestString = (String) obj.get("request");
             
             switch(requestString) {
@@ -134,7 +160,7 @@ public class RequestHandler extends Thread {
 			    		json.put("userID", userid);
 		    		}
 
-		    		toClient.println(json.toJSONString());
+		    		sendToClient(json.toJSONString());
 		    	break;
 		        case "checkLogin":
             		String userName = (String) obj.get("username");
@@ -161,7 +187,7 @@ public class RequestHandler extends Thread {
                     		json.put("result","incorrect password");
                 		}
             		}
-            		toClient.println(json.toJSONString());
+            		sendToClient(json.toJSONString());
             	break;
             	case "createGame":
 
@@ -178,7 +204,7 @@ public class RequestHandler extends Thread {
             		json = new JSONObject();
             		json.put("result", "success");
             		json.put("gameID", newId);
-            		toClient.println(json.toJSONString());  
+            		sendToClient(json.toJSONString());  
             	break;
             	case "getOpponent":
             		int gameId = (int)((long) obj.get("gameID"));
@@ -189,21 +215,22 @@ public class RequestHandler extends Thread {
             		int oppId = game.getOpponentId(playerNumber);
             		
             		if(oppId != -1) {
-            			//Method to return userid
-                		username = _cdb.getUsername((int) userId);
+            			String oppUsername = _cdb.getUsername(oppId);
+                		int oppPlayerNumber = game.getPlayerNumber(oppId);
                 		
                 		//This will come through as a JSON String
                 		json = new JSONObject();
                 		json.put("result","success");
                 		json.put("userID", oppId);
-                		json.put("username", username);
-                		toClient.println(json.toJSONString());
+                		json.put("username", oppUsername);
+                		json.put("playNumber", oppPlayerNumber);
+                		sendToClient(json.toJSONString());
             		}
             		else {
             			json = new JSONObject();
                 		json.put("result","waiting");
                 		System.out.println(json.toJSONString());
-                		toClient.println(json.toJSONString());
+                		sendToClient(json.toJSONString());
             		}
             	break;
             	case "getJoinableGames":
@@ -219,7 +246,7 @@ public class RequestHandler extends Thread {
             		}
             		json.put("games", games);
             		
-            		toClient.println(json.toJSONString());
+            		sendToClient(json.toJSONString());
             		//TODO: Add failure method
             	break;
             	case "joinGame":
@@ -231,8 +258,11 @@ public class RequestHandler extends Thread {
             		int otherPlayer = game.getOtherUser();
             		String otherUsername = _cdb.getUsername(otherPlayer);
             		
-            		if(game.joinGame((int) userId, _clientSocket)) {
-            			playerNumber = game.getPlayerNumber(otherPlayer);
+            		if(game.joinGame((int) userId)) {
+            			int otherPlayerNumber = game.getPlayerNumber(otherPlayer);
+            			playerNumber = game.getPlayerNumber((int) userId);
+            			
+            			_cdb.addOpponent((int) userId, playerNumber, gameId);
             			
             			_server.removeJoinableGame(gameId);
             			
@@ -240,13 +270,15 @@ public class RequestHandler extends Thread {
             			json.put("result", "success");
             			json.put("userID", otherPlayer);
             			json.put("username", otherUsername);
-            			json.put("playerNumber", playerNumber);
-            			toClient.println(json.toJSONString());  
+            			json.put("playerNumber", otherPlayerNumber);
+            			sendToClient(json.toJSONString());  
+            			
+            			System.out.println("Joined("+otherPlayer+", "+userId+")");
             		}
             		else {
             			json = new JSONObject();
             			json.put("result","game does not exist");
-            			toClient.println(json.toJSONString());  
+            			sendToClient(json.toJSONString());  
             		}
             	break;
             	case "insertMove":
@@ -269,7 +301,7 @@ public class RequestHandler extends Thread {
             			json = new JSONObject();
             			json.put("result", "failure");
             		}
-            		toClient.println(json.toJSONString()); 
+            		sendToClient(json.toJSONString()); 
             	break;
             	case "checkForMove":
             		gameId = (int)((long) obj.get("gameID"));
@@ -278,20 +310,30 @@ public class RequestHandler extends Thread {
             		json = new JSONObject();
             		game = _server.getGame(gameId);
             		
+     
             		if(game.getCurrentPlayer() == playerNumber) {
+            			JSONObject moveObj = game.getLastMove();
+                		int moveColFrom = (int) moveObj.get("colFrom");
+                		int moveRowFrom = (int) moveObj.get("rowFrom");
+                		int moveColTo = (int) moveObj.get("colTo");
+                		int moveRowTo = (int) moveObj.get("rowTo");
+                		
                 		json.put("result","success");
-                		json.put("move", game.getLastMove());
+                		json.put("colFrom", moveColFrom);
+                		json.put("rowFrom", moveRowFrom);
+                		json.put("colTo", moveColTo);
+                		json.put("rowTo", moveRowTo);
             		}
             		else {
             			json.put("result","waiting");
             		}
-            		toClient.println(json.toJSONString());
+            		sendToClient(json.toJSONString());
             	break;
             	case "getAllMoves":
             		gameId = (int)((long) obj.get("gameID"));
            
             		Game allMovesThread = _server.getGame(gameId);
-            		allMovesThread.getAllMoves(_clientSocket);
+            		//allMovesThread.getAllMoves(_clientSocket);
             	break;
             	case "getUser":
             		username = (String) obj.get("username");
@@ -304,7 +346,7 @@ public class RequestHandler extends Thread {
             		json = new JSONObject();
             		json.put("result","success");
             		json.put("userID", getUserId);
-            		toClient.println(json.toJSONString());
+            		sendToClient(json.toJSONString());
             		
             		//TODO: Add failure
             	break;
@@ -321,11 +363,27 @@ public class RequestHandler extends Thread {
 		
 		finally {
 			try {
-				_clientSocket.close();
+				if(!_isTest) {
+					_clientSocket.close();
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	/**
+	 * Sends a response to the client and the System.out
+	 * @param results
+	 */
+	public void sendToClient(String results) {
+		if(_isTest) {
+			_toClient.println(results);
+			System.out.println(results);
+		}
+		else {
+			_toClient.println(results);
 		}
 	}
 }
