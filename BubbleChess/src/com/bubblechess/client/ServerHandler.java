@@ -25,6 +25,9 @@ public class ServerHandler {
 		//SetupConnection();
 	}
 	
+	/**
+	 * Create the connection to the server
+	 */
 	protected void SetupConnection() {
 		if (socket == null) {
 			try {
@@ -40,6 +43,9 @@ public class ServerHandler {
 		}
 	}
 	
+	/**
+	 * Close the connection to the server
+	 */
 	protected void CloseConnection() {
 		if (socket != null) {
 			try {
@@ -85,8 +91,6 @@ public class ServerHandler {
 			CloseConnection();
 			return -3;
 		}
-		
-		System.out.println(response);
 		
 		if(response.get("result").equals("success")) {
 		
@@ -135,7 +139,7 @@ public class ServerHandler {
 		}
 		
 		if(response.get("result").equals("success")) {
-			retVal = Integer.parseInt((String)response.get("userID"));
+			retVal = (int)((long)response.get("userID"));
 		}
 		else {
 			retVal = -1;

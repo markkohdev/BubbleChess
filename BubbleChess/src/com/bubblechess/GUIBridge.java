@@ -296,6 +296,7 @@ public class GUIBridge {
 		if (creator) {
 			System.out.println("Creating game...");
 			System.out.println("GameID: " + this.CreateGame(1));
+			WaitForOpponent();
 			System.out.println("Opponent: " + this.opponent.getUsername());
 			this.PlayMove(new Move(new int[]{4,1},new int[]{4,3}));
 			System.out.println("Move sent.");
