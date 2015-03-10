@@ -76,6 +76,7 @@ public class MoveValidationTest {
 	/**
 	 * Tests the ChessBoard.inCheck(Color color) method
 	 */
+	@Test
 	public void inCheck(){
 		fen = "k-------/--------/--------/---q----/--------/---K----/--------/-------- w KQkq - 0 1";
 		setUp();
