@@ -169,13 +169,4 @@ public class StateRecognitionTest {
 		tearDown();
 	}
 	
-	/**
-	 * Test that the game is automatically ended in the case of three fold repetition 
-	 * Test #13 - 1.4.3.5
-	 */
-	@Test
-	public void threeFoldRepetition(){
-		//TODO: Enhancement
-	}
-	
 }
