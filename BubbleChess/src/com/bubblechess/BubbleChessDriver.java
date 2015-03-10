@@ -11,6 +11,22 @@ public class BubbleChessDriver {
 	
 	
 	public static void main(String[] args){
+		
+		//Run all the things here		
+		
+		//ServerHandler server = new ServerHandler("tux.cs.drexel.edu",8080);
+		ServerHandler server = new ServerHandler("144.118.117.17",8080);		
+		GUIBridge bridge = new GUIBridge(server);
+				
+		bridge.TestServer();
+				
+		//GamePlayPanel gameScreen = new GamePlayPanel();
+		//Spawn GUI here.  Pass it into GUIBridge.  Let it roll from there?
+
+		//MainApplicationWindow mainAppWindow = new MainApplicationWindow(gameScreen);
+		// LoginPanel loginScreen = new LoginPanel(GUIBridge);
+				
+		/*
 		//Run all the things here		
 		
 		//ServerHandler server = new ServerHandler("tux.cs.drexel.edu",8080);
@@ -82,7 +98,7 @@ public class BubbleChessDriver {
 			
 			
 		}
-		
+		*/
 		
 	}
 	
