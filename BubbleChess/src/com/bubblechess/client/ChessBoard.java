@@ -240,7 +240,7 @@ public class ChessBoard implements Board, Cloneable {
 					enPassantEligible = true;
 					enPassantSquare[0] = m.colTo();
 					//Destination square is between origin and destination
-					enPassantSquare[1] = Math.abs(m.rowFrom()-m.rowTo())/2;
+					enPassantSquare[1] = Math.abs(m.rowFrom()+m.rowTo())/2;
 					enPassantPawn[0] = m.colTo();
 					enPassantPawn[1] = m.rowTo();
 				}
@@ -491,7 +491,7 @@ public class ChessBoard implements Board, Cloneable {
 			
 			//Cannot castle through check
 			int[] from = {m.colFrom(), m.rowFrom()};
-			int[] to = {Math.abs(m.colFrom()-m.colTo())/2 , m.rowTo()};
+			int[] to = {Math.abs(m.colFrom()+m.colTo())/2 , m.rowTo()};
 			
 			//This square is also the rook's destination square
 			castlingRookDest[0] = to[0];
@@ -696,6 +696,7 @@ public class ChessBoard implements Board, Cloneable {
 	 * Returns true if there is an insufficient mating material case:
 	 * 	- KB vs K
 	 *  - KN vs K
+	 *  - K vs K
 	 * @return True if there is insufficient mating material
 	 */
 	protected boolean checkInsufficientMaterial(){
@@ -713,6 +714,10 @@ public class ChessBoard implements Board, Cloneable {
 					}
 				}
 			}
+		}
+		
+		if (pieces.size()==2 && pieces.get(0) instanceof King && pieces.get(1) instanceof King){
+			return true;
 		}
 		
 		if (pieces.size()==3 && knightOrBishop){
