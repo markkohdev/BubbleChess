@@ -57,7 +57,7 @@ public class LoginPanel extends JPanel {
 					setErrorLabel("No Password Was Entered");
 				}
 				else {
-					setLoginState(1);
+					tryLogin();
 				}
 				
 			}
@@ -69,7 +69,7 @@ public class LoginPanel extends JPanel {
 		txtpnDontHaveAn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				setLoginState(2);
+				continueAsGuest();
 			}
 		});
 		txtpnDontHaveAn.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -89,7 +89,7 @@ public class LoginPanel extends JPanel {
 		btnContinueAsGuest.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				setLoginState(3);
+				goToRegister();
 			}
 		});
 		btnContinueAsGuest.setBounds(423, 508, 291, 23);
@@ -121,6 +121,42 @@ public class LoginPanel extends JPanel {
 	}
 	
 	
+	public void tryLogin() {
+		MainApplicationWindow appWin = (MainApplicationWindow)this.getParent();
+		String userName = getUserName();
+		String password = getPassword();
+		
+		int result = appWin.bridge.Login(userName, password);
+		
+		if(result >= 0) {
+			appWin.setPaneResult(3);
+		}
+		else if(result == -1) {
+			setErrorLabel("Incorrect Password");
+		}
+		else if(result == -2) {
+			setErrorLabel("User not found");
+		}
+	}
+	
+	public void continueAsGuest() { 
+		MainApplicationWindow appWin = (MainApplicationWindow)this.getParent();
+		int result = appWin.bridge.ContinueAsGuest();
+		
+		if(result >= 0) { 
+			appWin.setPaneResult(3);
+		}
+		else {
+			setErrorLabel("Error creating guest account");
+		}
+		 
+	}
+	
+	public void goToRegister() {
+		MainApplicationWindow appWin = (MainApplicationWindow)this.getParent();
+		appWin.setPaneResult(2);
+	}
+	
 	/**
 	 * Chenges the login state and fires off a property Change
 	 * @param state
@@ -141,7 +177,7 @@ public class LoginPanel extends JPanel {
 		lblErrorLabel.setForeground(Color.RED);
 		lblErrorLabel.setFont(new Font("Dialog", Font.BOLD, 13));
 		lblErrorLabel.setBounds(423, 185, 70, 15);
-		this.add(lblErrorLabel);
+		add(lblErrorLabel);
 	}
 	
 	/**

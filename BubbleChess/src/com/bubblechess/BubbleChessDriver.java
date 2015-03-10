@@ -19,25 +19,53 @@ public class BubbleChessDriver {
 		LoginPanel login = new LoginPanel();
 		MainApplicationWindow mainAppWindow = new MainApplicationWindow(bridge);
 		mainAppWindow.addPanel(login);
-		mainAppWindow.setFrameVisible();
+		mainAppWindow.setFrameVisible(true);
 		
-		while(mainAppWindow.getPaneResult() < 0) {
-			mainAppWindow.startLogin(login);
-		}
+		int gameStart = 0;
 		
-		MainMenuPanel mainMenu = new MainMenuPanel();
-		int result = mainAppWindow.getPaneResult();
-		if (result == 2) {
+		do {
 			
-		}
-		else if (result == 0) {
-			mainAppWindow.removePanel(login);
-			mainAppWindow.addPanel(mainMenu);
-		}
+			int pane = mainAppWindow.getPaneResult();
+			switch(pane) {
+			case 1:
+				// login
+				LoginPanel newLogPanel = new LoginPanel();
+				mainAppWindow.addPanel(newLogPanel);
+				break;
+			case 2:
+				// create
+				RegisterPanel newRegister = new RegisterPanel();
+				mainAppWindow.addPanel(newRegister);
+				break;
+			case 3:
+				// mainmenu
+				MainMenuPanel newMenuPanel = new MainMenuPanel();
+				mainAppWindow.addPanel(newMenuPanel);
+				break;
+			case 4:
+				// create
+				
+				break;
+			case 5:
+				// JoinGame
+				
+				break;
+			case 6:
+				// gameplay
+				
+				break;
+			case 7:
+				// end game
+				
+				break;
+			default:
+				break;
+			} 
+			
+			
+			
+		} while(mainAppWindow.getPaneResult() == 0); 
 
-		while(login.getLoginState() == 0) {
-			// wait x time then recheck login state
-		}
 		
 		
 		//int playerNum = bridge.GetPlayerNumber();
