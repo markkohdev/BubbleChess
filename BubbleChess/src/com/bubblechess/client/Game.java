@@ -30,22 +30,42 @@ public class Game {
 		turn = user1;
 	}
 	
+	/**
+	 * Gets the ID of the game
+	 * @return
+	 */
 	public int getID(){
 		return gameID;
 	}
 	
+	/**
+	 * Gets the first user object
+	 * @return
+	 */
 	public User getUser1(){
 		return user1;
 	}
 	
+	/**
+	 * Gets the second user object
+	 * @return
+	 */
 	public User getUser2(){
 		return user2;
 	}
 	
+	/**
+	 * Sets the first user object
+	 * @param u1
+	 */
 	public void setUser1(User u1){
 		user1 = u1;
 	}
 	
+	/**
+	 * Sets the second user object
+	 * @param u2
+	 */
 	public void setUser2(User u2){
 		user2 = u2;
 	}
@@ -63,7 +83,7 @@ public class Game {
 	}
 
 	/**
-	 * Returns the number of moves played in the game so far
+	 * Gets the number of moves that have been played so far
 	 * @return The number of moves
 	 */
 	public int getNumMoves(){
@@ -71,7 +91,7 @@ public class Game {
 	}
 	
 	/**
-	 * Returns the board
+	 * Gets the board as a 2 dimensional array
 	 * @return The board
 	 */
 	public BoardPiece[][] getBoard(){
@@ -79,7 +99,7 @@ public class Game {
 	}
 	
 	/**
-	 * Return a list of captured pieces
+	 * Gets a list of captured pieces
 	 * @return An array of captured BoardPieces
 	 */
 	public BoardPiece[] getCaptured() {
@@ -117,22 +137,44 @@ public class Game {
 		return true;
 	}
 	
+	/**
+	 * Gets the user object who's turn it currently is
+	 * @return
+	 */
 	public User getTurn(){
 		return turn;
 	}
 	
+	/**
+	 * Checks if the board is currently an end State
+	 * @return
+	 */
 	public boolean endState(){
 		return board.endState();
 	}
 	
+	/**
+	 * Gets the current board state
+	 * @return
+	 */
 	public String getBoardState() {
 		return board.getState();
 	}
 	
+	/**
+	 * Gets all possible moves from a given coordinate
+	 * @param col
+	 * @param row
+	 * @return
+	 */
 	public ArrayList<Move> getMoves(int col, int row){
 		return board.getMoves(col, row);
 	}
 	
+	/**
+	 * Checks if the board is currently in state for a player
+	 * @return
+	 */
 	public int InCheck(){
 		if (board.inCheck(BoardPiece.Color.WHITE))
 			return 1;
