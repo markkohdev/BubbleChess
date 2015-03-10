@@ -17,6 +17,7 @@ public class RegisterPanel extends JPanel {
 
 	private JTextField textNewUsername;
 	private JTextField newPasswordField;
+	private JLabel lblErrorLabel;
 	/**
 	 * Create the panel.
 	 */
@@ -67,6 +68,11 @@ public class RegisterPanel extends JPanel {
 		lblBubblepipeChess.setFont(new Font("Tahoma", Font.BOLD, 30));
 		lblBubblepipeChess.setBounds(396, 71, 318, 70);
 		add(lblBubblepipeChess);
+		
+		lblErrorLabel = new JLabel();
+		lblErrorLabel.setForeground(Color.RED);
+		lblErrorLabel.setFont(new Font("Dialog", Font.BOLD, 13));
+		lblErrorLabel.setBounds(423, 185, 70, 15);
 
 	}
 	
@@ -105,11 +111,7 @@ public class RegisterPanel extends JPanel {
 	 * @param msg
 	 */
 	public void setErrorLabel(String msg) {
-		JLabel lblErrorLabel = new JLabel(msg);
-		lblErrorLabel.setForeground(Color.RED);
-		lblErrorLabel.setFont(new Font("Dialog", Font.BOLD, 13));
-		lblErrorLabel.setBounds(423, 185, 70, 15);
-		add(lblErrorLabel);
+		this.setErrorLabel(msg);
 	}
 	
 	

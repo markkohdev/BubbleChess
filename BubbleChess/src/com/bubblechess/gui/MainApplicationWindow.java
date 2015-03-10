@@ -18,6 +18,7 @@ public class MainApplicationWindow extends JFrame {
 	protected GUIBridge bridge;
 	private int paneResult;
 	private JPanel previousPanel;
+	private int gamePlaying;
 
 	/**
 	 * Create the application.
@@ -25,6 +26,7 @@ public class MainApplicationWindow extends JFrame {
 	public MainApplicationWindow(GUIBridge b) {	
 		this.bridge = b;
 		this.paneResult = -5;
+		this.gamePlaying = 0;
 		//frame = new JFrame();
 		setBounds(0, 0, 1024, 768);
 		//frame.setBounds(100, 100, 450, 300);
@@ -72,6 +74,8 @@ public class MainApplicationWindow extends JFrame {
 	public void addPanel(JPanel panel) {
 		this.setContentPane(panel);
 		this.previousPanel = panel;
+		this.setVisible(true);
+		this.resetPaneResult();
 	}
 	
 	public void removePreviousPanel(){
@@ -84,6 +88,14 @@ public class MainApplicationWindow extends JFrame {
 	 */
 	public void setVisiblePanel(JPanel panel, boolean b) {
 		panel.setVisible(b);
+	}
+	
+	public int isGamePlaying() { 
+		return this.gamePlaying;
+	}
+	
+	public void setGamePlaying(int i) { 
+		this.gamePlaying = i;
 	}
 	
 	/** 
