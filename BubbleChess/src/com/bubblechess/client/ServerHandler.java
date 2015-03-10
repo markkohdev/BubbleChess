@@ -17,7 +17,11 @@ public class ServerHandler {
 	protected PrintWriter toServer;
 	protected BufferedReader fromServer;
 	
-
+	/**
+	 * Constructor for the server handler
+	 * @param hostname
+	 * @param port
+	 */
 	public ServerHandler(String hostname, int port){
 		this.hostname = hostname;
 		this.port = port;
@@ -194,7 +198,7 @@ public class ServerHandler {
 	}
 	
 	/**
-	 * 
+	 * Creates a game for a user
 	 * @param userID
 	 * @param playerNumber
 	 * @return
@@ -235,7 +239,7 @@ public class ServerHandler {
 	}
 	
 	/**
-	 * 
+	 * Polls the server to see if an opponent has joined a game
 	 * @param gameID The gameID of the newly created game
 	 * @param userID The userID of the requester
 	 * @param playerNumber The playerNumber of the reuqestor (1 for white, 2 for black)
@@ -340,7 +344,10 @@ public class ServerHandler {
 		}
 	}
 	
-	
+	/**
+	 * Returns a list of joinable games on the server
+	 * @return
+	 */
 	public ArrayList<Integer> GetJoinableGames() {
 		SetupConnection();
 		JSONObject json = new JSONObject();
@@ -377,8 +384,13 @@ public class ServerHandler {
 		}
 	}
 	
-	
-	
+	/**
+	 * Sends a move to the server
+	 * @param m
+	 * @param userID
+	 * @param gameID
+	 * @return
+	 */
 	public boolean SendMove(Move m, int userID, int gameID){
 		SetupConnection();
 		JSONObject json = new JSONObject();
@@ -413,6 +425,12 @@ public class ServerHandler {
 			return false;
 	}
 	
+	/**
+	 * Polls the server to wait for a move from the opponent
+	 * @param gameID
+	 * @param playerNumber
+	 * @return
+	 */
 	public Move CheckForMove(int gameID, int playerNumber){
 		Move retVal = null;
 		
@@ -469,6 +487,10 @@ public class ServerHandler {
 		return retVal;
 	}
 	
+	/**
+	 * Sets a game to the end game and closes the connection
+	 * @return
+	 */
 	public boolean EndGame() {
 		CloseConnection();
 		return false;
