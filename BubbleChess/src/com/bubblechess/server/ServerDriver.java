@@ -12,7 +12,7 @@ public class ServerDriver {
 	protected static boolean _testDb = false;
 	
 	/**
-	 * Main method to run the server on port 430
+	 * Main method to run the server and add new Request Threads on port 8080
 	 * @param args
 	 * @throws IOException
 	 */
@@ -34,7 +34,7 @@ public class ServerDriver {
 	}
 	
 	/**
-	 * Method to set if the db is in test or not
+	 * Allows the database to be put into test mode
 	 * @param testDb
 	 */
 	public void setTestDB(boolean testDb) {
