@@ -355,7 +355,7 @@ public class ChessBoard implements Board, Cloneable {
 	 */
 	@Override
 	public boolean endState() {
-		if (this.state==STATE.CHECKMATE || this.state==STATE.STALEMATE) {
+		if (this.state==STATE.CHECKMATE || this.state==STATE.STALEMATE || this.state==STATE.DRAW) {
 			return true;
 		}
 		return false;
