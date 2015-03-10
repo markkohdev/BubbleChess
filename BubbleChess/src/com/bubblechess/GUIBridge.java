@@ -262,6 +262,8 @@ public class GUIBridge {
 		//We may wait here
 		Move next = server.CheckForMove(game.getID(),GetPlayerNumber());
 		
+		game.playMove(next);
+		
 		return next;
 	}
 	
@@ -287,7 +289,7 @@ public class GUIBridge {
 	public void TestServer(){
 		String testuser = "testuser";
 		String testpass = "testpass";
-		boolean creator = true;
+		boolean creator = false;
 		
 		System.out.println("Register code: " + this.Register(testuser, testpass));
 		
