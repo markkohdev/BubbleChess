@@ -27,7 +27,6 @@ public class BubbleChessDriver {
 		
 		while (close != 1) {
 			int gameID = 0;
-			int userColor = 0;
 			int pane = mainAppWindow.getPaneResult();
 			switch(pane) {
 			case 1:
@@ -54,12 +53,12 @@ public class BubbleChessDriver {
 			case 5:
 				// JoinGame
 				ArrayList<Integer> games = bridge.GetJoinableGames();
-				JoinPanel joinP = new JoinPanel(games);
+				JoinPanel joinP = new JoinPanel();
 				mainAppWindow.addPanel(joinP);
 				break;
 			case 6:
 				// gameplay
-				WaitingForOppPanel waitingPanel = new WaitingForOppPanel();
+				WaitingForOppPanel waitingPanel = new WaitingForOppPanel(gameID);
 				mainAppWindow.addPanel(waitingPanel);
 				boolean haveOpponent = bridge.WaitForOpponent();
 				if(haveOpponent) {
@@ -68,13 +67,14 @@ public class BubbleChessDriver {
 				}
 				break;
 			case 7:
-				close = -1;
+				close = 1;
 				break;
 			case 8:
 				EndScreenPanel endPanel = new EndScreenPanel();
 				mainAppWindow.addPanel(endPanel);
 				break;
 			default:
+				close = 1;
 				break;
 			}
 		}

@@ -125,14 +125,15 @@ public class LoginPanel extends JPanel {
 
 	}
 	
-	
+	/**
+	 * function to try to login using the function on the GUIBridge
+	 * if error occurs, it displays it on screen
+	 */
 	public void tryLogin() {
-		MainApplicationWindow appWin = MainApplicationWindow.getInstance();
 		String userName = getUserName();
 		String password = getPassword();
-		GUIBridge b = appWin.getBridge();
 		
-		int result = b.Login(userName, password);
+		int result = bridge.Login(userName, password);
 		
 		if(result >= 0) {
 			appWin.setPaneResult(3);
@@ -145,6 +146,10 @@ public class LoginPanel extends JPanel {
 		}
 	}
 	
+	/**
+	 * Tries to continue as guest using GUIBridge function
+	 * if success will set next pane, else set the error label to something
+	 */
 	public void continueAsGuest() { 
 		int result = bridge.ContinueAsGuest();
 		
@@ -157,19 +162,13 @@ public class LoginPanel extends JPanel {
 		 
 	}
 	
+	
+	/**
+	 * sets next pane to register pane
+	 */
 	public void goToRegister() {
 		appWin.setPaneResult(2);
 	}
-	
-	/**
-	 * Chenges the login state and fires off a property Change
-	 * @param state
-	 */
-	/*public void setLoginState(int state) {
-		int oldValue = this.loginState;
-		this.loginState = state;
-		firePropertyChange("loginState", oldValue, this.loginState);
-	}*/
 	
 
 	/**
@@ -180,13 +179,6 @@ public class LoginPanel extends JPanel {
 		this.lblErrorLabel.setText(msg);
 	}
 	
-	/**
-	 * gets login state
-	 * @return loginState
-	 */
-	/*public int getLoginState() {
-		return this.loginState;
-	}*/
 	/**
 	 * gets username entered in textfield
 	 * @return username

@@ -14,7 +14,10 @@ import javax.swing.JButton;
 
 import com.bubblechess.GUIBridge;
 import com.bubblechess.client.BoardPiece;
+
+import javax.swing.DefaultListModel;
 import javax.swing.JLayeredPane;
+import javax.swing.JList;
 
 public class GamePlayPanel extends JPanel {
 
@@ -23,7 +26,9 @@ public class GamePlayPanel extends JPanel {
 	 */
 	
 	private static GameBoard board;
-	
+	private DefaultListModel p1CaptureListModel;
+	private DefaultListModel p2CaptureListModel; 
+	private GUIBridge bridge;
 	
 	
 	
@@ -33,6 +38,8 @@ public class GamePlayPanel extends JPanel {
 	 * @param playerNum
 	 */
 	public GamePlayPanel() {
+		MainApplicationWindow mainWin = MainApplicationWindow.getInstance();
+		GUIBridge bridge = mainWin.getBridge();
 		int color = this.getPlayerNum();
 		BoardPiece[][] clientBoard = this.getClientBoard();
 		board = new GameBoard(clientBoard, color);
@@ -40,46 +47,48 @@ public class GamePlayPanel extends JPanel {
 		setPreferredSize(new Dimension(1024,768));
 		setLayout(null);
 		board.setLocation(23, 38);	
-		add(board);		
-		JButton btnNewButton = new JButton("New button");
-		btnNewButton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				
-				refreshBoard();
-			}
-		});
-		btnNewButton.setBounds(743, 396, 117, 25);
-		add(btnNewButton);
+		add(board);
+		p1CaptureListModel = new DefaultListModel();
+		p2CaptureListModel = new DefaultListModel();
+		JList p1CaptureList = new JList(p1CaptureListModel);
+		p1CaptureList.setBounds(900, 38, 100, 250);
+		add(p1CaptureList);
 		
-		JLayeredPane layeredPane = new JLayeredPane();
-		layeredPane.setBounds(0, 0, 1, 1);
-		add(layeredPane);	
+		JList p2CaptureList = new JList(p2CaptureListModel);
+		p2CaptureList.setBounds(900, 328, 100, 250);
+		add(p2CaptureList);
 	}
 	
-	public void refreshBoard() {
-		this.remove(board);
-		BoardPiece[][] clientBoard = this.getClientBoard();
-		int color = this.getPlayerNum();
-		board = new GameBoard(clientBoard, color);
-		this.add(board);
-		//this.invalidate();
-		//this.validate();
-		this.repaint();
-		
-	}
-	
-	public int getPlayerNum(){
-		MainApplicationWindow mainWin = MainApplicationWindow.getInstance();
-		GUIBridge bridge = mainWin.getBridge();		
+	public int getPlayerNum(){	
 		int playNum = bridge.GetPlayerNumber();
 		return playNum;
 	}
 	
 	public BoardPiece[][] getClientBoard() {
-		MainApplicationWindow mainWin = MainApplicationWindow.getInstance();
-		GUIBridge bridge = mainWin.getBridge();
 		BoardPiece[][] clientBoard = bridge.GetBoard();
 		return clientBoard;
+	}
+	
+	public boolean isPlayerTurn() {
+		boolean turn = bridge.IsPlayersTurn();
+		return turn;
+	}
+	
+	public void updateCapturedList() {
+		BoardPiece[] piecesCaptured = bridge.GetCaptured();
+		int pNum = getPlayerNum();
+		BoardPiece.Color pColor;
+		pColor = BoardPiece.Color.WHITE;
+		for(BoardPiece piece : piecesCaptured) {
+			int pieceNum = piece.getPieceID();
+			BoardPiece.Color pieceColor = piece.getColor();
+			String[] pieces = {"King", "Queen", "Rook", "Bishop", "Knight", "Pawn" };
+			if (pColor.equals(pieceColor)) {
+				p1CaptureListModel.addElement(pieces[pieceNum]);
+			}
+			else {
+				p2CaptureListModel.addElement(pieces[pieceNum]);
+			}
+		}
 	}
 }

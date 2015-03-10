@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 public class EndScreenPanel extends JPanel {
 
 	/**
+	 * Creates the end screen panel and button to go to main menu
 	 * Create the panel.
 	 */
 	public EndScreenPanel() {
@@ -25,11 +26,6 @@ public class EndScreenPanel extends JPanel {
 		lblBubblepipeChess.setBounds(394, 79, 318, 70);
 		add(lblBubblepipeChess);
 		
-		
-		JLabel lblGameMessage = new JLabel("You have lost");
-		lblGameMessage.setFont(new Font("Tahoma", Font.BOLD, 20));
-		lblGameMessage.setBounds(396, 185, 318, 70);
-		add(lblGameMessage);
 		
 		
 		JButton btnGoToMainMenu = new JButton("Go To Main Menu");
