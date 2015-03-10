@@ -11,16 +11,19 @@ import java.awt.Font;
 
 
 
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.bubblechess.GUIBridge;
 import com.bubblechess.client.BoardPiece;
+import com.bubblechess.client.Move;
 
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 public class GameBoard extends JPanel {
 	
@@ -32,29 +35,34 @@ public class GameBoard extends JPanel {
 	/**
 	 * Create MouseAdapter to trigger event for when pieces are clicked
 	 */
-	private MouseAdapter genericSelectListener = new MouseAdapter() { 
+	private MouseAdapter selectListener = new MouseAdapter() { 
 		@Override
 		public void mouseClicked(MouseEvent arg0) {
-			BoardCell cell = (BoardCell) arg0.getComponent();
-			if (cell.isSelected() == 1) {
-				for(int i = 0; i < 8; i++) {
-					for(int j = 0; j < 8; j++) {
-						boardCells[i][j].selectCell(false);
-					}
-				}
+			boolean pTurn = isPlayerTurn();
+			if (pTurn) {
+				BoardCell cell = (BoardCell) arg0.getComponent();
+				addBorderToCell(true, Color.GREEN);
+				ArrayList<Move> potentialMoves = getMoves(cell);
+				for(Move m : potentialMoves) {
+					int mCol = m.colTo();
+					int mRow = m.rowTo();
+					boardCells[mCol][mRow].selectCell(true, Color.CYAN);
+					boardCells[mCol][mRow].addListener(moveListner);
+				}		
 			}
-			else {
-				for(int i = 0; i < 8; i++) {
-					for(int j = 0; j < 8; j++) {
-						boardCells[i][j].selectCell(false);
-					}
-				}
-				cell.selectCell(true);
-				// getMoves(cell.getColumn(), cell.getRow());
-				
-			}			
-		}
+		}			
 	};
+	
+	private MouseAdapter moveListener = new MouseAdapter() { 
+		@Override
+		public void mouseClicked(MouseEvent arg0) {
+			boolean pTurn isPlayerTurn();
+			if (pTurn) {
+				
+				
+			}
+		}
+	}
 	
 	// Dark Square RGB: 92, 129, 152
 	// Light Square RGB: 140, 150, 155
@@ -150,7 +158,6 @@ public class GameBoard extends JPanel {
 	}
 	
 	public String getPieceUnicode(int pieceNum) {
-		
 		String[] unicode = {"\u265A", "\u265B", "\u265C", "\u265D", "\u265E", "\u265F" };
 		String pieceUni;
 		switch(pieceNum) {
@@ -171,6 +178,42 @@ public class GameBoard extends JPanel {
 		return pieceUni;
 		
 	}
+	
+	public void addBorderToCell(BoardCell cell, Color c) {
+		if (cell.isSelected() == 1) {
+			for(int i = 0; i < 8; i++) {
+				for(int j = 0; j < 8; j++) {
+					boardCells[i][j].selectCell(false, c);
+				}
+			}
+		}
+		else {
+			for(int i = 0; i < 8; i++) {
+				for(int j = 0; j < 8; j++) {
+					boardCells[i][j].selectCell(true, c);
+				}
+			}
+		}
+	}
+	
+	public boolean isPlayerTurn() {
+		MainApplicationWindow mainWin = MainApplicationWindow.getInstance();
+		GUIBridge bridge = mainWin.getBridge();
+		
+		boolean turn = bridge.IsPlayersTurn();
+		return turn;
+	}
+	
+	public ArrayList<Move> getMoves(BoardCell cell) {
+		MainApplicationWindow mainWin = MainApplicationWindow.getInstance();
+		GUIBridge bridge = mainWin.getBridge();
+		int col = cell.getColumn();
+		int row = cell.getRow();
+		ArrayList<Move> moves = bridge.getMoves(col, row);
+		
+		return moves;
+	}
+	
 	
 	/**
 	 * Function to start listeners for clients pieces are start of game

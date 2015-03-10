@@ -17,27 +17,6 @@ public class BoardCell extends JPanel {
 	private boolean haveListener;
 	private int selected;
 
-	/*
-	 * Below Comment Block not used. Will be Taken Out later on.
-	 * 
-	 * private MouseAdapter pieceListener = new MouseAdapter() {
-	 * 
-	 * @Override public void mouseClicked(MouseEvent arg0) { BoardCell cell =
-	 * (BoardCell) arg0.getComponent(); if (cell.isSelected() == 1) {
-	 * cell.selectCell(false); } else { cell.selectCell(true); } } };
-	 *
-
-	private MouseAdapter moveListener = new MouseAdapter() {
-		@Override
-		public void mouseClicked(MouseEvent arg0) {
-			
-			 BoardCell cell = (BoardCell) arg0.getComponent(); if
-			 (cell.getBorder() == null) { cell.selectCell(true); } else {
-			 cell.selectCell(false); } cell.changeListenerState(true);
-			 
-		}
-	}; */
-
 	/**
 	 * Constructor
 	 * Create the panel.
@@ -97,28 +76,14 @@ public class BoardCell extends JPanel {
 	 * @param b
 	 * @param listener
 	 */
-	public void changeListenerState(MouseAdapter listener) {
+	public void addListener(MouseAdapter listener) {
 			this.addMouseListener(listener);
 	}
-
-	/* Function not used. changeListenState should be used instead.
-	 * Keeping function in case needed later on.
-	 * 
-	public void tempDisableListener(boolean b, MouseAdapter listener) {
-		if (b) {
-			this.removeMouseListener(listener);
-		} else {
-			this.addMouseListener(listener);
-		}
-	} */
 
 	/**
 	 * Checks if cell has listener
 	 * @return true Cell has listener added, false Call does not have listener added
 	 */
-	public boolean hasListener() {
-		return this.haveListener;
-	}
 
 	/**
 	 * Checks if cell is selected
@@ -132,16 +97,14 @@ public class BoardCell extends JPanel {
 	 * Adds selection border to screen
 	 * @param b
 	 */
-	public void selectCell(boolean b) {
+	public void selectCell(boolean b, Color c) {
 		if (b) {
-			this.setBorder(BorderFactory.createBevelBorder(1, Color.GREEN,
-					Color.GREEN));
+			this.setBorder(BorderFactory.createBevelBorder(1, c, c));
 			this.selected = 1;
 		} else {
 			this.setBorder(BorderFactory.createEmptyBorder());
 			this.selected = 0;
 		}
-
 	}
 
 	/**
@@ -157,11 +120,7 @@ public class BoardCell extends JPanel {
 		piece.setOpaque(false);
 		piece.setHorizontalAlignment(JLabel.CENTER);
 		piece.setVisible(true);
-		// piece.setVisible(true);
 		add(piece);
-		//this.revalidate();
-		//this.repaint();
-		//this.validate();
 	}
 
 	/**
