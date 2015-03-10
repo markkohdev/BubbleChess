@@ -12,10 +12,10 @@ import com.bubblechess.GUIBridge;
 import com.bubblechess.client.ServerHandler;
 
 public class MainApplicationWindow extends JFrame {
-
 	
+	private static MainApplicationWindow instance = null;	
 	// private JFrame frame;
-	protected GUIBridge bridge;
+	private GUIBridge bridge;
 	private int paneResult;
 	private JPanel previousPanel;
 	private int gamePlaying;
@@ -23,8 +23,7 @@ public class MainApplicationWindow extends JFrame {
 	/**
 	 * Create the application.
 	 */
-	public MainApplicationWindow(GUIBridge b) {	
-		this.bridge = b;
+	public MainApplicationWindow() {	
 		this.paneResult = -5;
 		this.gamePlaying = 0;
 		//frame = new JFrame();
@@ -35,6 +34,21 @@ public class MainApplicationWindow extends JFrame {
 		// LoginPanel lP = new LoginPanel();
 		// frame.setContentPane(lP);
 		// frame.setVisible(true);
+	}
+	
+	public static MainApplicationWindow getInstance() {
+		if (instance == null) {
+			instance = new MainApplicationWindow();
+		}
+		return instance;
+	}
+	
+	public void setBridge(GUIBridge b) {
+		this.bridge = b;
+	}
+	
+	public GUIBridge getBridge(){ 
+		return this.bridge;
 	}
 	
 	/**
@@ -97,6 +111,8 @@ public class MainApplicationWindow extends JFrame {
 	public void setGamePlaying(int i) { 
 		this.gamePlaying = i;
 	}
+	
+
 	
 	/** 
 	 * Starts the login Panel. Property Listens is watching for when the loginState

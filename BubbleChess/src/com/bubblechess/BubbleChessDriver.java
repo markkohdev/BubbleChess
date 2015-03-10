@@ -1,9 +1,9 @@
 package com.bubblechess;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.bubblechess.client.*;
 import com.bubblechess.gui.*;
-
 
 import org.json.simple.*;
 
@@ -19,11 +19,12 @@ public class BubbleChessDriver {
 		ServerHandler server = new ServerHandler("144.118.48.18",8080);		
 		GUIBridge bridge = new GUIBridge(server);
 		LoginPanel login = new LoginPanel();
-		MainApplicationWindow mainAppWindow = new MainApplicationWindow(bridge);
+		MainApplicationWindow mainAppWindow = MainApplicationWindow.getInstance();
+		mainAppWindow.setBridge(bridge);
 		mainAppWindow.addPanel(login);
 		mainAppWindow.setFrameVisible(true);
 		
-		close = appMenus(mainAppWindow, bridge);
+		close = appMenus();
 		
 		
 		if (close != 1) {
@@ -48,10 +49,12 @@ public class BubbleChessDriver {
 		
 		
 		
-	private static int appMenus(MainApplicationWindow mainAppWindow, GUIBridge bridge) {
+	public static int appMenus() {
 		int close = 0;
 		int gameID = 0;
 		int userColor = 0;
+		MainApplicationWindow mainAppWindow = MainApplicationWindow.getInstance();
+		GUIBridge b = mainAppWindow.getBridge();
 		// 1 white, 2 black
 		int gamePlaying = mainAppWindow.isGamePlaying();
 		while(gamePlaying == 0) {
@@ -80,11 +83,15 @@ public class BubbleChessDriver {
 				break;
 			case 5:
 				// JoinGame
+				b = mainAppWindow.getBridge();
+				ArrayList<Integer> games = b.GetJoinableGames();
+				JoinPanel joinP = new JoinPanel(games);
 				
 				break;
 			case 6:
 				// gameplay
-				userColor = bridge.GetPlayerNumber();
+				b = mainAppWindow.getBridge();
+				userColor = b.GetPlayerNumber();
 				if(userColor != 0) {
 					GamePlayPanel gamePanel = new GamePlayPanel(userColor);
 					mainAppWindow.addPanel(gamePanel);

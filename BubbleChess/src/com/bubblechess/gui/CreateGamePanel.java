@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 
+import com.bubblechess.GUIBridge;
+
 public class CreateGamePanel extends JPanel {
 	
 	private JComboBox colorDropDown;
@@ -83,9 +85,10 @@ public class CreateGamePanel extends JPanel {
 	}
 	
 	public void tryCreateGame() {
-		MainApplicationWindow mainWin = (MainApplicationWindow)this.getParent();
+		MainApplicationWindow mainWin = MainApplicationWindow.getInstance();
 		int color = this.getSelectedColor();
-		int result = mainWin.bridge.CreateGame(color);
+		GUIBridge b = mainWin.getBridge();
+		int result = b.CreateGame(color);
 		if(result < 0) {
 			setErrorLabel("Error Creating Game");			
 		}

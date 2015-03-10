@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import com.bubblechess.GUIBridge;
+
 
 public class RegisterPanel extends JPanel {
 
@@ -93,11 +95,12 @@ public class RegisterPanel extends JPanel {
 	}
 	
 	public void tryRegister() { 
-		MainApplicationWindow mainWin = (MainApplicationWindow) this.getParent();
+		MainApplicationWindow mainWin = MainApplicationWindow.getInstance();
 		String password = this.getPassword();
 		String userName = this.getUserName();
+		GUIBridge b = mainWin.getBridge();
 		
-		int result = mainWin.bridge.Register(userName, password);
+		int result = b.Register(userName, password);
 		if (result >= 0) {
 			mainWin.setPaneResult(3);
 		}

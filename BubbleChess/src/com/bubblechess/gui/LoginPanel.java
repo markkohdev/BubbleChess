@@ -29,7 +29,7 @@ public class LoginPanel extends JPanel {
 	/**
 	 * Login states: 0 Waiting, 1 TryLogin, 2 CreateUser, 3 Continue as guest
 	 */
-	private int loginState;
+	//private int loginState;
 
 	
 
@@ -38,7 +38,7 @@ public class LoginPanel extends JPanel {
 	 * Create the panel. Adds Listeners for all 3 Buttons and changes the login state when activated
 	 */
 	public LoginPanel() {
-		this.setLoginState(0);
+		//this.setLoginState(0);
 		setBackground(Color.LIGHT_GRAY);
 		setPreferredSize(new Dimension(1024,768));
 		setLayout(null);
@@ -126,11 +126,12 @@ public class LoginPanel extends JPanel {
 	
 	
 	public void tryLogin() {
-		MainApplicationWindow appWin = (MainApplicationWindow)this.getParent();
+		MainApplicationWindow appWin = MainApplicationWindow.getInstance();
 		String userName = getUserName();
 		String password = getPassword();
+		GUIBridge b = appWin.getBridge();
 		
-		int result = appWin.bridge.Login(userName, password);
+		int result = b.Login(userName, password);
 		
 		if(result >= 0) {
 			appWin.setPaneResult(3);
@@ -144,8 +145,9 @@ public class LoginPanel extends JPanel {
 	}
 	
 	public void continueAsGuest() { 
-		MainApplicationWindow appWin = (MainApplicationWindow)this.getParent();
-		int result = appWin.bridge.ContinueAsGuest();
+		MainApplicationWindow appWin = MainApplicationWindow.getInstance();
+		GUIBridge b = appWin.getBridge();
+		int result = b.ContinueAsGuest();
 		
 		if(result >= 0) { 
 			appWin.setPaneResult(3);
@@ -157,7 +159,7 @@ public class LoginPanel extends JPanel {
 	}
 	
 	public void goToRegister() {
-		MainApplicationWindow appWin = (MainApplicationWindow)this.getParent();
+		MainApplicationWindow appWin = MainApplicationWindow.getInstance();
 		appWin.setPaneResult(2);
 	}
 	
@@ -165,11 +167,11 @@ public class LoginPanel extends JPanel {
 	 * Chenges the login state and fires off a property Change
 	 * @param state
 	 */
-	public void setLoginState(int state) {
+	/*public void setLoginState(int state) {
 		int oldValue = this.loginState;
 		this.loginState = state;
 		firePropertyChange("loginState", oldValue, this.loginState);
-	}
+	}*/
 	
 
 	/**
@@ -184,9 +186,9 @@ public class LoginPanel extends JPanel {
 	 * gets login state
 	 * @return loginState
 	 */
-	public int getLoginState() {
+	/*public int getLoginState() {
 		return this.loginState;
-	}
+	}*/
 	/**
 	 * gets username entered in textfield
 	 * @return username

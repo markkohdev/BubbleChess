@@ -51,7 +51,7 @@ public class MainMenuPanel extends JPanel {
 		btnLogout.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				changePane(1);
+				changePane(7);
 			}
 		});
 		btnLogout.setBounds(412, 428, 152, 58);
@@ -66,7 +66,7 @@ public class MainMenuPanel extends JPanel {
 	}
 	
 	public void changePane(int i) {
-		MainApplicationWindow mainWin = (MainApplicationWindow)this.getParent();
+		MainApplicationWindow mainWin = MainApplicationWindow.getInstance();
 		mainWin.setPaneResult(i);
 	}
 }
