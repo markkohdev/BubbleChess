@@ -1,8 +1,10 @@
 package com.bubblechess.tests;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
@@ -20,8 +22,6 @@ public class ServerTest {
 	
 	protected RequestHandler _requestHandle;
 	protected ServerInstance _si;
-	protected PrintWriter _printWriter;
-	protected StringWriter _console;
 	
 	/**
 	 * Anything needed to be done before all tests
@@ -30,8 +30,8 @@ public class ServerTest {
 	public void setUp() {
 		_requestHandle = null;
 		_si = new ServerInstance();
-		_console = new StringWriter();
-		_printWriter = new PrintWriter(_console, true);
+		ChessDB cdb = new ChessDB(true);
+		cdb.createTables();
 	}
 	
 	/**
@@ -42,22 +42,35 @@ public class ServerTest {
 	}
 	
 	/**
+	 * Returns result from the request handler
+	 * @return
+	 */
+	private String getResult(RequestHandler requestHandle) {
+		while (requestHandle.getResults() == null) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return _requestHandle.getResults();
+	}
+	
+	/**
 	 * Test 29 to see if user is created
 	 */
 	@Test
 	public void createUser() {
 		String request = "{\"request\":\"createUser\",\"password\":\"testPass\",\"username\":\"testUser\"}";
-		_requestHandle = new RequestHandler(null, _si, request, _printWriter);
+		_requestHandle = new RequestHandler(null, _si, request, System.out);
 		_requestHandle.start();
 		
 		JSONObject json = new JSONObject();
 		json.put("result", "success");
 		json.put("userID", '1');
-		
-		System.out.println(json.toJSONString());
-		System.out.println(_console.toString());
-		
-		Assert.assertEquals(0, 0);
+
+		Assert.assertEquals(json.toJSONString(), getResult(_requestHandle));
 		
 		/*{"request":"checkLogin","password":"rocks","username":"Eric"}
 		{"request":"getJoinableGames"}
@@ -67,19 +80,15 @@ public class ServerTest {
 		*/
 	}
 	
-	/*@Test
-	public void createUser2(){
+	@Test
+	public void createUserFail() {
 		String request = "{\"request\":\"createUser\",\"password\":\"testPass\",\"username\":\"testUser\"}";
-		//_toServer.println(request);
+		_requestHandle = new RequestHandler(null, _si, request, System.out);
+		_requestHandle.start();
 		
-		int result = 0;
-		Assert.assertEquals(0, result);
-		
-		/*{"request":"checkLogin","password":"rocks","username":"Eric"}
-		{"request":"getJoinableGames"}
-		{"gameID":13,"request":"joinGame","userID":2}
-		{"gameID":13,"request":"checkForMove","user":2}
-		{"playerNumber":1,"userID":1,"gameID":13,"request":"getOpponent"}
-		
-	}*/
+		JSONObject json = new JSONObject();
+		json.put("result", "username already exists");
+
+		Assert.assertEquals(json.toJSONString(), getResult(_requestHandle));	
+	}
 }

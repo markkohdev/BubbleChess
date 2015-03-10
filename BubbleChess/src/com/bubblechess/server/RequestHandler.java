@@ -15,10 +15,12 @@ import org.json.simple.parser.ParseException;
 public class RequestHandler extends Thread {
 	private Socket _clientSocket = null;
 	private ServerInstance _server = null;
-	protected PrintWriter _toClient;
+	protected PrintStream _toClient;
 	protected BufferedReader _in;
 	protected String _request;
 	protected boolean _isTest = false;
+	protected String _response;
+	private String _results;
 	
 	protected ChessDB _cdb;
 	
@@ -34,7 +36,7 @@ public class RequestHandler extends Thread {
 		_cdb = new ChessDB(false);
 		
 		try {	
-				_toClient = new PrintWriter(_clientSocket.getOutputStream(), true);
+				_toClient = new PrintStream(_clientSocket.getOutputStream());
 				_in = new BufferedReader(new InputStreamReader(_clientSocket.getInputStream()));
 				_request = _in.readLine();
 		} catch (IOException e) {
@@ -49,13 +51,13 @@ public class RequestHandler extends Thread {
 	 * @param server
 	 * @param isTest
 	 */
-	public RequestHandler(Socket clientSocket, ServerInstance server, String request, PrintWriter client) {
+	public RequestHandler(Socket clientSocket, ServerInstance server, String request, PrintStream stream) {
 		// TODO Auto-generated constructor stub
 		_clientSocket = clientSocket;
 		_server = server;
 		_cdb = new ChessDB(true);
 		
-		_toClient = client;
+		_toClient = stream;
 		_request = request;
 		_isTest = true;
 	}
@@ -130,9 +132,7 @@ public class RequestHandler extends Thread {
             //String request = "{ \"request\": \"joinGame\",\"userID\": \"1234\",\"gameID\": \"1234\"}";
 			
             //JSON parsing
-			if(!_isTest) {
-				System.out.println(_request);
-			}
+			System.out.println(_request);
 
     		JSONObject obj = (JSONObject) JSONValue.parse(_request);
             String requestString = (String) obj.get("request");
@@ -142,7 +142,6 @@ public class RequestHandler extends Thread {
 		    		String username = (String) obj.get("username");
 		    		String password = (String) obj.get("password");
 		    		
-		    		// TODO: Confirm no user
 		    		//Method to create a user
 		    		JSONObject json;
 		    		
@@ -159,7 +158,7 @@ public class RequestHandler extends Thread {
 			    		json.put("result", "success");
 			    		json.put("userID", userid);
 		    		}
-
+		    		
 		    		sendToClient(json.toJSONString());
 		    	break;
 		        case "checkLogin":
@@ -357,9 +356,6 @@ public class RequestHandler extends Thread {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-            
-        //DataOutputStream out = new DataOutputStream(server.getOutputStream());
-        //out.writeUTF("Thank you for connecting to " + server.getLocalSocketAddress() + "\nGoodbye!");
 		
 		finally {
 			try {
@@ -378,12 +374,11 @@ public class RequestHandler extends Thread {
 	 * @param results
 	 */
 	public void sendToClient(String results) {
-		if(_isTest) {
-			_toClient.println(results);
-			System.out.println(results);
-		}
-		else {
-			_toClient.println(results);
-		}
+		_toClient.println(results);
+		_results = results;
+	}
+	
+	public String getResults() {
+		return _results;
 	}
 }
