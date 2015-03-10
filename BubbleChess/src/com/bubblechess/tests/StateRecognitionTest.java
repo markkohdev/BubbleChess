@@ -15,18 +15,24 @@ import com.bubblechess.client.Game;
 import com.bubblechess.client.Move;
 import com.bubblechess.client.User;
 
-public class GamePlayTest {
+public class StateRecognitionTest {
 	private Game game;
 	private Board chessboard;
 	private User user1, user2;
 	private int gameid = 1;
+	private String fen = "";
 	
 	/**
 	 * Anything needed to be done before all tests
 	 */
 	@Before
 	public void setUp() {
-		chessboard = new ChessBoard();
+		if (fen.isEmpty()){
+			chessboard = new ChessBoard();
+		}
+		else{
+			chessboard = new ChessBoard(fen);
+		}		
 		game = new Game(gameid, user1, user2, chessboard);
 	}
 	
@@ -35,12 +41,33 @@ public class GamePlayTest {
 	 */
 	@After
 	public void tearDown() {
-		
+		chessboard = null;
+		game = null;
+		fen = "";
 	}
 	
-	/*public static junit.framework.Test suite(){
-		return new junit.framework.JUnit4TestAdapter(GamePlayTest.class);
-	}*/
+	/**
+	 * Test that the state is BLACK_MOVE after White makes a move
+	 */
+	@Test
+	public void checkBlacktoMove(){
+		setUp();
+		game.playMove(new Move(new int[]{4,1}, new int[]{4,3}));
+		Assert.assertEquals("Black to Move", game.getBoard().getState());
+		tearDown();
+	}
+	
+	/**
+	 * Test that the state is WHITE_MOVE after Black makes a move
+	 */
+	@Test
+	public void checkWhitetoMove(){
+		setUp();
+		game.playMove(new Move(new int[]{4,1}, new int[]{4,3}));
+		game.playMove(new Move(new int[]{4,6}, new int[]{4,4}));
+		Assert.assertEquals("White to Move", game.getBoard().getState());
+		tearDown();
+	}
 	
 	/**
 	 * Test that the board automatically recognizes checkmate
@@ -49,18 +76,21 @@ public class GamePlayTest {
 	@Test
 	public void recognizeCheckmate() {
 		//Fool's Mate!
-		String fen = "rnb-kbnr/pppp-ppp/--------/----p---/-----PPq/--------/PPPPP--P/RNBQKBNR w KQkq - 0 2";
-		chessboard = new ChessBoard(fen);
+		fen = "rnb-kbnr/pppp-ppp/--------/----p---/-----PPq/--------/PPPPP--P/RNBQKBNR w KQkq - 0 2";
+		setUp();
 		
 		String result = chessboard.getState();
 		Assert.assertEquals("Checkmate", result);
 		
+		tearDown();
+		
 		//Scholar's Mate
 		fen = "r-bqk-nr/pppp-Qpp/--n-----/--b-p---/--B-P---/--------/PPPP-PPP/RNB-K-NR b KQkq - 0 3";
-		chessboard = new ChessBoard(fen);
-		result = chessboard.getState();
+		setUp();
 		
-		Assert.assertEquals("Checkmate", result);
+		Assert.assertEquals("Checkmate", chessboard.getState());
+		
+		tearDown();
 	}
 	
 	/**
@@ -69,17 +99,19 @@ public class GamePlayTest {
 	 */
 	@Test
 	public void recognizeStalemate() {
-		String fen = "-----bnr/----p-pq/----Qpkr/-------p/-------P/----P---/PPPP-PP-/RNB-KBNR b KQkq - 0 10";
-		chessboard = new ChessBoard(fen);
+		fen = "-----bnr/----p-pq/----Qpkr/-------p/-------P/----P---/PPPP-PP-/RNB-KBNR b KQkq - 0 10";
+		setUp();
 		
-		String result = chessboard.getState();
-		Assert.assertEquals("Stalemate", result);
+		Assert.assertEquals("Stalemate", chessboard.getState());
+		
+		tearDown();
 		
 		fen = "--------/--------/--------/--------/--------/----k---/----p---/----K--- w KQkq - 0 60";
-		chessboard = new ChessBoard(fen);
-		result = chessboard.getState();
+		setUp();
 		
-		Assert.assertEquals("Stalemate", result);
+		Assert.assertEquals("Stalemate", chessboard.getState());
+		
+		tearDown();
 	}
 	
 	/**
@@ -87,8 +119,8 @@ public class GamePlayTest {
 	 */
 	@Test
 	public void loadGame(){
-		String fen = "rnbqkbnr/pppppppp/--------/--------/--------/--------/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
+		fen = "rnbqkbnr/pppppppp/--------/--------/--------/--------/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+		setUp();
 		
 		ChessBoard newGame = new ChessBoard();
 			
@@ -111,6 +143,8 @@ public class GamePlayTest {
 		}
 		
 		Assert.assertEquals("White to Move", chessboard.getState());
+		
+		tearDown();
 	}
 	
 	/**
@@ -120,15 +154,19 @@ public class GamePlayTest {
 	 */
 	@Test
 	public void insufficientMaterial(){
-		String fen = "--------/---K----/--------/--n-----/--------/----k---/--------/-------- w KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
+		fen = "--------/---K----/--------/--n-----/--------/----k---/--------/-------- w KQkq - 0 1";
+		setUp();
 		
 		Assert.assertEquals("Draw", chessboard.getState());
+		
+		tearDown();
 		
 		fen = "--------/---K----/--------/--------/-----B--/----k---/--------/-------- w KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
+		setUp();
 		
 		Assert.assertEquals("Draw", chessboard.getState());
+		
+		tearDown();
 	}
 	
 	/**
