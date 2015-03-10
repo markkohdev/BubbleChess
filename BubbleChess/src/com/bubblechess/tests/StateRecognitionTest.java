@@ -53,7 +53,7 @@ public class StateRecognitionTest {
 	public void checkBlacktoMove(){
 		setUp();
 		game.playMove(new Move(new int[]{4,1}, new int[]{4,3}));
-		Assert.assertEquals("Black to Move", game.getBoard().getState());
+		Assert.assertEquals("Black to Move", game.getBoardState());
 		tearDown();
 	}
 	
@@ -65,7 +65,7 @@ public class StateRecognitionTest {
 		setUp();
 		game.playMove(new Move(new int[]{4,1}, new int[]{4,3}));
 		game.playMove(new Move(new int[]{4,6}, new int[]{4,4}));
-		Assert.assertEquals("White to Move", game.getBoard().getState());
+		Assert.assertEquals("White to Move", game.getBoardState());
 		tearDown();
 	}
 	

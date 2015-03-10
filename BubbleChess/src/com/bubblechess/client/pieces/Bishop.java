@@ -11,6 +11,7 @@ public class Bishop extends ChessPiece {
 	public Bishop(Color col) {
 		color = col;
 		dirs = new int[][]{NE,SE,SW,NW};
+		id=3;
 	}
 	
 	@Override

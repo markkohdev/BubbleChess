@@ -70,7 +70,7 @@ public class LoginPanel extends JPanel {
 		txtpnDontHaveAn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				continueAsGuest();
+				goToRegister();
 			}
 		});
 		txtpnDontHaveAn.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -90,7 +90,7 @@ public class LoginPanel extends JPanel {
 		btnContinueAsGuest.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				goToRegister();
+				continueAsGuest();
 			}
 		});
 		btnContinueAsGuest.setBounds(423, 508, 291, 23);
