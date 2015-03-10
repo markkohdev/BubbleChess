@@ -20,13 +20,20 @@ public class MoveValidationTest {
 	private Board chessboard;
 	private User user1, user2;
 	private int gameid = 1;
+	private String fen = "";
 	
 	/**
 	 * Anything needed to be done before all tests
 	 */
 	@Before
 	public void setUp() {
-		chessboard = new ChessBoard();
+		if (fen.isEmpty()){
+			chessboard = new ChessBoard();
+		}
+		else{
+			chessboard = new ChessBoard(fen);
+		}		
+		
 		game = new Game(gameid, user1, user2, chessboard);
 	}
 	
@@ -35,7 +42,7 @@ public class MoveValidationTest {
 	 */
 	@After
 	public void tearDown() {
-		
+		fen = "";
 	}
 	
 	/**
@@ -44,8 +51,8 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void kingInCheck(){
-		String fen = "K-------/--------/--------/-q------/--------/--------/--------/-------k w KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
+		fen = "K-------/--------/--------/-q------/--------/--------/--------/-------k w KQkq - 0 1";
+		setUp();
 		
 		ArrayList<Move> legalMoves = new ArrayList<Move>();
 		legalMoves.add(new Move(new int[]{0,7}, new int[]{0,6}));
@@ -57,6 +64,8 @@ public class MoveValidationTest {
 		Assert.assertEquals(legalMoves.get(0).from()[1], generatedMoves.get(0).from()[1]);
 		Assert.assertEquals(legalMoves.get(0).to()[0], generatedMoves.get(0).to()[0]);
 		Assert.assertEquals(legalMoves.get(0).to()[1], generatedMoves.get(0).to()[1]);
+		
+		tearDown();
 	}
 	
 	/**
@@ -66,8 +75,8 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void moveOnFriendlyPiece(){
-		String fen = "k-------/---p----/--prp---/--------/--------/---p----/--------/-------K b KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
+		fen = "k-------/---p----/--prp---/--------/--------/---p----/--------/-------K b KQkq - 0 1";
+		setUp();
 		
 		ArrayList<Move> generatedMoves = chessboard.getMoves(3,5);
 		ArrayList<Move> legalMoves = new ArrayList<Move>();
@@ -84,6 +93,7 @@ public class MoveValidationTest {
 			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
 		}
 		
+		tearDown();
 	}
 	
 	/**
@@ -92,8 +102,9 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void movePastEnemyPiece(){
-		String fen = "k-------/---p----/--prp---/--------/--------/---P----/--------/-------K b KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
+		fen = "k-------/---p----/--prp---/--------/--------/---P----/--------/-------K b KQkq - 0 1";
+		setUp();
+		
 		Move illegalMove = new Move(new int[]{3,5}, new int[]{3,1});
 		ArrayList<Move> generatedMoves = chessboard.getMoves(3,5);
 		
@@ -107,6 +118,7 @@ public class MoveValidationTest {
 			}
 		}
 
+		tearDown();
 	}
 	
 	/**
@@ -115,8 +127,8 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void kingMoves(){
-		String fen = "-----k--/--------/--------/---K----/--------/--------/--P-----/-------- b KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
+		fen = "-----k--/--------/--------/---K----/--------/--------/--P-----/-------- b KQkq - 0 1";
+		setUp();
 		
 		ArrayList<Move> generatedMoves = chessboard.getMoves(3,4);
 		ArrayList<Move> legalMoves = new ArrayList<Move>();
@@ -138,6 +150,8 @@ public class MoveValidationTest {
 			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);
 			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
 		}
+		
+		tearDown();
 	}
 	
 	/**
@@ -147,6 +161,7 @@ public class MoveValidationTest {
 	@Test
 	public void castling(){
 		setUp();
+		
 		//Sample game
 		game.playMove(new Move(new int[]{4,1}, new int[]{4,3}));
 		game.playMove(new Move(new int[]{4,6}, new int[]{4,4}));
@@ -184,6 +199,7 @@ public class MoveValidationTest {
 		}
 		fail();
 		
+		tearDown();
 	}
 	
 	/**
@@ -195,8 +211,8 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void castlingBlocked(){
-		String fen = "-----k--/--------/--------/--------/--------/------r-/--------/----K--R w KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
+		fen = "-----k--/--------/--------/--------/--------/------r-/--------/----K--R w KQkq - 0 1";
+		setUp();
 		
 		Move whitecastle = new Move(new int[]{4,0}, new int[]{6,0});
 		ArrayList<Move> whiteKingMoves = chessboard.getMoves(4,0);
@@ -212,7 +228,7 @@ public class MoveValidationTest {
 		}
 		
 		fen = "-----k--/--------/--------/--------/--------/-----r--/--------/----K--R w KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
+		setUp();
 		
 		whitecastle = new Move(new int[]{4,0}, new int[]{6,0});
 		whiteKingMoves = chessboard.getMoves(4,0);
@@ -228,7 +244,7 @@ public class MoveValidationTest {
 		}
 		
 		fen = "-----k--/--------/--------/--------/--------/----r---/--------/----K--R w KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
+		setUp();
 		
 		whitecastle = new Move(new int[]{4,0}, new int[]{6,0});
 		whiteKingMoves = chessboard.getMoves(4,0);
@@ -243,6 +259,7 @@ public class MoveValidationTest {
 			}
 		}
 		
+		tearDown();		
 	}
 	
 	/**
@@ -251,9 +268,8 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void castlingIfMoved(){
-		String fen = "r----k--/--------/--------/--------/--------/--------/--------/R---K--R w KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
-		game = new Game(gameid, user1, user2, chessboard);
+		fen = "r----k--/--------/--------/--------/--------/--------/--------/R---K--R w KQkq - 0 1";
+		setUp();
 		
 		Move kingside = new Move(new int[]{4,0}, new int[]{6,0});
 		Move queenside = new Move(new int[]{4,0}, new int[]{2,0});
@@ -297,6 +313,8 @@ public class MoveValidationTest {
 		}
 		
 		fail();
+		
+		tearDown();
 	}
 	
 	/**
@@ -305,8 +323,8 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void rookMoves(){
-		String fen = "k-------/--------/--------/----R---/--------/--------/--------/-------K w KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
+		fen = "k-------/--------/--------/----R---/--------/--------/--------/-------K w KQkq - 0 1";
+		setUp();
 		
 		ArrayList<Move> generatedMoves = chessboard.getMoves(4,4);
 		ArrayList<Move> legalMoves = new ArrayList<Move>();
@@ -334,6 +352,8 @@ public class MoveValidationTest {
 			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);
 			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
 		}
+		
+		tearDown();
 	}
 	
 	/**
@@ -342,8 +362,8 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void knightMoves(){
-		String fen = "k-------/--------/--------/----N---/--------/--------/--------/-------K w KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
+		fen = "k-------/--------/--------/----N---/--------/--------/--------/-------K w KQkq - 0 1";
+		setUp();
 		
 		ArrayList<Move> generatedMoves = chessboard.getMoves(4,4);
 		ArrayList<Move> legalMoves = new ArrayList<Move>();
@@ -365,6 +385,8 @@ public class MoveValidationTest {
 			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);
 			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
 		}
+		
+		tearDown();
 	}
 	
 	/**
@@ -373,8 +395,8 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void bishopMoves(){
-		String fen = "k-------/--------/--------/----B---/--------/--------/--------/-------K w KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
+		fen = "k-------/--------/--------/----B---/--------/--------/--------/-------K w KQkq - 0 1";
+		setUp();
 		
 		ArrayList<Move> generatedMoves = chessboard.getMoves(4,4);
 		ArrayList<Move> legalMoves = new ArrayList<Move>();
@@ -401,6 +423,8 @@ public class MoveValidationTest {
 			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);
 			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
 		}
+		
+		tearDown();
 	}
 	
 	/**
@@ -409,8 +433,8 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void queenMoves(){
-		String fen = "k-------/--------/--------/----Q---/--------/--------/--------/-------K w KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
+		fen = "k-------/--------/--------/----Q---/--------/--------/--------/-------K w KQkq - 0 1";
+		setUp();
 		
 		ArrayList<Move> generatedMoves = chessboard.getMoves(4,4);
 		ArrayList<Move> legalMoves = new ArrayList<Move>();
@@ -451,6 +475,8 @@ public class MoveValidationTest {
 			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);
 			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
 		}
+		
+		tearDown();
 	}
 	
 	/**
@@ -460,9 +486,9 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void pawnMoves(){
-		String fen = "k-------/--------/--------/--------/--------/--------/---PP---/-------K w KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
-		game = new Game(gameid, user1, user2, chessboard);
+		fen = "k-------/--------/--------/--------/--------/--------/---PP---/-------K w KQkq - 0 1";
+		setUp();
+		
 		game.playMove(new Move(new int[]{3,1}, new int[]{3,2}));
 		
 		ArrayList<Move> generatedMoves = chessboard.getMoves(4,1);
@@ -494,6 +520,8 @@ public class MoveValidationTest {
 			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);
 			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
 		}
+		
+		tearDown();
 	}
 	
 	/**
@@ -503,9 +531,9 @@ public class MoveValidationTest {
 	 */
 	@Test
 	public void pawnCapture(){
-		String fen = "k-------/--------/--------/---nn---/--------/----P---/--------/-------K w KQkq - 0 1";
-		chessboard = new ChessBoard(fen);
-		game = new Game(gameid, user1, user2, chessboard);
+		fen = "k-------/--------/--------/---nn---/--------/----P---/--------/-------K w KQkq - 0 1";
+		setUp();
+		
 		game.playMove(new Move(new int[]{4,2}, new int[]{4,3}));
 		
 		ArrayList<Move> generatedMoves = chessboard.getMoves(4,3);
@@ -522,6 +550,8 @@ public class MoveValidationTest {
 			Assert.assertEquals(legalMoves.get(i).to()[0], generatedMoves.get(i).to()[0]);
 			Assert.assertEquals(legalMoves.get(i).to()[1], generatedMoves.get(i).to()[1]);
 		}
+		
+		tearDown();
 	}
 	
 	/**
@@ -559,6 +589,8 @@ public class MoveValidationTest {
 		
 		//Roundabout way to check if the pawn has been removed
 		Assert.assertEquals(empty.size(), chessboard.getMoves(3,4).size());
+		
+		tearDown();
 	}
 	
 	/**
