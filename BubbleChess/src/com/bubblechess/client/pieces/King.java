@@ -12,6 +12,7 @@ public class King extends ChessPiece {
 		color = col;
 		hasMoved = false;
 		dirs = new int[][]{N,NE,E,SE,S,SW,W,NW};
+		id=0;
 	}
 	
 	@Override

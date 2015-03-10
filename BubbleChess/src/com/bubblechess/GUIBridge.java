@@ -259,7 +259,13 @@ public class GUIBridge {
 		if(!valid)
 			return false;
 		
+		//If we've reached the endgame by playing a move, we won
+		if(game.endState())
+			System.out.println("Game over, you are winner!");
+		
 		return server.SendMove(m, player.getID(), game.getID());
+		
+		
 	}
 	
 	public Move WaitForNextMove() {
@@ -270,6 +276,10 @@ public class GUIBridge {
 		Move next = server.CheckForMove(game.getID(),GetPlayerNumber());
 		
 		game.playMove(next);
+		
+		//If we've reached the endgame by playing a move, we won
+		if(game.endState())
+			System.out.println("Game over, you lose.");
 		
 		return next;
 	}
@@ -282,6 +292,22 @@ public class GUIBridge {
 		return game.endState();
 	}
 	
+	/**
+	 * Get a matrix of board pieces representing the board state
+	 * @return All pieces currently on the board
+	 */
+	public BoardPiece[][] GetBoard() {
+		return game.getBoard();
+	}
+	
+	/**
+	 * Get an array of captured BoardPieces
+	 * @return Captured pieces
+	 */
+	public BoardPiece[] GetCaptured() {
+		return game.getCaptured();
+	}
+	
 	
 	/**
 	 * Check if either player is in check
@@ -292,15 +318,14 @@ public class GUIBridge {
 		return game.InCheck();
 	}
 	
-	
-	public void TestServer(){
-		String testuser = "testuser";
-		String testpass = "testpass";
-		boolean creator = false;
+	/**
+	 * For testing a small game between two players
+	 */
+	public void TestServer(String username,String password,boolean creator){
 		
-		System.out.println("Register code: " + this.Register(testuser, testpass));
+		System.out.println("Register code: " + this.Register(username, password));
 		
-		System.out.println("Login code: " + this.Login(testuser, testpass));
+		System.out.println("Login code: " + this.Login(username, password));
 		
 		if (creator) {
 			System.out.println("Creating game...");

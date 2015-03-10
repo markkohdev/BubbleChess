@@ -13,6 +13,7 @@ public class Rook extends ChessPiece {
 		hasMoved = false;
 		
 		dirs = new int[][]{N,E,S,W};
+		id=2;
 	}
 
 	@Override

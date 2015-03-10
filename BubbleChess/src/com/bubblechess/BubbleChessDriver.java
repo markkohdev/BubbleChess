@@ -16,7 +16,7 @@ public class BubbleChessDriver {
 		int close = 0;
 		
 		//ServerHandler server = new ServerHandler("tux.cs.drexel.edu",8080);
-		ServerHandler server = new ServerHandler("144.110.117.17",8080);		
+		ServerHandler server = new ServerHandler("144.118.117.17",8080);		
 		GUIBridge bridge = new GUIBridge(server);
 		LoginPanel login = new LoginPanel();
 		MainApplicationWindow mainAppWindow = MainApplicationWindow.getInstance();

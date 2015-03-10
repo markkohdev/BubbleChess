@@ -166,7 +166,7 @@ public class ServerHandler {
 		json.put("password",password);
 		
 		toServer.println(json.toJSONString());
-		
+
 		//Wait for server response
 		JSONObject response;
 		try {

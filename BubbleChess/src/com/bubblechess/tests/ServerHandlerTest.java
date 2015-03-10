@@ -54,7 +54,7 @@ public class ServerHandlerTest extends ServerHandler {
 	}
 	
 	/**
-	 * #0 - Test login funcitonality
+	 * #1 - Test login funcitonality
 	 */
 	@Test
 	public void testLogin() {
@@ -107,7 +107,7 @@ public class ServerHandlerTest extends ServerHandler {
 		result = ContinueAsGuest();
 		Assert.assertEquals(result, 5);
 		
-		//Incorrect password
+		//unexpected
 		serverResult = new JSONObject();
 		serverResult.put("result","failure");
 		SendAsServer(serverResult);
@@ -115,6 +115,60 @@ public class ServerHandlerTest extends ServerHandler {
 		Assert.assertEquals(result, -1);
 	}
 	
+	/**
+	 * #0 - Test for Register
+	 */
+	@Test
+	public void testRegister() {
+		JSONObject serverResult;
+		int result;
+		
+		//Test correct register
+		serverResult = new JSONObject();
+		serverResult.put("result","success");
+		serverResult.put("userID",10);
+		SendAsServer(serverResult);
+		result = Register("testuser","testpass");
+		Assert.assertEquals(result, 10);
+		
+		//Existent username
+		serverResult = new JSONObject();
+		serverResult.put("result","username already exists");
+		SendAsServer(serverResult);
+		result = Register("testuser","testpass");
+		Assert.assertEquals(result, -1);
+		
+		//Unexpected
+		serverResult = new JSONObject();
+		serverResult.put("result","unexpected");
+		SendAsServer(serverResult);
+		result = Register("testuser","testpass");
+		Assert.assertEquals(result, -2);
+	}
+	
+	/**
+	 * #0 - Test for Register
+	 */
+	@Test
+	public void testCreateGame() {
+		JSONObject serverResult;
+		int result;
+		
+		//Valid game creation
+		serverResult = new JSONObject();
+		serverResult.put("result","success");
+		serverResult.put("gameID",1);
+		SendAsServer(serverResult);
+		result = CreateGame(1,1);
+		Assert.assertEquals(result, 1);
+		
+		//Invalid player number
+		serverResult = new JSONObject();
+		serverResult.put("result","failure");
+		SendAsServer(serverResult);
+		result = CreateGame(1,-1);
+		Assert.assertEquals(result, -1);
+	}
 	
 
 }
