@@ -61,73 +61,7 @@ public class RequestHandler extends Thread {
 	
 	public void run (){
 		try {
-            //Input
-            /* Basic Move JSON
-            { 
-            	"request": "insertMove"
-                "userID": 1234,
-                "gameID": 1,
-                "colFrom": 2,
-                "rowFrom": 2,
-                "colTo": 3,
-                "rowTo": 3
-            }
-            */
-            //String request="{ \"request\": \"insertMove\", \"userID\": 1234,\"gameID\": 1,\"colFrom\": 2,\"rowFrom\": 2,\"colTo\": 3,\"rowTo\": 3}";
-           
-            /* getAllMoves JSON
-            { 
-            	"request": "getAllMoves",
-                "gameID": 1
-            }
-            */
-            //String request = "{ \"request\": \"getAllMoves\",\"gameID\": 1}";
-            
-            
-            /* createUser JSON
-            { 
-            	"request": "getUser",
-                "username": "Test1",
-                "password": "pass1"
-            }
-            */
-            //String request = "{ \"request\": \"createUser\",\"username\": \"Test1\",\"password\": \"pass1\"}";
-            
-            /* getUser JSON
-            { 
-            	"request": "getUser",
-                "username": "Test1"
-            }
-            */
-            //String request = "{ \"request\": \"getUser\",\"username\": \"Test1\"}";
-            
-            /* checkUser JSON
-            { 
-            	"request": "checkUser",
-                "username": "Test1",
-                "password": "pass1"
-            }
-            */
-            //String request = "{ \"request\": \"checkUser\",\"username\": \"Test1\", \"password\": \"pass1\"}";
-            
-            /* createGame JSON
-            { 
-            	"request": "createGame",
-                "userID": "1234",
-                "userNumber": "user1"
-            }
-            */
-            //String request = "{ \"request\": \"createGame\",\"userID\": \"1234\",\"userNumber\": \"user1\"}";
-            
-            /* joinGame JSON
-            { 
-            	"request": "joinGame",
-                "userID": "1234",
-                "gameID": "1234"
-            }
-            */
-            //String request = "{ \"request\": \"joinGame\",\"userID\": \"1234\",\"gameID\": \"1234\"}";
-			
+
             //JSON parsing
 			System.out.println(_request);
 
