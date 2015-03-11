@@ -90,6 +90,14 @@ public class GameBoard extends JPanel {
 	}
 	
 	/**
+	 * Get the color of a piece on the board
+	 * @return 0 for blank, 1 for white, 2 for black
+	 */
+	public int GetPieceColor(int col, int row){
+		return squares[col][row].pieceColor();
+	}
+	
+	/**
 	 * Refresh the board by clearing it and readding the pieces
 	 * @param board
 	 */
@@ -105,6 +113,8 @@ public class GameBoard extends JPanel {
 				
 			}
 		}
+		
+		this.repaint();
 	}
 	
 	

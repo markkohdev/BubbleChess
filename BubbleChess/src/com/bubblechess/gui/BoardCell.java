@@ -20,6 +20,7 @@ public class BoardCell extends JPanel {
 	private boolean haveListener;
 	private boolean highlighted;
 	private GameBoard board;
+	private BoardPiece piece;
 
 	/**
 	 * Constructor for board cell
@@ -40,13 +41,13 @@ public class BoardCell extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 background = getBackground();
-                setBackground(Color.CYAN);
+                //setBackground(Color.CYAN);
                 repaint();
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-            	setBackground(background);
+            	//setBackground(background);
             	AlertClicked();
             	
             }
@@ -113,6 +114,7 @@ public class BoardCell extends JPanel {
 		} else {
 			this.setBorder(BorderFactory.createEmptyBorder());
 			this.highlighted = false;
+			this.repaint();
 		}
 	}
 	
@@ -123,26 +125,6 @@ public class BoardCell extends JPanel {
 	public boolean isHighlighted(){
 		return highlighted;
 	}
-
-	/**
-	 * Adds chess piece unicode as JLabel to cell
-	 * @param uni
-	 * @param c
-	 */
-	public void addChessPiece(String uni, Color c) {
-		Font pieceFont = new Font(Font.SANS_SERIF, Font.PLAIN, 50);
-		JLabel piece = new JLabel(uni);
-		piece.setFont(pieceFont);
-		piece.setForeground(c);
-		piece.setOpaque(false);
-		piece.setHorizontalAlignment(JLabel.CENTER);
-		piece.setVisible(true);
-		// piece.setVisible(true);
-		add(piece);
-		//this.revalidate();
-		//this.repaint();
-		//this.validate();
-	}
 	
 	/**
 	 * Clear all everything off the boardcell
@@ -150,6 +132,8 @@ public class BoardCell extends JPanel {
 	public void ClearPiece() {
 		this.removeAll();
 		this.highlightCell(false);
+		this.piece = null;
+		this.revalidate();
 	}
 
 	/**
@@ -176,16 +160,31 @@ public class BoardCell extends JPanel {
 					c = new Color(139,69,19);
 				}
 				
+				this.piece = boardPiece;
+				
 				Font pieceFont = new Font(Font.SANS_SERIF, Font.PLAIN, 50);
-				JLabel piece = new JLabel(pieceCodes[PieceType]);
-				piece.setFont(pieceFont);
-				piece.setForeground(c);
-				piece.setOpaque(false);
-				piece.setHorizontalAlignment(JLabel.CENTER);
-				piece.setVisible(true);
-				add(piece);
+				JLabel piecelabel = new JLabel(pieceCodes[PieceType]);
+				piecelabel.setFont(pieceFont);
+				piecelabel.setForeground(c);
+				piecelabel.setOpaque(false);
+				piecelabel.setHorizontalAlignment(JLabel.CENTER);
+				piecelabel.setVisible(true);
+				add(piecelabel);
 			}
+			
+			//this.revalidate();
 		}
+	}
+	
+	public int pieceColor() {
+		if (piece == null)
+			return 0;
+		else if (piece.getColor() == BoardPiece.PieceColor.WHITE)
+			return 1;
+		else if (piece.getColor() == BoardPiece.PieceColor.BLACK)
+			return 2;
+		else
+			return 0;
 	}
 
 }

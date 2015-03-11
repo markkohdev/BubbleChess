@@ -84,13 +84,15 @@ public class BubbleChessDriver {
 			mainAppWindow.addPanel(joinP);
 			break;
 		case 6:
-			// gameplay
+			// Created gameplay
 			WaitingForOppPanel waitingPanel = new WaitingForOppPanel(gameID);
 			mainAppWindow.addPanel(waitingPanel);
 			boolean haveOpponent = bridge.WaitForOpponent();
 			if(haveOpponent) {
 				GamePlayPanel gamePanel = new GamePlayPanel();
 				mainAppWindow.addPanel(gamePanel);
+				if (bridge.GetPlayerNumber() == 2)
+					gamePanel.OpponentTurn();
 			}
 			break;
 		case 7:

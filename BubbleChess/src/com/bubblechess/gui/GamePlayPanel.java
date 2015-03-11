@@ -73,13 +73,13 @@ public class GamePlayPanel extends JPanel {
 		
 		refreshBoard();
 		
-		
 	}
 	
 	
 	public void refreshBoard() {
 		if (!bridge.EndState()) {
 			board.RefreshBoard(getClientBoard());
+			this.repaint();
 			updateCapturedList();
 		}
 		else {
@@ -102,15 +102,18 @@ public class GamePlayPanel extends JPanel {
 	
 	public synchronized void SquareClicked(int col, int row) {
 		if (state == PanelState.PLAYER){
-			PlayableMoves = bridge.getMoves(col, row);
-			int[][] highlight = new int[PlayableMoves.size()][2];
-			for (int i=0;i<PlayableMoves.size();i++){
-				highlight[i][0] = PlayableMoves.get(i).colTo();
-				highlight[i][0] = PlayableMoves.get(i).rowTo();
+			if (playerNumber == board.GetPieceColor(col, row)) {
+				PlayableMoves = bridge.getMoves(col, row);
+				int[][] highlight = new int[PlayableMoves.size()][2];
+				for (int i=0;i<PlayableMoves.size();i++){
+					highlight[i][0] = PlayableMoves.get(i).colTo();
+					highlight[i][1] = PlayableMoves.get(i).rowTo();
+				}
+				board.HighlightSquares(highlight);
+				this.repaint();
+				
+				this.state = PanelState.HIGHLIGHTED;
 			}
-			board.HighlightSquares(highlight);
-			
-			this.state = PanelState.HIGHLIGHTED;
 		}
 		else if (state == PanelState.HIGHLIGHTED){
 			Move play = null;
@@ -125,7 +128,10 @@ public class GamePlayPanel extends JPanel {
 					System.out.println("Move play successful.");
 					PlayableMoves = null;
 					
+					//Show us our move
 					refreshBoard();
+					this.revalidate();
+					
 					//Wait for the opponent turn
 					OpponentTurn();
 				}
@@ -134,7 +140,7 @@ public class GamePlayPanel extends JPanel {
 				board.clearHighlights();
 				//PlayableMoves = null;
 				this.state = PanelState.PLAYER;
-				SquareClicked(col, row);
+				//SquareClicked(col, row);
 			}
 		}
 		else if (state == PanelState.OPPONENT) {
@@ -144,10 +150,13 @@ public class GamePlayPanel extends JPanel {
 	}
 	
 	public void OpponentTurn(){
+		//Make clicking useless and wait for a move
 		state = PanelState.OPPONENT;
 		bridge.WaitForNextMove();
-		refreshBoard();
 		
+		//We've gotten a move, show it to us
+		refreshBoard();
+		state = PanelState.PLAYER;
 	}
 	
 	public void updateCapturedList() {
