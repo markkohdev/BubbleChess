@@ -12,7 +12,7 @@ public class Knight extends ChessPiece {
 	 * Constructor for the Knight Piece
 	 * @param col
 	 */
-	public Knight(Color col) {
+	public Knight(PieceColor col) {
 		color = col;
 		
 		// Modify directional vectors for knight movement

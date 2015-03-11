@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public abstract class ChessPiece implements BoardPiece {
 
-	protected Color color;
+	protected PieceColor color;
 	protected int[][] dirs;
 	protected boolean hasMoved;
 	protected int id = -1;
@@ -48,7 +48,7 @@ public abstract class ChessPiece implements BoardPiece {
 	 * Returns the color of this piece
 	 * @return Color.WHITE or Color.BLACK
 	 */
-	public Color getColor() {
+	public PieceColor getColor() {
 		return color;
 	}
 	

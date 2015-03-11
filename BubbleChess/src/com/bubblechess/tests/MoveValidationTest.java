@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import com.bubblechess.client.Board;
 import com.bubblechess.client.BoardPiece;
-import com.bubblechess.client.BoardPiece.Color;
+import com.bubblechess.client.BoardPiece.PieceColor;
 import com.bubblechess.client.ChessBoard;
 import com.bubblechess.client.ChessPiece;
 import com.bubblechess.client.Game;
@@ -81,14 +81,14 @@ public class MoveValidationTest {
 		fen = "k-------/--------/--------/---q----/--------/---K----/--------/-------- w KQkq - 0 1";
 		setUp();
 		
-		Assert.assertEquals(true, chessboard.inCheck(Color.WHITE));
+		Assert.assertEquals(true, chessboard.inCheck(PieceColor.WHITE));
 		
 		tearDown();
 		
 		fen = "K-------/--------/--------/---Q----/--------/---k----/--------/-------- b KQkq - 0 1";
 		setUp();
 		
-		Assert.assertEquals(true, chessboard.inCheck(Color.BLACK));
+		Assert.assertEquals(true, chessboard.inCheck(PieceColor.BLACK));
 		
 		tearDown();
 	}

@@ -14,7 +14,6 @@ import com.bubblechess.client.ServerHandler;
 public class MainApplicationWindow extends JFrame {
 	
 	private static MainApplicationWindow instance = null;	
-	// private JFrame frame;
 	private GUIBridge bridge;
 	private int paneResult;
 	private JPanel previousPanel;
@@ -26,16 +25,14 @@ public class MainApplicationWindow extends JFrame {
 	public MainApplicationWindow() {	
 		this.paneResult = -5;
 		this.gamePlaying = 0;
-		//frame = new JFrame();
 		setBounds(0, 0, 1024, 768);
-		//frame.setBounds(100, 100, 450, 300);
-		//frame.setPreferredSize(new Dimension(1024,768));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// LoginPanel lP = new LoginPanel();
-		// frame.setContentPane(lP);
-		// frame.setVisible(true);
 	}
 	
+	/**
+	 * start an instance of the MainApplicationWindow class
+	 * @return instance of MainApplicationWindow
+	 */
 	public static MainApplicationWindow getInstance() {
 		if (instance == null) {
 			instance = new MainApplicationWindow();
@@ -43,10 +40,18 @@ public class MainApplicationWindow extends JFrame {
 		return instance;
 	}
 	
+	/**
+	 * Set the bridge to the input guibridge
+	 * @param b
+	 */
 	public void setBridge(GUIBridge b) {
 		this.bridge = b;
 	}
 	
+	/**
+	 * Get the guibridge
+	 * @return returns the gui bridge
+	 */
 	public GUIBridge getBridge(){ 
 		return this.bridge;
 	}
@@ -76,9 +81,14 @@ public class MainApplicationWindow extends JFrame {
 		this.resetPaneResult();
 	}
 	
+	/**
+	 * Remove previous main from JFrame
+	 */
 	public void removePreviousPanel(){
 		this.remove(this.previousPanel);
 	}
+	
+	
 	/**
 	 * Sets panel received as paramter to visible or not
 	 * @param panel
@@ -88,22 +98,30 @@ public class MainApplicationWindow extends JFrame {
 		panel.setVisible(b);
 	}
 	
+	
+	/**
+	 * Set the paneResult (next pane number) to i
+	 * @param i
+	 */
 	public void setPaneResult(int i) {
 		paneResult = i;
 	}
+	
+	
+	/**
+	 * Reset paneResult to 0
+	 */
 	public void resetPaneResult() { 
 		paneResult = 0;
 	}
 	
+	
+	/**
+	 * Get the pane result
+	 * @return paneResult
+	 */
 	public int getPaneResult() {
 		return this.paneResult;
 	}
-	
-	public void startMainMenu() {
-		
-	}
-	
-
-
 
 }

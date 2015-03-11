@@ -10,12 +10,12 @@ public class Pawn extends ChessPiece {
 
 	protected int[][] dirsWhite = {N,NE,NW};
 	protected int[][] dirsBlack = {S,SE,SW};
-	
+
 	/**
 	 * Constructor for the Pawn Piece
 	 * @param col
 	 */
-	public Pawn(Color col) {
+	public Pawn(PieceColor col) {
 		color = col;
 		hasMoved = false;
 		id=5;
@@ -31,7 +31,7 @@ public class Pawn extends ChessPiece {
 		int from[] = {x,y};
 		int to[] = new int[2];
 		
-		if (color == Color.WHITE) {
+		if (color == PieceColor.WHITE) {
 			for (int i=0;i<dirsWhite.length;i++) {
 				to[0] = x + dirsWhite[i][0]; // next x
 				to[1] = y + dirsWhite[i][1]; // next y
@@ -43,7 +43,7 @@ public class Pawn extends ChessPiece {
 			}
 		}
 		
-		if (color == Color.BLACK) {
+		if (color == PieceColor.BLACK) {
 			for (int i=0;i<dirsBlack.length;i++) {
 				to[0] = x + dirsBlack[i][0]; // next x
 				to[1] = y + dirsBlack[i][1]; // next y
@@ -70,12 +70,12 @@ public class Pawn extends ChessPiece {
 		
 		//Move forward two spaces on first move
 		if (hasMoved==false){
-			if (color==Color.WHITE){
+			if (color==PieceColor.WHITE){
 				to[0] = x;
 				to[1] = y+2;
 				moves.add(new Move(from, to));
 			}
-			if (color==Color.BLACK){
+			if (color==PieceColor.BLACK){
 				to[0] = x;
 				to[1] = y-2;
 				moves.add(new Move(from, to));
@@ -91,7 +91,7 @@ public class Pawn extends ChessPiece {
 	 */
 	@Override
 	public int[][] getDirs() {
-		if (this.getColor() == Color.WHITE) {
+		if (this.getColor() == PieceColor.WHITE) {
 			return dirsWhite;
 		}
 		return dirsBlack;

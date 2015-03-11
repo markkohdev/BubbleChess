@@ -22,11 +22,43 @@ public class ServerHandler {
 	 * @param hostname
 	 * @param port
 	 */
-	public ServerHandler(String hostname, int port){
+	public ServerHandler(String hostname, int port) throws Exception{
 		this.hostname = hostname;
 		this.port = port;
+		this.socket = null;
 		
-		//SetupConnection();
+		//Test connection
+		boolean success = TestConnection();
+		if (!success) {
+			throw new Exception("Unable to connect to gameplay server.");
+		}
+	}
+	
+	/**
+	 * Test the connection
+	 */
+	protected boolean TestConnection() {
+		if (socket == null) {
+			try {
+				socket = new Socket(hostname,port);
+				toServer = new PrintWriter(socket.getOutputStream(),true);
+				fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				
+				socket.close();
+				socket = null;
+				toServer = null;
+				fromServer = null;
+				
+				return true;
+			}
+			catch(UnknownHostException e){
+				System.out.println("Error: Not connected to server.  Unknown host.");
+				return false;
+			} catch (IOException e) {
+				return false;
+			}
+		}
+		return false;
 	}
 	
 	/**

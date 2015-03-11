@@ -5,12 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 
-
-
-
-
-
-
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -24,193 +18,142 @@ import java.awt.event.MouseEvent;
 
 public class GameBoard extends JPanel {
 	
-	private BoardCell boardCells[][];
+	private BoardCell squares[][];
 	private int selectedCol, selectedRow;	
-	
-	
-	
-	/**
-	 * Create MouseAdapter to trigger event for when pieces are clicked
-	 */
-	private MouseAdapter genericSelectListener = new MouseAdapter() { 
-		@Override
-		public void mouseClicked(MouseEvent arg0) {
-			BoardCell cell = (BoardCell) arg0.getComponent();
-			if (cell.isSelected() == 1) {
-				for(int i = 0; i < 8; i++) {
-					for(int j = 0; j < 8; j++) {
-						boardCells[i][j].selectCell(false);
-					}
-				}
-			}
-			else {
-				for(int i = 0; i < 8; i++) {
-					for(int j = 0; j < 8; j++) {
-						boardCells[i][j].selectCell(false);
-					}
-				}
-				cell.selectCell(true);
-				// getMoves(cell.getColumn(), cell.getRow());
-				
-			}			
-		}
-	};
-	
-	// Dark Square RGB: 92, 129, 152
-	// Light Square RGB: 140, 150, 155
+	private Color c1, c2;
+	protected int width;
+	protected int height;
+	protected GamePlayPanel game;
 	
 	/**
-	 * Constructor of GameBoard, adding pieces to board with players color on proper side
+	 * Constructor for the gameboard uses game and takes color to create it
+	 * @param game
 	 * @param color
 	 */
-	public GameBoard(BoardPiece[][] clientBoard, int color){
-		boardCells = new BoardCell[8][8];
+	public GameBoard(GamePlayPanel game, int color){
+		this.game = game;
+		
+		this.width = 8;
+		this.height = 8;
+		squares = new BoardCell[width][height];
 		setBackground(Color.WHITE);
 		setPreferredSize(new Dimension(500, 500));
 		setLayout(new GridLayout(8, 8));
-		setBounds(0,0,500,500);		
-		this.setCellColors();
-		this.addPiecesToCells(clientBoard, color);
-		this.addCellsToBoard(color);
-	}
+		setBounds(0,0,500,500);
 	
-	public void addCellsToBoard(int color) {
-		if(color == 1) {
-			for(int i = 0; i < 8; i++)
+		//White
+		if (color == 1) {
+			for(int row = height-1; row >= 0; row--)
 			{
-				for(int j = 0; j < 8; j++)
+				for(int col = 0; col < width; col++)
 				{
+					//Create empty cells with the appropriate cell color
+					BoardCell cell = new BoardCell(this);
+					cell.setColumn(col);
+					cell.setRow(row);
+					if((col+row)%2 != 0) {
+						cell.setBackColor(Color.white);	
+					}
+					else {
+						cell.setBackColor(Color.black);
+					}
 					
-					this.add(boardCells[i][j]);
-					
+					squares[col][row] = cell;
+					this.add(cell);
 				}
 				
 			}
-			
 		}
 		else {
-			for(int i = 7; i >= 0; i--)
+			for(int row = 0; row < height; row++)
 			{
-				for(int j = 7; j >= 0; j--)
+				for(int col = width -1; col >=0; col--)
 				{
+					//Create empty cells with the appropriate cell color
+					BoardCell cell = new BoardCell(this);
+					cell.setColumn(col);
+					cell.setRow(row);
+					if((col+row)%2 != 0) {
+						cell.setBackColor(Color.white);	
+					}
+					else {
+						cell.setBackColor(Color.black);
+					}
 					
-					this.add(boardCells[i][j]);
-					
+					squares[col][row] = cell;
+					this.add(cell);
 				}
 				
 			}
-			
-		}		
+		}
+		
 	}
 	
-	public void setCellColors() {
-		for(int i = 0; i < 8; i++)
-		{
-			for(int j = 0; j < 8; j++)
-			{
-				
-				BoardCell cell = new BoardCell();
-				cell.setColumn(j);
-				cell.setRow(i);
-				if((i+j)%2 == 0) {
-					cell.setBackColor(Color.white);	
-				}
-				else {
-					cell.setBackColor(Color.black);
-				}					
-				this.boardCells[i][j] = cell;	
-			}
-			
-		}
-	}
 	/**
-	 * Add Pieces to board using param to determine placement of pieces
-	 * @param color
+	 * Refresh the board by clearing it and readding the pieces
+	 * @param board
 	 */
-	public void addPiecesToCells(BoardPiece[][] clientBoard, int color) {		
-		//currentPawnPanel.changeListenerState(pieceListener);
-		Color c;
-		BoardPiece.Color whiteColor = BoardPiece.Color.WHITE;
-		for(int i = 0; i < 8; i++)
-		{
-			for(int j = 0; j < 8; i++) {
-				BoardPiece.Color pieceColor = clientBoard[i][j].getColor();
-				int pieceNumber = clientBoard[i][j].getPieceID();
-				if (pieceColor.compareTo(whiteColor) == 0) {
-					c = new Color(192,192,192);
-				}
-				else{
-					c = new Color(139,69,19);
-				}
-				String pieceUni = this.getPieceUnicode(pieceNumber);
-				boardCells[i][j].addChessPiece(pieceUni, c);
+	public void RefreshBoard(BoardPiece[][] board){
+		//Clear the board
+		//this.removeAll();
+		
+		for (int col=0; col <board.length; col ++){
+			for (int row = 0; row < board[col].length; row++){
+				
+				squares[col][row].ClearPiece();
+				squares[col][row].SetPiece(board[col][row]);
 				
 			}
 		}
 	}
 	
-	public String getPieceUnicode(int pieceNum) {
-		
-		String[] unicode = {"\u265A", "\u265B", "\u265C", "\u265D", "\u265E", "\u265F" };
-		String pieceUni;
-		switch(pieceNum) {
-			case 0: pieceUni = unicode[0];
-					break;
-			case 1: pieceUni = unicode[1];
-					break;
-			case 2: pieceUni = unicode[2];
-					break;
-			case 3: pieceUni = unicode[3];
-					break;
-			case 4: pieceUni = unicode[4];
-					break;
-			default: pieceUni = "";
-					break;
+	
+	/**
+	 * check if the cell is clicked
+	 * @param col
+	 * @param row
+	 */
+	public void CellClicked(int col, int row) {
+		System.out.println("Square clicked: ("+col +"," + row +")");
+		game.SquareClicked(col, row);
+	}
+	
+	
+	/**
+	 * highlight the cells inputed
+	 * @param highlight
+	 */
+	public void HighlightSquares(int[][] highlight) {
+		for(int i = 0; i < highlight.length; i++){
+			int col = highlight[i][0];
+			int row = highlight[i][1];
+			squares[col][row].highlightCell(true);
 		}
-		
-		return pieceUni;
-		
 	}
 	
 	/**
-	 * Function to start listeners for clients pieces are start of game
+	 * Check if square is highlighted
+	 * @param col
+	 * @param row
+	 * @return true if hightlighted, false if not
 	 */
-	public void startListeners() {
-		
+	public boolean SquareIsHighlighted(int col, int row){
+		return squares[col][row].isHighlighted();
 	}
+
 	
 	/**
-	 * Set selected piece col to param
-	 * @param c
+	 * clear all highlights on board
 	 */
-	public void setSelCol(int c) {
-		this.selectedCol = c;
+	public void clearHighlights() {
+		for (int col=0; col <width; col ++){
+			for (int row = 0; row < height; row++){
+				squares[col][row].highlightCell(false);
+			}
+		}
 	}
-	
-	
-	/**
-	 * Set selected piece row to param
-	 * @param r
-	 */
-	public void setSelRow(int r) {
-		this.selectedRow = r;
-	}
-	
-	/**
-	 * Get selected piece row
-	 * @return selectedRow
-	 */
-	public int getSelRow() { 
-		return this.selectedRow;
-	}
-	
-	/**
-	 * Get selected piece column
-	 * @return selectedCol
-	 */
-	public int getSelCol() { 
-		return this.selectedCol;
-	}
+
+
 
 
 }

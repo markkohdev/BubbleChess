@@ -10,45 +10,55 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.bubblechess.client.BoardPiece;
+import com.bubblechess.client.BoardPiece.PieceColor;;
+
 public class BoardCell extends JPanel {
 
-	private int column;
+	private int col;
 	private int row;
 	private boolean haveListener;
-	private int selected;
-
-	/*
-	 * Below Comment Block not used. Will be Taken Out later on.
-	 * 
-	 * private MouseAdapter pieceListener = new MouseAdapter() {
-	 * 
-	 * @Override public void mouseClicked(MouseEvent arg0) { BoardCell cell =
-	 * (BoardCell) arg0.getComponent(); if (cell.isSelected() == 1) {
-	 * cell.selectCell(false); } else { cell.selectCell(true); } } };
-	 *
-
-	private MouseAdapter moveListener = new MouseAdapter() {
-		@Override
-		public void mouseClicked(MouseEvent arg0) {
-			
-			 BoardCell cell = (BoardCell) arg0.getComponent(); if
-			 (cell.getBorder() == null) { cell.selectCell(true); } else {
-			 cell.selectCell(false); } cell.changeListenerState(true);
-			 
-		}
-	}; */
+	private boolean highlighted;
+	private GameBoard board;
 
 	/**
-	 * Constructor
-	 * Create the panel.
+	 * Constructor for board cell
+	 * @param board
 	 */
-	public BoardCell() {
+	public BoardCell(GameBoard board) {
 
 		setLayout(new BorderLayout());
 		setBorder(BorderFactory.createEmptyBorder());
-		this.selected = 0;
+		this.highlighted = false;
 		this.haveListener = false;
+		this.board = board;
+		
+		
+		addMouseListener(new MouseAdapter() {
+            private Color background;
 
+            @Override
+            public void mousePressed(MouseEvent e) {
+                background = getBackground();
+                setBackground(Color.CYAN);
+                repaint();
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            	setBackground(background);
+            	AlertClicked();
+            	
+            }
+        });
+
+	}
+	
+	/**
+	 * Tell the board that the current cell was clicked
+	 */
+	public void AlertClicked(){
+		this.board.CellClicked(col, row);
 	}
 
 	/**
@@ -64,7 +74,7 @@ public class BoardCell extends JPanel {
 	 * @param i
 	 */
 	public void setColumn(int i) {
-		this.column = i;
+		this.col = i;
 	}
 
 	/**
@@ -88,60 +98,30 @@ public class BoardCell extends JPanel {
 	 * @return column
 	 */
 	public int getColumn() {
-		return this.column;
+		return this.col;
 	}
 	
-
 	/**
-	 * Changes haveListen to true/false and adds/removes MouseAdapter param as mouse listener for cell
-	 * @param b
-	 * @param listener
+	 * Set a border to highlight the cell
+	 * @param highlight
 	 */
-	public void changeListenerState(MouseAdapter listener) {
-			this.addMouseListener(listener);
-	}
-
-	/* Function not used. changeListenState should be used instead.
-	 * Keeping function in case needed later on.
-	 * 
-	public void tempDisableListener(boolean b, MouseAdapter listener) {
-		if (b) {
-			this.removeMouseListener(listener);
-		} else {
-			this.addMouseListener(listener);
-		}
-	} */
-
-	/**
-	 * Checks if cell has listener
-	 * @return true Cell has listener added, false Call does not have listener added
-	 */
-	public boolean hasListener() {
-		return this.haveListener;
-	}
-
-	/**
-	 * Checks if cell is selected
-	 * @return 0 Not Select, 1 Selected
-	 */
-	public int isSelected() {
-		return this.selected;
-	}
-
-	/**
-	 * Adds selection border to screen
-	 * @param b
-	 */
-	public void selectCell(boolean b) {
-		if (b) {
+	public void highlightCell(boolean highlight) {
+		if (highlight) {
 			this.setBorder(BorderFactory.createBevelBorder(1, Color.GREEN,
 					Color.GREEN));
-			this.selected = 1;
+			this.highlighted = true;
 		} else {
 			this.setBorder(BorderFactory.createEmptyBorder());
-			this.selected = 0;
+			this.highlighted = false;
 		}
-
+	}
+	
+	/**
+	 * checks if cell is highlighted
+	 * @return
+	 */
+	public boolean isHighlighted(){
+		return highlighted;
 	}
 
 	/**
@@ -163,13 +143,49 @@ public class BoardCell extends JPanel {
 		//this.repaint();
 		//this.validate();
 	}
+	
+	/**
+	 * Clear all everything off the boardcell
+	 */
+	public void ClearPiece() {
+		this.removeAll();
+		this.highlightCell(false);
+	}
 
 	/**
-	 * Removes chess piece(JLabel) from cell.
-	 * @param piece
+	 * Set the piece on the board cell
+	 * @param boardPiece
 	 */
-	public void removeChessPiece(JLabel piece) {
-		this.remove(piece);
+	public void SetPiece(BoardPiece boardPiece) {
+		
+		if (boardPiece != null) {
+			// unicode	 =		{"king",   "queen",  "rook",   "bishop", "knight", "pawn" }  
+	        String[] pieceCodes = {"\u265A", "\u265B", "\u265C", "\u265D", "\u265E", "\u265F" };
+			
+			int PieceType = boardPiece.getPieceID();
+			
+			//If we have a piece, set it up
+			if (PieceType != -1) {
+				Color c;
+				
+				//Set up the color
+				if (boardPiece.getColor() == PieceColor.WHITE) {
+					c = new Color(192,192,192);
+				}
+				else {
+					c = new Color(139,69,19);
+				}
+				
+				Font pieceFont = new Font(Font.SANS_SERIF, Font.PLAIN, 50);
+				JLabel piece = new JLabel(pieceCodes[PieceType]);
+				piece.setFont(pieceFont);
+				piece.setForeground(c);
+				piece.setOpaque(false);
+				piece.setHorizontalAlignment(JLabel.CENTER);
+				piece.setVisible(true);
+				add(piece);
+			}
+		}
 	}
 
 }

@@ -2,7 +2,7 @@ package com.bubblechess.client;
 
 import java.util.ArrayList;
 
-import com.bubblechess.client.BoardPiece.Color;
+import com.bubblechess.client.BoardPiece.PieceColor;
 
 public interface Board {
 
@@ -108,6 +108,6 @@ public interface Board {
 	 * @param color
 	 * @return True if the player color is in check, False otherwise
 	 */
-	public boolean inCheck(Color color);
+	public boolean inCheck(PieceColor color);
 	
 }

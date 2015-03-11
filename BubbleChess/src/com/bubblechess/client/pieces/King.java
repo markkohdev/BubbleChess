@@ -12,7 +12,7 @@ public class King extends ChessPiece {
 	 * Constructor for the King Piece
 	 * @param col
 	 */
-	public King(Color col) {
+	public King(PieceColor col) {
 		color = col;
 		hasMoved = false;
 		dirs = new int[][]{N,NE,E,SE,S,SW,W,NW};
@@ -62,7 +62,7 @@ public class King extends ChessPiece {
 		int[] from = {x, y};
 		int to[] = new int[2];
 		//Castling may be possible if the white king is on e1 or the black king on e8
-		if (color==Color.WHITE && x == 4 && y == 0 && hasMoved == false) {
+		if (color==PieceColor.WHITE && x == 4 && y == 0 && hasMoved == false) {
 			to[0] = 6;
 			to[1] = 0;
 			moves.add(new Move(from, to));
@@ -71,7 +71,7 @@ public class King extends ChessPiece {
 			moves.add(new Move(from, to));
 		}
 		
-		if (color==Color.BLACK && x == 4 && y == 7 && hasMoved == false) {
+		if (color==PieceColor.BLACK && x == 4 && y == 7 && hasMoved == false) {
 			to[0] = 6;
 			to[1] = 7;
 			moves.add(new Move(from, to));

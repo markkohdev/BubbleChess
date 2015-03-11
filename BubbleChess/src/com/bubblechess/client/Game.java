@@ -177,9 +177,9 @@ public class Game {
 	 * @return 1 if white is in check, 2 if black is in check, 0 otherwise
 	 */
 	public int InCheck(){
-		if (board.inCheck(BoardPiece.Color.WHITE))
+		if (board.inCheck(BoardPiece.PieceColor.WHITE))
 			return 1;
-		else if (board.inCheck(BoardPiece.Color.BLACK))
+		else if (board.inCheck(BoardPiece.PieceColor.BLACK))
 			return 2;
 		else
 			return 0;

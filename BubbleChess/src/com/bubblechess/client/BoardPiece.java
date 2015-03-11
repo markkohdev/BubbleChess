@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public interface BoardPiece {
 
-	public enum Color {WHITE, BLACK};
+	public enum PieceColor {WHITE, BLACK};
 		
 	/**
 	 * Create a deep copy of the BoardPiece
@@ -33,7 +33,8 @@ public interface BoardPiece {
 	 * Get the piece's color (enum)
 	 * @return The piece's color
 	 */
-	public Color getColor();
+	public PieceColor getColor();
+	
 	
 	/**
 	 * Get the piece's ID number
