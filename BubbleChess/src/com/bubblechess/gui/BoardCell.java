@@ -133,7 +133,7 @@ public class BoardCell extends JPanel {
 		this.removeAll();
 		this.highlightCell(false);
 		this.piece = null;
-		this.revalidate();
+		this.repaint();
 	}
 
 	/**
@@ -172,7 +172,7 @@ public class BoardCell extends JPanel {
 				add(piecelabel);
 			}
 			
-			//this.revalidate();
+			this.repaint();
 		}
 	}
 	
