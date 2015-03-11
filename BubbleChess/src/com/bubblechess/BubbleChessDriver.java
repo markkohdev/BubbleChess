@@ -80,7 +80,6 @@ public class BubbleChessDriver {
 			break;
 		case 5:
 			// JoinGame
-			ArrayList<Integer> games = bridge.GetJoinableGames();
 			JoinPanel joinP = new JoinPanel();
 			mainAppWindow.addPanel(joinP);
 			break;
