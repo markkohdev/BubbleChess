@@ -124,7 +124,7 @@ public class GameBoard extends JPanel {
 	 * @param row
 	 */
 	public void CellClicked(int col, int row) {
-		System.out.println("Square clicked: ("+col +"," + row +")");
+		//System.out.println("Square clicked: ("+col +"," + row +")");
 		game.SquareClicked(col, row);
 	}
 	

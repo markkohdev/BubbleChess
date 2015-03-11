@@ -76,15 +76,13 @@ public class GamePlayPanel extends JPanel {
 	}
 	
 	
-	public synchronized void refreshBoard() {
+	public void refreshBoard() {
 		if (!bridge.EndState()) {
 			board.RefreshBoard(getClientBoard());
 			updateCapturedList();
 			this.revalidateBoard();
 			MainApplicationWindow mainWin = MainApplicationWindow.getInstance();
 			mainWin.revalidate();
-			mainWin.repaint();
-			mainWin.validate();
 		}
 		else {
 			MainApplicationWindow mainWin = MainApplicationWindow.getInstance();
@@ -105,9 +103,11 @@ public class GamePlayPanel extends JPanel {
 	}
 	
 	
-	public synchronized void SquareClicked(int col, int row) {
+	public void SquareClicked(int col, int row) {
 		if (state == PanelState.PLAYER){
 			if (playerNumber == board.GetPieceColor(col, row)) {
+				System.out.println("Player piece clicked.  Displaying possible moves.");
+				
 				PlayableMoves = bridge.getMoves(col, row);
 				int[][] highlight = new int[PlayableMoves.size()][2];
 				for (int i=0;i<PlayableMoves.size();i++){
@@ -115,7 +115,6 @@ public class GamePlayPanel extends JPanel {
 					highlight[i][1] = PlayableMoves.get(i).rowTo();
 				}
 				board.HighlightSquares(highlight);
-				this.revalidateBoard();
 				
 				this.state = PanelState.HIGHLIGHTED;
 			}
@@ -130,7 +129,7 @@ public class GamePlayPanel extends JPanel {
 			
 			if (play != null) {
 				if (bridge.PlayMove(play)) {
-					System.out.println("Move play successful.");
+					System.out.println("Desired move played.");
 					PlayableMoves = null;
 					
 					//Show us our move
@@ -141,14 +140,15 @@ public class GamePlayPanel extends JPanel {
 				}
 			}
 			else {
+				System.out.println("Clearing highlighted cells.");
 				board.clearHighlights();
-				//PlayableMoves = null;
 				this.state = PanelState.PLAYER;
-				//SquareClicked(col, row);
+				SquareClicked(col, row);
 			}
 		}
 		else if (state == PanelState.OPPONENT) {
 			//Opponent's turn - do nothing
+			System.out.println("Piece clicked while waiting for opponent.");
 		}
 		
 	}
@@ -156,10 +156,20 @@ public class GamePlayPanel extends JPanel {
 	public void OpponentTurn(){
 		//Make clicking useless and wait for a move
 		state = PanelState.OPPONENT;
-		bridge.WaitForNextMove();
 		
+		Thread listener = new Thread(new OpponentMoveListener(this,bridge));
+		listener.start();
+		
+		System.out.println("Panel moving forward");
+	}
+	
+	public void OpponentMoveRecieved() {
+		
+		System.out.println("Panel recieved refresh request");
 		//We've gotten a move, show it to us
 		refreshBoard();
+		
+		//Allow us to make moves again
 		state = PanelState.PLAYER;
 	}
 	
