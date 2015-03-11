@@ -139,6 +139,17 @@ public class GUIBridge {
 	}
 	
 	/**
+	 * Get the ID of the current game
+	 * @return Return the game ID
+	 */
+	public int GetGameID(){
+		if (game == null)
+			return -1;
+		else
+			return game.getID();
+	}
+	
+	/**
 	 * Spin while waiting for opponent to the current game
 	 * @return True if an opponent joined, False if there was an issue
 	 */
