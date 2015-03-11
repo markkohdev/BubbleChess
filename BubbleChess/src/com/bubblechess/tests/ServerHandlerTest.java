@@ -22,9 +22,13 @@ import junit.framework.*;
 public class ServerHandlerTest extends ServerHandler {
 	
 
-	public ServerHandlerTest() {
+	public ServerHandlerTest() throws Exception {
 		super(null, 0);
 		// TODO Auto-generated constructor stub
+	}
+	
+	protected boolean TestConnection() {
+		return true;
 	}
 
 	@Before
