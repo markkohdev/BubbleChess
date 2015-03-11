@@ -5,13 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 
-
-
-
-
-
-
-
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -33,7 +26,8 @@ public class GameBoard extends JPanel {
 	protected GamePlayPanel game;
 	
 	/**
-	 * Constructor of GameBoard, adding pieces to board with players color on proper side
+	 * Constructor for the gameboard uses game and takes color to create it
+	 * @param game
 	 * @param color
 	 */
 	public GameBoard(GamePlayPanel game, int color){
@@ -95,6 +89,10 @@ public class GameBoard extends JPanel {
 		
 	}
 	
+	/**
+	 * Refresh the board by clearing it and readding the pieces
+	 * @param board
+	 */
 	public void RefreshBoard(BoardPiece[][] board){
 		//Clear the board
 		//this.removeAll();
@@ -109,11 +107,22 @@ public class GameBoard extends JPanel {
 		}
 	}
 	
+	
+	/**
+	 * check if the cell is clicked
+	 * @param col
+	 * @param row
+	 */
 	public void CellClicked(int col, int row) {
 		System.out.println("Square clicked: ("+col +"," + row +")");
 		game.SquareClicked(col, row);
 	}
 	
+	
+	/**
+	 * highlight the cells inputed
+	 * @param highlight
+	 */
 	public void HighlightSquares(int[][] highlight) {
 		for(int i = 0; i < highlight.length; i++){
 			int col = highlight[i][0];
@@ -122,10 +131,20 @@ public class GameBoard extends JPanel {
 		}
 	}
 	
+	/**
+	 * Check if square is highlighted
+	 * @param col
+	 * @param row
+	 * @return true if hightlighted, false if not
+	 */
 	public boolean SquareIsHighlighted(int col, int row){
 		return squares[col][row].isHighlighted();
 	}
 
+	
+	/**
+	 * clear all highlights on board
+	 */
 	public void clearHighlights() {
 		for (int col=0; col <width; col ++){
 			for (int row = 0; row < height; row++){

@@ -65,7 +65,9 @@ public class RequestHandler extends Thread {
 	 */
 	public void run (){
 		try {
-
+			if (_request == null)
+				return;
+			
             //JSON parsing
 			System.out.println(_request);
 

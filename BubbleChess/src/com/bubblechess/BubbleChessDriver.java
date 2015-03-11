@@ -12,25 +12,27 @@ public class BubbleChessDriver {
 	
 	public static void main(String[] args){
 
-		//Run all the things here
-		int close = 0;
-		
+		if (args.length < 2) {
+			System.out.println("Please run as follows <server IP> <server port>");
+			return;
+		}
 		//ServerHandler server = new ServerHandler("tux.cs.drexel.edu",8080);
 		ServerHandler server;
 		try {
-			server = new ServerHandler("144.118.117.17",8080);
+			server = new ServerHandler(args[0],Integer.parseInt(args[1]));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			System.out.println(e.getMessage());
 			return;
 		}
+		int close = 0;	
 		GUIBridge bridge = new GUIBridge(server);
-		LoginPanel login = new LoginPanel();
 		MainApplicationWindow mainAppWindow = MainApplicationWindow.getInstance();
 		mainAppWindow.setBridge(bridge);
+		LoginPanel login = new LoginPanel();
 		mainAppWindow.addPanel(login);
 		mainAppWindow.setFrameVisible(true);
-		close = 0;
+
 		
 		while (close != 1) {
 			int gameID = 0;

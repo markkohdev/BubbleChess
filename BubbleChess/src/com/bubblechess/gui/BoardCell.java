@@ -22,8 +22,8 @@ public class BoardCell extends JPanel {
 	private GameBoard board;
 
 	/**
-	 * Constructor
-	 * Create the panel.
+	 * Constructor for board cell
+	 * @param board
 	 */
 	public BoardCell(GameBoard board) {
 
@@ -101,7 +101,10 @@ public class BoardCell extends JPanel {
 		return this.col;
 	}
 	
-	
+	/**
+	 * Set a border to highlight the cell
+	 * @param highlight
+	 */
 	public void highlightCell(boolean highlight) {
 		if (highlight) {
 			this.setBorder(BorderFactory.createBevelBorder(1, Color.GREEN,
@@ -113,6 +116,10 @@ public class BoardCell extends JPanel {
 		}
 	}
 	
+	/**
+	 * checks if cell is highlighted
+	 * @return
+	 */
 	public boolean isHighlighted(){
 		return highlighted;
 	}
@@ -137,12 +144,18 @@ public class BoardCell extends JPanel {
 		//this.validate();
 	}
 	
-	
+	/**
+	 * Clear all everything off the boardcell
+	 */
 	public void ClearPiece() {
 		this.removeAll();
 		this.highlightCell(false);
 	}
 
+	/**
+	 * Set the piece on the board cell
+	 * @param boardPiece
+	 */
 	public void SetPiece(BoardPiece boardPiece) {
 		
 		if (boardPiece != null) {
