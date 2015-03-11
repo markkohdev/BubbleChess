@@ -77,7 +77,7 @@ public class LoginPanel extends JPanel {
 				goToRegister();
 			}
 		});
-		btnDontHaveAn.setBounds(423, 331, 291, 20);
+		btnDontHaveAn.setBounds(423, 527, 291, 20);
 		add(btnDontHaveAn);
 		
 		JTextArea txtrOr = new JTextArea();
@@ -86,16 +86,6 @@ public class LoginPanel extends JPanel {
 		txtrOr.setText("_______________________________________________________ OR ______________________________________________________");
 		txtrOr.setBounds(10, 401, 1004, 51);
 		add(txtrOr);
-		
-		JButton btnContinueAsGuest = new JButton("Continue As Guest");
-		btnContinueAsGuest.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				continueAsGuest();
-			}
-		});
-		btnContinueAsGuest.setBounds(423, 508, 291, 23);
-		add(btnContinueAsGuest);
 		
 		JLabel lblUsername = new JLabel("UserName");
 		lblUsername.setFont(new Font("Tahoma", Font.PLAIN, 13));
@@ -144,22 +134,6 @@ public class LoginPanel extends JPanel {
 		else if(result == -2) {
 			setErrorLabel("User not found");
 		}
-	}
-	
-	/**
-	 * Tries to continue as guest using GUIBridge function
-	 * if success will set next pane, else set the error label to something
-	 */
-	public void continueAsGuest() { 
-		int result = bridge.ContinueAsGuest();
-		
-		if(result >= 0) { 
-			appWin.setPaneResult(3);
-		}
-		else {
-			setErrorLabel("Error creating guest account");
-		}
-		 
 	}
 	
 	
