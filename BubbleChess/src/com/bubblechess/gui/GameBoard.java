@@ -163,6 +163,17 @@ public class GameBoard extends JPanel {
 		}
 	}
 
+	public void revalidateBoard() {
+		this.revalidate();
+		this.repaint();
+		for (int col=0; col <width; col ++){
+			for (int row = 0; row < height; row++){
+				squares[col][row].revalidate();
+				squares[col][row].repaint();
+			}
+		}
+	}
+
 
 
 

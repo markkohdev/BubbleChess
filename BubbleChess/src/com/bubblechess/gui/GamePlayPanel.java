@@ -76,14 +76,19 @@ public class GamePlayPanel extends JPanel {
 	}
 	
 	
-	public void refreshBoard() {
+	public synchronized void refreshBoard() {
 		if (!bridge.EndState()) {
 			board.RefreshBoard(getClientBoard());
-			this.repaint();
 			updateCapturedList();
+			this.revalidateBoard();
+			MainApplicationWindow mainWin = MainApplicationWindow.getInstance();
+			mainWin.revalidate();
+			mainWin.repaint();
+			mainWin.validate();
 		}
 		else {
-			//MainAppWindow.setPaneResult(8);
+			MainApplicationWindow mainWin = MainApplicationWindow.getInstance();
+			mainWin.setPaneResult(8);
 		}
 	}
 	
@@ -110,7 +115,7 @@ public class GamePlayPanel extends JPanel {
 					highlight[i][1] = PlayableMoves.get(i).rowTo();
 				}
 				board.HighlightSquares(highlight);
-				this.repaint();
+				this.revalidateBoard();
 				
 				this.state = PanelState.HIGHLIGHTED;
 			}
@@ -130,7 +135,6 @@ public class GamePlayPanel extends JPanel {
 					
 					//Show us our move
 					refreshBoard();
-					this.revalidate();
 					
 					//Wait for the opponent turn
 					OpponentTurn();
@@ -175,5 +179,12 @@ public class GamePlayPanel extends JPanel {
 				p2CaptureListModel.addElement(pieces[pieceNum]);
 			}
 		}
+	}
+	
+	protected void revalidateBoard() {
+		this.revalidate();
+		this.validate();
+		this.repaint();
+		board.revalidateBoard();
 	}
 }
