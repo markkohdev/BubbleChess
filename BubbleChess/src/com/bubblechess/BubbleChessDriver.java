@@ -25,18 +25,24 @@ public class BubbleChessDriver {
 			System.out.println(e.getMessage());
 			return;
 		}
+		
+		
 		int close = 0;	
 		GUIBridge bridge = new GUIBridge(server);
 		MainApplicationWindow mainAppWindow = MainApplicationWindow.getInstance();
 		mainAppWindow.setBridge(bridge);
-		LoginPanel login = new LoginPanel();
-		mainAppWindow.addPanel(login);
+		
+		//LoginPanel login = new LoginPanel();
+		
+		
+		//mainAppWindow.addPanel(login);
+		mainAppWindow.setPaneResult(1);
 		mainAppWindow.setFrameVisible(true);
 
 		
 		while (close != 1) {
 			
-			appWindowSwitcher(mainAppWindow);
+			close = appWindowSwitcher();
 		}
 	}
 	
@@ -44,9 +50,11 @@ public class BubbleChessDriver {
 	 * Function to switch windows
 	 * @param mainAppWindow
 	 */
-	public static void appWindowSwitcher(MainApplicationWindow mainAppWindow) {
+	public static int appWindowSwitcher() {
+		MainApplicationWindow mainAppWindow = MainApplicationWindow.getInstance();
 		GUIBridge bridge = mainAppWindow.getBridge();
-		int gameID = 0;
+		int gameID = bridge.GetGameID();
+		int close = 0;
 		int pane = mainAppWindow.getPaneResult();
 		switch(pane) {
 		case 1:
@@ -93,10 +101,8 @@ public class BubbleChessDriver {
 			EndScreenPanel endPanel = new EndScreenPanel();
 			mainAppWindow.addPanel(endPanel);
 			break;
-		default:
-			close = 1;
-			break;
 		}
+		return close;
 	}
 	
 }
