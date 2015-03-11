@@ -130,7 +130,8 @@ public class Game {
 		//Update the board's state
 		board.updateState();
 		
-		if(turn == user1)
+		//Switch the turns
+		if(turn.getID() == user1.getID())
 			turn = user2;
 		else
 			turn = user1;

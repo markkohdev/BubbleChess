@@ -18,9 +18,7 @@ import java.awt.event.MouseEvent;
 
 public class GameBoard extends JPanel {
 	
-	private BoardCell squares[][];
-	private int selectedCol, selectedRow;	
-	private Color c1, c2;
+	protected BoardCell squares[][];
 	protected int width;
 	protected int height;
 	protected GamePlayPanel game;
@@ -102,9 +100,7 @@ public class GameBoard extends JPanel {
 	 * @param board
 	 */
 	public void RefreshBoard(BoardPiece[][] board){
-		//Clear the board
-		//this.removeAll();
-		
+		//Clear the board	
 		for (int col=0; col <board.length; col ++){
 			for (int row = 0; row < board[col].length; row++){
 				
@@ -162,19 +158,4 @@ public class GameBoard extends JPanel {
 			}
 		}
 	}
-
-	public void revalidateBoard() {
-		this.revalidate();
-		this.repaint();
-		for (int col=0; col <width; col ++){
-			for (int row = 0; row < height; row++){
-				squares[col][row].revalidate();
-				squares[col][row].repaint();
-			}
-		}
-	}
-
-
-
-
 }

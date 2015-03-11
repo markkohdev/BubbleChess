@@ -311,6 +311,8 @@ public class ServerHandler {
 						(String)response.get("username"), //Opponent username
 						};
 				retVal = opponent;
+				//Make a line after the dots
+				System.out.println();
 			}
 			else if (response.get("result").equals("waiting")){
 				attempts++;
@@ -501,6 +503,9 @@ public class ServerHandler {
 				
 				Move m = new Move(from,to);
 				retVal = m;
+				
+				//Make a line after the dots
+				System.out.println();
 			}
 			else if (response.get("result").equals("waiting")){
 				attempts++;

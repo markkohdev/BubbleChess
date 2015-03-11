@@ -47,9 +47,30 @@ public class LoginPanel extends JPanel {
 		setPreferredSize(new Dimension(1024,768));
 		setLayout(null);
 		
+		JLabel lblBubblepipeChess = new JLabel("BubblePipe Chess",JLabel.CENTER);
+		lblBubblepipeChess.setFont(new Font("Tahoma", Font.BOLD, 30));
+		lblBubblepipeChess.setBounds(0, 150, 1024, 70);
+		add(lblBubblepipeChess);
+		
+		
 		textUsername = new JTextField();
 		textUsername.setBounds(423, 242, 192, 20);
 		add(textUsername);
+		
+		JLabel lblUsername = new JLabel("UserName");
+		lblUsername.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lblUsername.setBounds(412, 217, 200, 14);
+		add(lblUsername);
+		
+		JLabel lblPassword = new JLabel("Password");
+		lblPassword.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lblPassword.setBounds(412, 273, 200, 14);
+		add(lblPassword);
+		
+		passwordField = new JPasswordField();
+		passwordField.setBounds(423, 298, 192, 20);
+		add(passwordField);
+		
 		
 		JButton btnLogin = new JButton("Login");
 		btnLogin.addMouseListener(new MouseAdapter() {
@@ -66,53 +87,29 @@ public class LoginPanel extends JPanel {
 				}
 			}
 		});
-		
-		btnLogin.setBounds(625, 297, 89, 23);
+		btnLogin.setBounds(437, 350, 150, 20);
 		add(btnLogin);
+
+		JLabel txtrOr = new JLabel("OR",JLabel.CENTER);
+		txtrOr.setFont(new Font("Tahoma", Font.BOLD, 20));
+		txtrOr.setBounds(0, 375, 1024, 70);
+		add(txtrOr);
 		
-		JButton btnDontHaveAn = new JButton("Click Here To Register");
-		btnDontHaveAn.addMouseListener(new MouseAdapter() {
+		JButton btnRegister = new JButton("Click Here To Register");
+		btnRegister.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				goToRegister();
 			}
 		});
-		btnDontHaveAn.setBounds(423, 527, 291, 20);
-		add(btnDontHaveAn);
-		
-		JTextArea txtrOr = new JTextArea();
-		txtrOr.setFont(new Font("Tahoma", Font.BOLD, 18));
-		txtrOr.setBackground(Color.LIGHT_GRAY);
-		txtrOr.setText("_______________________________________________________ OR ______________________________________________________");
-		txtrOr.setBounds(10, 401, 1004, 51);
-		add(txtrOr);
-		
-		JLabel lblUsername = new JLabel("UserName");
-		lblUsername.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblUsername.setBounds(423, 217, 192, 14);
-		add(lblUsername);
-		
-		JLabel lblPassword = new JLabel("Password");
-		lblPassword.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblPassword.setBounds(423, 273, 192, 14);
-		add(lblPassword);
-		
-		JLabel lblBubblepipeChess = new JLabel("BubblePipe Chess");
-		lblBubblepipeChess.setFont(new Font("Tahoma", Font.BOLD, 30));
-		lblBubblepipeChess.setBounds(396, 71, 318, 70);
-		add(lblBubblepipeChess);
-		
-		passwordField = new JPasswordField();
-		passwordField.setBounds(423, 298, 192, 20);
-		add(passwordField);
-		
+		btnRegister.setBounds(387, 450, 250, 20);
+		add(btnRegister);
+
 		lblErrorLabel = new JLabel();
 		lblErrorLabel.setForeground(Color.RED);
 		lblErrorLabel.setFont(new Font("Dialog", Font.BOLD, 13));
 		lblErrorLabel.setBounds(423, 185, 70, 15);
-		
-
-
+	
 	}
 	
 	/**

@@ -15,12 +15,11 @@ import com.bubblechess.client.BoardPiece.PieceColor;;
 
 public class BoardCell extends JPanel {
 
-	private int col;
-	private int row;
-	private boolean haveListener;
-	private boolean highlighted;
-	private GameBoard board;
-	private BoardPiece piece;
+	protected int col;
+	protected int row;
+	protected boolean highlighted;
+	protected GameBoard board;
+	protected BoardPiece piece;
 
 	/**
 	 * Constructor for board cell
@@ -31,7 +30,6 @@ public class BoardCell extends JPanel {
 		setLayout(new BorderLayout());
 		setBorder(BorderFactory.createEmptyBorder());
 		this.highlighted = false;
-		this.haveListener = false;
 		this.board = board;
 		
 		
@@ -114,8 +112,8 @@ public class BoardCell extends JPanel {
 		} else {
 			this.setBorder(BorderFactory.createEmptyBorder());
 			this.highlighted = false;
-			this.repaint();
 		}
+		this.repaint();
 	}
 	
 	/**
@@ -130,10 +128,9 @@ public class BoardCell extends JPanel {
 	 * Clear all everything off the boardcell
 	 */
 	public void ClearPiece() {
-		this.removeAll();
 		this.highlightCell(false);
 		this.piece = null;
-		this.repaint();
+		this.removeAll();
 	}
 
 	/**
@@ -171,8 +168,6 @@ public class BoardCell extends JPanel {
 				piecelabel.setVisible(true);
 				add(piecelabel);
 			}
-			
-			this.repaint();
 		}
 	}
 	

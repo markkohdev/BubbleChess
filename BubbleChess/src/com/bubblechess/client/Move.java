@@ -67,7 +67,7 @@ public class Move {
 	}
 	
 	/**
-	 * Converts the move object to a string
+	 * Converts the move object to a string as "(colFrom,rowFrom),(colTo,rowTo)"
 	 * @return
 	 */
 	public String toString(){

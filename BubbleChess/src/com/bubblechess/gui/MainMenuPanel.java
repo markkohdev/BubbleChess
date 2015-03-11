@@ -24,7 +24,8 @@ public class MainMenuPanel extends JPanel {
 	 */
 	public MainMenuPanel() {
 		setBackground(Color.LIGHT_GRAY);
-		setPreferredSize(new Dimension(1024,768));
+		//setPreferredSize(new Dimension(1024,768));
+		MainApplicationWindow.getInstance().setSize(new Dimension(1024,768));
 		setLayout(null);
 		
 		JButton btnCreateGame = new JButton("Create Game");
