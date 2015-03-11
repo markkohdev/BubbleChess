@@ -64,9 +64,9 @@ public class LoginPanel extends JPanel {
 				else {
 					tryLogin();
 				}
-				
 			}
 		});
+		
 		btnLogin.setBounds(625, 297, 89, 23);
 		add(btnLogin);
 		

@@ -100,7 +100,7 @@ public class JoinPanel extends JPanel {
 	 * @return ID from selected Game
 	 */
 	public int getSelectedID() {
-		int gameID = (Integer)this.joinDropDown.getSelectedItem();		
+		int gameID = Integer.parseInt((String)this.joinDropDown.getSelectedItem());		
 		return gameID;
 		
 	}
